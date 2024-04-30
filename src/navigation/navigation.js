@@ -11,13 +11,14 @@ import GymScreen from '../screens/GymScreen';
 import MealScreen from '../screens/MealScreen';
 import WorkoutScreen from '../screens/WorkoutScreen';
 import ChatScreen from '../screens/ChatScreen';
-import { BlurView } from 'expo-blur';
+import { BlurView } from 'exp o-blur';
+import {DefaultTheme} from  "@react-navigation/native"
 
 const Tab = createBottomTabNavigator();
 
 export default function Navigation() {
     return (
-        <NavigationContainer >
+        <NavigationContainer   theme={MyTheme} >
             <Tab.Navigator screenOptions={({ route }) => ({
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
@@ -66,3 +67,12 @@ export default function Navigation() {
         </NavigationContainer>
     );
 }
+
+const MyTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      primary: 'rgb(255, 45, 85)',
+      background: 'transparent',
+    },
+  };
