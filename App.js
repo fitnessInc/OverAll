@@ -1,13 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View,ImageBackground } from 'react-native';
 import Navigation from './src/navigation/navigation';
 import 'react-native-gesture-handler';
-import { StyleSheet, Text, View, ImageBackground } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import image from './assets/images/soccer.png';
 import 'react-native-gesture-handler';
-import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
-import Main from './screens/MainComponent';
+
+
 
 export default function App() {
   return (

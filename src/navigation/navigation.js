@@ -11,7 +11,7 @@ import GymScreen from '../screens/GymScreen';
 import MealScreen from '../screens/MealScreen';
 import WorkoutScreen from '../screens/WorkoutScreen';
 import ChatScreen from '../screens/ChatScreen';
-import { BlurView } from 'exp o-blur';
+import { BlurView } from 'expo-blur';
 import {DefaultTheme} from  "@react-navigation/native"
 
 const Tab = createBottomTabNavigator();
@@ -42,7 +42,8 @@ export default function Navigation() {
                 tabBarLabelStyle : {
                     fontSize: 14,
                     fontWeight: 600,
-                    marginBottom: -10
+                    marginBottom: -10,
+                    color:"white"
                 },
                 tabBarStyle : {
                     paddingTop: 12,
@@ -50,7 +51,7 @@ export default function Navigation() {
                 },
 
                 tabBarBackground: () => (
-                    <View intensity={100} className="backdrop-blur-sm bg-white/30" />
+                    <View intensity={60} className="backdrop-blur-sm bg-white/30" />
                 )
              
             })}>
