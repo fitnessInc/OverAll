@@ -31,11 +31,14 @@ export default function Navigation() {
                         iconName = Images.workoutIcon;
                     } else if(route.name == 'Meal') {
                         iconName = Images.mealIcon;
-                    } else {
+                    } else if (route.name='Loggin'){
+                        iconName = Images.logginIcon;
+                    }else {
                         iconName = Images.chatIcon;
                     }
 
-                    return <Image className="w-6 h-6" source={iconName} />;
+                    return <Image className="w-6 h-6" source={iconName}  style={{ tintColor: 'white' }}
+                    />;
                 },
 
                 tabBarInactiveTintColor: 'black',
