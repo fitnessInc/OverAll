@@ -5,4 +5,5 @@ export const Images = {
     chatIcon: require('../assets/images/chat.png'),
     mealIcon: require('../assets/images/meal.png'),
     settingsIcon: require('../assets/images/settings.png'),
+    LoggingIcon:require('../assets/images/log.png')
 }

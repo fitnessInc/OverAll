@@ -13,6 +13,7 @@ import WorkoutScreen from '../screens/WorkoutScreen';
 import ChatScreen from '../screens/ChatScreen';
 import { BlurView } from 'expo-blur';
 import {DefaultTheme} from  "@react-navigation/native"
+import LoggingScreen from '../screens/LoggingScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -31,13 +32,14 @@ export default function Navigation() {
                         iconName = Images.workoutIcon;
                     } else if(route.name == 'Meal') {
                         iconName = Images.mealIcon;
-                    } else if (route.name='Loggin'){
-                        iconName = Images.logginIcon;
-                    }else {
+                    } else if (route.name=='Logging'){
+                        // iconName = Images.LoggingIcon;
+                        return <Image className="w-6 h-6" source={Images.LoggingIcon} />;
+                    }else{
                         iconName = Images.chatIcon;
                     }
 
-                    return <Image className="w-6 h-6" source={iconName}  style={{ tintColor: 'white' }}
+                    return <Image className="w-6 h-6" source={iconName}  style={{ tintColor:focused?'white:':"white" }}
                     />;
                 },
 
@@ -65,8 +67,8 @@ export default function Navigation() {
                 <Tab.Screen name="Meal" component={MealScreen} options={{ headerShown: false }} />
                 <Tab.Screen name="Chat" component={ChatScreen} options={{ headerShown: false }} />
                 <Tab.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
-            
-                
+                <Tab.Screen name="Logging" component={LoggingScreen} options={{ headerShown: false }} />
+        
             </Tab.Navigator>
         </NavigationContainer>
     );
