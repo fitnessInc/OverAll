@@ -14,6 +14,7 @@ import ChatScreen from '../screens/ChatScreen';
 import { BlurView } from 'expo-blur';
 import {DefaultTheme} from  "@react-navigation/native"
 import LoggingScreen from '../screens/LoggingScreen';
+import CarouselCard from '../components/carousel';
 
 const Tab = createBottomTabNavigator();
 
@@ -64,7 +65,7 @@ export default function Navigation() {
             
                 <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false, }} />
                 <Tab.Screen name="Workout" component={WorkoutScreen} options={{ headerShown: false }} />
-                <Tab.Screen name="Meal" component={MealScreen} options={{ headerShown: false }} />
+                <Tab.Screen name="Meal" component={CarouselCard} options={{ headerShown: false }} />
                 <Tab.Screen name="Chat" component={ChatScreen} options={{ headerShown: false }} />
                 <Tab.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
                 <Tab.Screen name="Logging" component={LoggingScreen} options={{ headerShown: false }} />
