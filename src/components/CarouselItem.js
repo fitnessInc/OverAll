@@ -6,7 +6,7 @@ import { Data } from "../../assets/data";
 
 
 export const SliderWidth = Dimensions.get('window').width;
-export const ItemWidth = Math.round(SliderWidth * 0.9);
+export const ItemWidth = Math.round(SliderWidth * 0.99);
 
 export default function CarouselCardItem({ index, item }) {
     return (
@@ -23,11 +23,11 @@ export default function CarouselCardItem({ index, item }) {
 const Styles = StyleSheet.create({
     container: {
         backgroundColor:'white',
-        marginTop:200,
-        borderRadius: 8,
+        marginTop:250,
+        borderRadius: 10,
         width: ItemWidth,
         paddingBottom: 250,
-        height:350,
+        height:300,
         justifyContent:'center',
         alignItems:'center',
         textAlign:'center'
@@ -40,18 +40,20 @@ const Styles = StyleSheet.create({
         
     },
     header: {
-        color: "white",
+        color: "black",
         fontSize: 20,
         fontWeight: "bold",
         paddingLeft: 20,
         paddingTop: 20,
     },
     body: {
-        color: "#222",
+        color: "black",
         fontSize: 18,
+        fontWeight:'bold',
         paddingLeft: 20,
         paddingLeft: 20,
         paddingRight: 20,
+        textAlign:'center'
     },
 
 });

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator ,} from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -12,15 +12,33 @@ import MealScreen from '../screens/MealScreen';
 import WorkoutScreen from '../screens/WorkoutScreen';
 import ChatScreen from '../screens/ChatScreen';
 import { BlurView } from 'expo-blur';
-import {DefaultTheme} from  "@react-navigation/native"
+import { DefaultTheme } from "@react-navigation/native"
 import LoggingScreen from '../screens/LoggingScreen';
 import CarouselCard from '../components/carousel';
+import Food from '../screens/food';
+import Order from '../screens/Order';
+import { createStackNavigator } from '@react-navigation/stack';
+
+
+const Stack = createStackNavigator();
+
+function MealStackNavigator() {
+    return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="CarouselCard" component={CarouselCard} />
+            <Stack.Screen name="Food" component={Food} />
+            <Stack.Screen name="Order" component={Order} />
+        </Stack.Navigator>
+    );
+}
 
 const Tab = createBottomTabNavigator();
 
+
 export default function Navigation() {
     return (
-        <NavigationContainer   theme={MyTheme} >
+        <NavigationContainer theme={MyTheme} >
+            
             <Tab.Navigator screenOptions={({ route }) => ({
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
@@ -29,29 +47,29 @@ export default function Navigation() {
                         iconName = Images.homeIcon;
                     } else if (route.name === 'Settings') {
                         iconName = Images.settingsIcon;
-                    } else if(route.name == 'Workout') {
+                    } else if (route.name == 'Workout') {
                         iconName = Images.workoutIcon;
-                    } else if(route.name == 'Meal') {
+                    } else if (route.name == 'Meal') {
                         iconName = Images.mealIcon;
-                    } else if (route.name=='Logging'){
+                    } else if (route.name == 'Logging') {
                         // iconName = Images.LoggingIcon;
                         return <Image className="w-6 h-6" source={Images.LoggingIcon} />;
-                    }else{
+                    } else {
                         iconName = Images.chatIcon;
                     }
 
-                    return <Image className="w-6 h-6" source={iconName}  style={{ tintColor:focused?'white:':"white" }}
+                    return <Image className="w-6 h-6" source={iconName} style={{ tintColor: focused ? 'white:' : "white" }}
                     />;
                 },
 
                 tabBarInactiveTintColor: 'black',
-                tabBarLabelStyle : {
+                tabBarLabelStyle: {
                     fontSize: 14,
                     fontWeight: 600,
                     marginBottom: -10,
-                    color:"white"
+                    color: "white"
                 },
-                tabBarStyle : {
+                tabBarStyle: {
                     paddingTop: 12,
                     // position: 'absolute',
                 },
@@ -59,17 +77,17 @@ export default function Navigation() {
                 tabBarBackground: () => (
                     <View intensity={60} className="backdrop-blur-sm bg-white/30" />
                 )
-             
+
             })}>
 
-            
+
                 <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false, }} />
                 <Tab.Screen name="Workout" component={WorkoutScreen} options={{ headerShown: false }} />
                 <Tab.Screen name="Meal" component={CarouselCard} options={{ headerShown: false }} />
                 <Tab.Screen name="Chat" component={ChatScreen} options={{ headerShown: false }} />
                 <Tab.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
                 <Tab.Screen name="Logging" component={LoggingScreen} options={{ headerShown: false }} />
-        
+                
             </Tab.Navigator>
         </NavigationContainer>
     );
@@ -78,8 +96,8 @@ export default function Navigation() {
 const MyTheme = {
     ...DefaultTheme,
     colors: {
-      ...DefaultTheme.colors,
-      primary: 'rgb(255, 45, 85)',
-      background: 'transparent',
+        ...DefaultTheme.colors,
+        primary: 'rgb(255, 45, 85)',
+        background: 'transparent',
     },
-  };
+};
