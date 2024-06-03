@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator ,} from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator, } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -20,17 +20,7 @@ import Order from '../screens/Order';
 import { createStackNavigator } from '@react-navigation/stack';
 
 
-const Stack = createStackNavigator();
 
-function MealStackNavigator() {
-    return (
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="CarouselCard" component={CarouselCard} />
-            <Stack.Screen name="Food" component={Food} />
-            <Stack.Screen name="Order" component={Order} />
-        </Stack.Navigator>
-    );
-}
 
 const Tab = createBottomTabNavigator();
 
@@ -38,7 +28,6 @@ const Tab = createBottomTabNavigator();
 export default function Navigation() {
     return (
         <NavigationContainer theme={MyTheme} >
-            
             <Tab.Navigator screenOptions={({ route }) => ({
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
@@ -52,10 +41,15 @@ export default function Navigation() {
                     } else if (route.name == 'Meal') {
                         iconName = Images.mealIcon;
                     } else if (route.name == 'Logging') {
-                        // iconName = Images.LoggingIcon;
+
                         return <Image className="w-6 h-6" source={Images.LoggingIcon} />;
-                    } else {
-                        iconName = Images.chatIcon;
+                    } else if (route.name == "Food") {
+                        iconName: () => null;
+
+                    }else if (route.name==='Order'){
+                        iconName:()=>null;
+                    }else{
+                        iconName= Images.chatIcon
                     }
 
                     return <Image className="w-6 h-6" source={iconName} style={{ tintColor: focused ? 'white:' : "white" }}
@@ -87,7 +81,23 @@ export default function Navigation() {
                 <Tab.Screen name="Chat" component={ChatScreen} options={{ headerShown: false }} />
                 <Tab.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
                 <Tab.Screen name="Logging" component={LoggingScreen} options={{ headerShown: false }} />
-                
+                <Tab.Screen name="Food"
+                    component={Food}
+                    options={{
+                        headerShown: false,
+                        tabBarLabel: () => null,
+                        tabBarButton: (props) => null,
+                    }}
+                />
+                <Tab.Screen name="Order"
+                    component={Order}
+                    options={{
+                        headerShown: false,
+                        tabBarLabel: () => null,
+                        tabBarButton: (props) => null,
+                    }}
+                />
+
             </Tab.Navigator>
         </NavigationContainer>
     );

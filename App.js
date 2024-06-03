@@ -1,28 +1,40 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View,ImageBackground } from 'react-native';
+import { StyleSheet, Text, View, ImageBackground } from 'react-native';
 import Navigation from './src/navigation/navigation';
 import 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
 import image from './assets/images/soccer.png';
 import 'react-native-gesture-handler';
+import MealStackNavigator from './src/navigation/MealStackNavigator';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Provider } from 'react-redux';
+import store from './store';
+
+
 
 
 
 export default function App() {
   return (
-    <ImageBackground
+    <>
+      <Provider store={store}>
+        <SafeAreaProvider>
+          <ImageBackground
 
-      source={image}
-      style={{
-        flex: 1,
-        // resizeMode:'cover',
-        justifyContent: 'center',
+            source={image}
+            style={{
+              flex: 1,
+              // resizeMode:'cover',
+              justifyContent: 'center',
 
-      }}
+            }}
 
-    >
-      <Navigation />
-    </ ImageBackground>
+          >
+            <Navigation />
+          </ ImageBackground>
+        </SafeAreaProvider>
+      </Provider>
+    </>
   );
 }
 

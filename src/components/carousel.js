@@ -11,6 +11,7 @@ import Order from "../screens/Order";
 import { NavigationContainer } from '@react-navigation/native';
 // import LinearGradient from 'react-native-linear-gradient';
 import { LinearGradient } from 'expo-linear-gradient';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 
@@ -21,7 +22,7 @@ export default function CarouselCard({ navigation }) {
   const xCarousel = useRef(null)
 
   return (
-    <View>
+    <SafeAreaView>
       <Carousel
         layout="tinder"
         layoutCardOffset={9}
@@ -49,20 +50,20 @@ export default function CarouselCard({ navigation }) {
         inactiveDotScale={0.6}
         tappableDots={true}
       />
-      <TouchableOpacity activeOpacity={0.7} onPress={()=>navigation.navigate("Food")}>
+      <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate("Food")}>
         <LinearGradient
           colors={['white', 'green', 'white']}
           start={{ x: 1, y: 0 }}
-          end={{ x: 1, y: 1}}
+          end={{ x: 1, y: 1 }}
           style={styles.button}
         >
           <Text style={styles.text}>Customize Your Meal</Text>
         </LinearGradient>
       </TouchableOpacity>
-      <TouchableOpacity activeOpacity={0.9}>
+      <TouchableOpacity activeOpacity={0.9} onPress={() => navigation.navigate('Order')}>
         <LinearGradient
-          colors={["white", 'green','white']}
-          start={{ x: 1, y:0 }}
+          colors={["white", 'green', 'white']}
+          start={{ x: 1, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.button}
         >
@@ -72,7 +73,7 @@ export default function CarouselCard({ navigation }) {
 
 
 
-    </View>
+    </SafeAreaView>
   )
 
 };
@@ -83,21 +84,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-   button:{
-     alignItems:'center',
-     margin:5,
-     fontSize:'50',
-     fontWeight:'900',
-      padding:'40'
+  button: {
+    alignItems: 'center',
+    margin: 5,
+    fontSize: '50',
+    fontWeight: '900',
+    padding: '40',
+    borderRadius: 20,
+    borderBottomRightRadius:10,
+    borderBottomLeftRadius:10
+    
+    
 
-   },
+  },
 
-    text:{
-       fontSize:'25',
-       fontVariant:'bold',
-       fontWeight:'900',
-       color:'white'
-    }
+  text: {
+    fontSize: '15',
+    fontVariant: 'bold',
+    fontWeight: '900',
+    color: 'white',
+    borderCurve: 4,
+    borderRadius: 20
+  }
 });
 
 

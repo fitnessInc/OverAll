@@ -1,12 +1,13 @@
 import React from "react";
 import { View, Text, StyleSheet, Dimensions, Image } from "react-native";
-import { Data } from "../../assets/data";
+
+
 
 
 
 
 export const SliderWidth = Dimensions.get('window').width;
-export const ItemWidth = Math.round(SliderWidth * 0.99);
+export const ItemWidth = Math.round(SliderWidth * 0.95);
 
 export default function CarouselCardItem({ index, item }) {
     return (
@@ -23,11 +24,11 @@ export default function CarouselCardItem({ index, item }) {
 const Styles = StyleSheet.create({
     container: {
         backgroundColor:'white',
-        marginTop:250,
+        marginTop:200,
         borderRadius: 10,
         width: ItemWidth,
         paddingBottom: 250,
-        height:300,
+        height:200,
         justifyContent:'center',
         alignItems:'center',
         textAlign:'center'
