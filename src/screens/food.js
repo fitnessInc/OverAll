@@ -98,7 +98,7 @@ export default function Food({ item }) {
                 renderItem={({item}) => <Item item={item} />}
                 keyExtractor={item => item.id}
                 numColumns={2}
-                // ItemSeparatorComponent={() => <View style={{height: 20, width: 20 }}/>}
+             
             />
 
         </SafeAreaView>
