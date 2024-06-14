@@ -7,7 +7,6 @@ import { Resto } from "../components/Card";
 
 
 
-
 export default function Order({ item }) {
 
     return (
@@ -18,7 +17,7 @@ export default function Order({ item }) {
                 renderItem={({ item }) => <RestauCard item={item} />}
                 snapToAlignment='center'
                 keyExtractor={Resto.id}
-                contentContainerStyle={{ paddingVertical:"100%" }}
+                contentContainerStyle={{ paddingVertical:350, marginTop:45 }}
             />
 
         </SafeAreaView>
