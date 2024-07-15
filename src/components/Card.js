@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Dimensions,TouchableHighlight , Image, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Rating, AirbnbRating } from 'react-native-ratings';
-import { useAnimatedKeyboard } from "react-native-reanimated";
-import Search from 'react-native-search-box';
-import AtoZListView from 'react-native-atoz-listview';
-import { ViewPropTypes } from 'deprecated-react-native-prop-types';
+
 
 
 
@@ -42,46 +39,7 @@ export const Resto = [
 const RestauCard = ({ item }) => {
     const [data, setData] = useState([]);
     const [rating, setRating] = useState(0);
-  
-    const rowHeight = 60;
-  
-    const renderRow = (item, sectionId, index) => (
-      <TouchableHighlight
-        style={{
-          height: rowHeight,
-          justifyContent: 'center',
-          alignItems: 'center'
-        }}
-      >
-        <Text>{item.name}</Text>
-      </TouchableHighlight>
-    );
-  
-    const onSearch = (searchText) => {
-      return new Promise((resolve, reject) => {
-        console.log(searchText);
-        console.log('Add your search function here.');
-        resolve();
-      });
-    };
-  
-    useEffect(() => {
-      const beforeFocus = () => {
-        return new Promise((resolve, reject) => {
-          console.log('beforeFocus');
-          resolve();
-        });
-      };
-  
-      const onFocus = (text) => {
-        return new Promise((resolve, reject) => {
-          console.log('onFocus', text);
-          resolve();
-        });
-      };
-  
-      // Add any additional side effects or cleanup here if needed
-    }, []);
+
   
     const handleRating = (rating) => {
       console.log(`rating is: ${rating}`);
@@ -95,16 +53,6 @@ const RestauCard = ({ item }) => {
   
     return (
       <View>
-        <Search
-          ref="search_box"
-          onSearch={onSearch}
-        />
-        <AtoZListView
-          data={data}
-          renderRow={renderRow}
-          rowHeight={rowHeight}
-          sectionHeaderHeight={40}
-        />
         <TouchableOpacity>
           <Image
             source={item.source}

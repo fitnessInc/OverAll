@@ -17,7 +17,7 @@ import LoggingScreen from '../screens/LoggingScreen';
 import CarouselCard from '../components/carousel';
 import Food from '../screens/food';
 import Order from '../screens/Order';
-import { createStackNavigator } from '@react-navigation/stack';
+import Profiles from '../screens/Profiles';
 
 
 
@@ -48,12 +48,16 @@ export default function Navigation() {
 
                     }else if (route.name==='Order'){
                         iconName:()=>null;
+                    }else if(route.name ==='Profiles'){
+                        iconName: () => null;
+
                     }else{
                         iconName= Images.chatIcon
                     }
 
                     return <Image className="w-6 h-6" source={iconName} style={{ tintColor: focused ? 'white:' : "white" }}
                     />;
+                    
                 },
 
                 tabBarInactiveTintColor: 'black',
@@ -89,8 +93,8 @@ export default function Navigation() {
                         tabBarButton: (props) => null,
                     }}
                 />
-                <Tab.Screen name="Order"
-                    component={Order}
+                <Tab.Screen name="Profiles"
+                    component={Profiles}
                     options={{
                         headerShown: false,
                         tabBarLabel: () => null,

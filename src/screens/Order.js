@@ -17,7 +17,7 @@ export default function Order({ item }) {
                 renderItem={({ item }) => <RestauCard item={item} />}
                 snapToAlignment='center'
                 keyExtractor={Resto.id}
-                contentContainerStyle={{ paddingVertical:350, marginTop:45 }}
+                contentContainerStyle={{ paddingVertical:350, marginTop:45 }}     
             />
 
         </SafeAreaView>

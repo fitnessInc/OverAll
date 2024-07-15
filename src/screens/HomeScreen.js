@@ -5,8 +5,10 @@ import Calisthenics from "../../assets/images/calisImg.jpg"
 import { Tile } from '@rneui/themed';
 import gym from '../../assets/images/gym.jpg';
 import nutrition from '../../assets/images/nutrution.jpg';
+import Profiles from './Profiles';
 
-const HomeScreen = () => {
+
+const HomeScreen = ({navigation}) => {
 
 
 
@@ -17,9 +19,9 @@ const HomeScreen = () => {
         imageSrc={Calisthenics}
         featured
         height={200}
-        //   onPress={() => navigation.navigate('Intake')}
+         onPress={() => navigation.navigate('Profiles')}
       />
-      {/* Add margin to create space between tiles */}
+      
       <View style={styles.space} />
       <Tile
         imageSrc={gym}
