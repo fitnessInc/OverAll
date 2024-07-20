@@ -63,7 +63,7 @@ const Profiles = () => {
             const newData = avatars.map(item => {
                 if (item.id === id) {
                     // return { ...item, uri: result.assets[0].uri };
-                    return { ...item, uri: result.uri };
+                    return { ...item, uri: result.uri.assets[0].uri};
                 }
                   console.log(result)
                 return(
