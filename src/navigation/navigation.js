@@ -18,6 +18,7 @@ import CarouselCard from '../components/carousel';
 import Food from '../screens/food';
 import Order from '../screens/Order';
 import Profiles from '../screens/Profiles';
+import Pro from '../screens/trainersPro/profileOne'
 
 
 
@@ -95,6 +96,14 @@ export default function Navigation() {
                 />
                 <Tab.Screen name="Profiles"
                     component={Profiles}
+                    options={{
+                        headerShown: false,
+                        tabBarLabel: () => null,
+                        tabBarButton: (props) => null,
+                    }}
+                />
+                <Tab.Screen name="Pro"
+                    component={Pro}
                     options={{
                         headerShown: false,
                         tabBarLabel: () => null,
