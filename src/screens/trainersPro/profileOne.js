@@ -1,31 +1,20 @@
 
-
-
-import { height, width } from 'deprecated-react-native-prop-types/DeprecatedImagePropType';
-import React from 'react';
-import { View, Text, Image, StyleSheet, Dimensions, SafeAreaView, TouchableOpacity, Modal } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, Image, StyleSheet, Dimensions, SafeAreaView, TouchableOpacity, Modal,FlatList } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useState } from "react";
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Button } from 'react-native-elements';
-import { ResponsiveGrid } from 'react-native-flexible-grid'; 
+import { ResponsiveGrid } from 'react-native-flexible-grid';
+import { installTwicPics } from '@twicpics/components/react-native';
+import { TwicImg, TwicVideo } from '@twicpics/components/react-native';
 
 
+installTwicPics({
+  "domain": `https://nanitosse.twic.pics/`,
+  "cachePolicy": `disk`,
+});
 
- const data=[
-  {
-    id:1,
-    title:"hanibal",
-    url:"https://www.youtube.com/watch?v=Zk9jp9rJ3Ss"
-  },
-  {
-    id:1,
-    title:"hanibal",
-    url:"https://www.pexels.com/photo/photo-of-man-with-muscular-body-1547248/"
-  }
-
- ]
 
 
 
@@ -43,6 +32,45 @@ const Pro = ({ route }) => {
   const [location, Setlocation] = useState('')
   const [showPicker, setShowpicker] = useState(false);
 
+
+
+
+  const data = [
+    {
+
+      title: "hanibal",
+      url: "https://www.youtube.com/watch?v=Zk9jp9rJ3Ss",
+      type: "video"
+    },
+    {
+
+      title: "hanibal",
+      url: "https://www.pexels.com/photo/photo-of-man-with-muscular-body-1547248/",
+      type: "image"
+    },
+  ];
+
+
+
+  let autoId = useRef(0);
+  let clonedData = [];
+
+
+  for (let i = 0; i < 5; i++) {
+    const newData = data.map((item) => ({
+      ...item,
+      id: ++autoId.current,
+
+    }))
+    clonedData = [...clonedData, ...newData];
+  }
+
+
+
+
+
+
+
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setDate(currentDate);
@@ -50,10 +78,41 @@ const Pro = ({ route }) => {
     console.log(selectedDate``)
   };
 
-  const Option = {
-    dateStyle: "long",
-    timeStyle: 'short'
-  };
+
+
+
+  // const flattenData = Array(3).fill(data).flat()
+
+  const renderItem = ({ item }) => {
+
+
+
+    return (
+      <View style={styles.boxContainer}>
+        {item.type === 'image' ? (
+          <TwicImg
+            src={item.url}
+            resizeMode="cover"
+            style={styles.media}
+          />
+        ) : (
+          <TwicVideo
+            src={item.url}
+            mode="cover"
+            style={styles.media}
+            resizeMode='cover'
+          />
+
+        )}
+      </View>
+
+    )
+  }
+
+
+
+
+
 
 
 
@@ -163,7 +222,7 @@ const Pro = ({ route }) => {
                     selectedValue={selectedValue}
                     onValueChange={(itemValue, itemIndex) => {
                       setSelectedValue(itemValue);
-                      itemValue==='datetime'? setShowpicker(true):undefined
+                      itemValue === 'datetime' ? setShowpicker(true) : undefined
 
                     }}
 
@@ -191,9 +250,28 @@ const Pro = ({ route }) => {
                 </View>
               </Modal>
             </TouchableOpacity>
-
           </View>
         </View>
+        {/* <View style={{ flex: 1 }}>
+          <ResponsiveGrid
+            maxItemsPerColumn={3}
+            data={data}
+            renderItem={renderItem}
+            showScrollIndicator={false}
+            style={{ padding: 5 }}
+            keyExtractor={(item,index) => item.id.toString()}
+          />
+        </View> */}
+
+        <FlatList
+          data={clonedData}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+          numColumns={3}
+          columnWrapperStyle={styles.row}
+          contentContainerStyle={{ padding: 5 }}
+          showsVerticalScrollIndicator={false}
+        />
       </View>
     </SafeAreaView>
   );
@@ -277,6 +355,25 @@ const styles = StyleSheet.create({
     height: 10, // Height of the separator
     backgroundColor: '#cccccc', // Color of the separator
     marginVertical: 100, // Space around the separator
+  },
+  boxContainer: {
+    flex: 1,
+    margin: 1,
+  },
+  box: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'transparent',
+  },
+  media: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 10,
+  },
+  row: {
+    flex: 1,
+    justifyContent: "space-between",
+    marginBottom: 10,
   },
 
 })
