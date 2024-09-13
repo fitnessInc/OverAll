@@ -1,11 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, Dimensions, Image } from "react-native";
 
-
-
-
-
-
 export const SliderWidth = Dimensions.get('window').width;
 export const ItemWidth = Math.round(SliderWidth * 0.95);
 

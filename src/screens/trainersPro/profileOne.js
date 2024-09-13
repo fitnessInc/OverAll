@@ -1,19 +1,11 @@
 
 import React, { useState, useRef } from 'react';
-import { View, Text, Image, StyleSheet, Dimensions, SafeAreaView, TouchableOpacity, Modal,FlatList } from 'react-native';
+import { View, Text, Image, StyleSheet, Dimensions, SafeAreaView, TouchableOpacity, Modal, FlatList, TouchableOpacityBase } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Button } from 'react-native-elements';
-import { ResponsiveGrid } from 'react-native-flexible-grid';
-import { installTwicPics } from '@twicpics/components/react-native';
-import { TwicImg, TwicVideo } from '@twicpics/components/react-native';
-
-
-installTwicPics({
-  "domain": `https://nanitosse.twic.pics/`,
-  "cachePolicy": `disk`,
-});
+import { Video } from 'expo-av';
 
 
 
@@ -22,7 +14,6 @@ const ScreenWidth = Dimensions.get('window').width;
 const Width = Math.round(ScreenWidth * 1);
 const ScreenHeight = Dimensions.get("window").height;
 const Height = Math.round(ScreenHeight * 0.3);
-
 const Pro = ({ route }) => {
   const { item } = route.params;
   const [modal, setModal] = useState(false);
@@ -31,44 +22,12 @@ const Pro = ({ route }) => {
   const [trainees, Setrainees] = useState(1)
   const [location, Setlocation] = useState('')
   const [showPicker, setShowpicker] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
-
-
-
-  const data = [
-    {
-
-      title: "hanibal",
-      url: "https://www.youtube.com/watch?v=Zk9jp9rJ3Ss",
-      type: "video"
-    },
-    {
-
-      title: "hanibal",
-      url: "https://www.pexels.com/photo/photo-of-man-with-muscular-body-1547248/",
-      type: "image"
-    },
-  ];
-
-
-
-  let autoId = useRef(0);
-  let clonedData = [];
-
-
-  for (let i = 0; i < 5; i++) {
-    const newData = data.map((item) => ({
-      ...item,
-      id: ++autoId.current,
-
-    }))
-    clonedData = [...clonedData, ...newData];
+  const VideoRef = useRef(null);
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded)
   }
-
-
-
-
-
 
 
   const onChange = (event, selectedDate) => {
@@ -78,38 +37,82 @@ const Pro = ({ route }) => {
     console.log(selectedDate``)
   };
 
+  const data = [
+    {
+      id: 1,
+      title: "hanibal",
+      url: require('../../../assets/images/Hannibal.jpg'),
+      type: 'image'
+    },
+    {
+      id: 2,
+      title: 'Pushup',
+      url: require('../../../assets/images/pushup.jpg'),
+      type: 'image'
+    },
+    {
+      id: 3,
+      title: "hanibal",
+      url: require('../../../assets/videos/nutrution.mp4'),
+      type: 'video'
+    },
+    {
+      id: 4,
+      title: "hanibal",
+      url: require('../../../assets/images/Hannibal.jpg'),
+      type: 'image'
+    },
+    {
+      id: 5,
+      title: "hanibal",
+      url: require('../../../assets/videos/nutrution.mp4'),
+      type: 'video'
+    },
+    {
+      id: 6,
+      title: "hanibal",
+      url: require('../../../assets/images/Hannibal.jpg'),
+      type: 'image'
+    },
+
+  ]
+
+  const renderItem = ({ item }) => (
 
 
-
-  // const flattenData = Array(3).fill(data).flat()
-
-  const renderItem = ({ item }) => {
-
-
-
-    return (
-      <View style={styles.boxContainer}>
-        {item.type === 'image' ? (
-          <TwicImg
-            src={item.url}
+    <View style={{ width: ScreenWidth / 3, height: ScreenWidth / 3, }}>
+      <TouchableOpacity onPress={toggleExpand}>
+        {item.type === 'video' ? (
+          <Video
+            ref={VideoRef}
+            source={item.url}
+            rate={1.0}
+            volume={1.0}
+            isMuted={false}
             resizeMode="cover"
-            style={styles.media}
+            shouldPlay={false}
+            useNativeControls={isExpanded}
+            style={{ width: '100%', height: '100%' ,borderRadius:15}}
+
           />
         ) : (
-          <TwicVideo
-            src={item.url}
-            mode="cover"
-            style={styles.media}
-            resizeMode='cover'
+          <Image
+            source={item.url}
+            style={{
+              width: '100%',  // Take full width of parent container
+              height: '100%', // Take full height of parent container
+              backgroundColor: 'transparent',
+              borderRadius:10,
+            }}
           />
-
         )}
-      </View>
-
-    )
-  }
 
 
+      </TouchableOpacity>
+    </View>
+
+
+  )
 
 
 
@@ -139,7 +142,7 @@ const Pro = ({ route }) => {
       <View style={styles.separator} />
     )
 
-  }
+  };
 
   return (
     <SafeAreaView>
@@ -252,25 +255,13 @@ const Pro = ({ route }) => {
             </TouchableOpacity>
           </View>
         </View>
-        {/* <View style={{ flex: 1 }}>
-          <ResponsiveGrid
-            maxItemsPerColumn={3}
-            data={data}
-            renderItem={renderItem}
-            showScrollIndicator={false}
-            style={{ padding: 5 }}
-            keyExtractor={(item,index) => item.id.toString()}
-          />
-        </View> */}
-
         <FlatList
-          data={clonedData}
+          data={data}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item, index) => index.toString()}
           numColumns={3}
-          columnWrapperStyle={styles.row}
-          contentContainerStyle={{ padding: 5 }}
           showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ justifyContent: 'flex-start', alignContent: "center", }}
         />
       </View>
     </SafeAreaView>
@@ -279,6 +270,8 @@ const Pro = ({ route }) => {
 
 
 const styles = StyleSheet.create({
+
+
   image: {
     resizeMode: 'cover',
     width: Width,
@@ -333,9 +326,9 @@ const styles = StyleSheet.create({
 
   },
   itemStyle: {
-    fontSize: 18,        // Customize font size
-    color: 'black',       // Customize text color
-    fontWeight: 'bold',  // Customize text weight
+    fontSize: 18,
+    color: 'black',
+    fontWeight: 'bold',
     // height: 44,
     // Customize height of each item
   },
@@ -352,19 +345,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 50, 0, 0.45)', // Semi-transparent overlay
   },
   separator: {
-    height: 10, // Height of the separator
-    backgroundColor: '#cccccc', // Color of the separator
-    marginVertical: 100, // Space around the separator
+    height: 10,
+    backgroundColor: '#cccccc',
+    marginVertical: 100,
   },
   boxContainer: {
     flex: 1,
     margin: 1,
+    width: 150,
+    height: 150
   },
-  box: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'transparent',
-  },
+
   media: {
     width: '100%',
     height: '100%',
@@ -375,8 +366,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 10,
   },
+  video: {
+    width: 100,
+    height: 100,
+  },
 
-})
+});
 
 
 
