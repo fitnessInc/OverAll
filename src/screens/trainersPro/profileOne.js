@@ -1,6 +1,6 @@
 
 import React, { useState, useRef } from 'react';
-import { View, Text, Image, StyleSheet, Dimensions, SafeAreaView, TouchableOpacity, Modal, FlatList, TouchableOpacityBase } from 'react-native';
+import { View, Text, Image, StyleSheet, Dimensions, SafeAreaView, TouchableOpacity, Modal, FlatList, } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -14,6 +14,8 @@ const ScreenWidth = Dimensions.get('window').width;
 const Width = Math.round(ScreenWidth * 1);
 const ScreenHeight = Dimensions.get("window").height;
 const Height = Math.round(ScreenHeight * 0.3);
+
+
 const Pro = ({ route }) => {
   const { item } = route.params;
   const [modal, setModal] = useState(false);
@@ -22,7 +24,10 @@ const Pro = ({ route }) => {
   const [trainees, Setrainees] = useState(1)
   const [location, Setlocation] = useState('')
   const [showPicker, setShowpicker] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  // const [isExpanded, setIsExpanded] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedMedia, setSelectedMedia] = useState(null);
+  const [status,SetStatus]= useState({});
 
   const VideoRef = useRef(null);
   const toggleExpand = () => {
@@ -34,8 +39,26 @@ const Pro = ({ route }) => {
     const currentDate = selectedDate || date;
     setDate(currentDate);
     setShowpicker(false);
-    console.log(selectedDate``)
+    console.log(selectedDate)
   };
+
+  const handlePlaybackStatus=(status)=>{
+    SetStatus(status)
+  };
+
+  const handlePlayPause=()=>{
+    if(VideoRef.current){
+      if(status.isPlaying){
+         VideoRef.current.pauseAsync();
+      }else{
+        VideoRef.current.playAsync();
+
+
+      }
+    }
+  }
+
+
 
   const data = [
     {
@@ -81,7 +104,7 @@ const Pro = ({ route }) => {
 
 
     <View style={{ width: ScreenWidth / 3, height: ScreenWidth / 3, }}>
-      <TouchableOpacity onPress={toggleExpand}>
+      <TouchableOpacity onPress={() => OpenModal(item)} >
         {item.type === 'video' ? (
           <Video
             ref={VideoRef}
@@ -91,8 +114,8 @@ const Pro = ({ route }) => {
             isMuted={false}
             resizeMode="cover"
             shouldPlay={false}
-            useNativeControls={isExpanded}
-            style={{ width: '100%', height: '100%' ,borderRadius:15}}
+            useNativeControls
+            style={{ width: '100%', height: '100%', borderRadius: 15 }}
 
           />
         ) : (
@@ -102,7 +125,7 @@ const Pro = ({ route }) => {
               width: '100%',  // Take full width of parent container
               height: '100%', // Take full height of parent container
               backgroundColor: 'transparent',
-              borderRadius:10,
+              borderRadius: 15,
             }}
           />
         )}
@@ -113,6 +136,16 @@ const Pro = ({ route }) => {
 
 
   )
+
+  const OpenModal = (item) => {
+    setModalVisible(true);
+    setSelectedMedia(item);
+  };
+
+  const CloseModal = () => {
+    setModalVisible(false);
+    setSelectedMedia(null);
+  };
 
 
 
@@ -263,6 +296,40 @@ const Pro = ({ route }) => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ justifyContent: 'flex-start', alignContent: "center", }}
         />
+        {selectedMedia && (
+          <Modal
+            visible={modalVisible}
+            transparent={true}
+            onRequestClose={CloseModal}
+            animationType="fade"
+          >
+            <View style={styles.modalContainer}>
+              {selectedMedia.type === 'video' ? (
+                <Video
+                  source={ selectedMedia.url }
+                  style={styles.VideoModal}
+                  resizeMode="contain"
+                  controls={true} 
+                  ref={VideoRef}
+                  rate={1.0}
+                  volume={1.0}
+                  isMuted={false}
+                  shouldPlay={false}
+                  useNativeControls
+                  // onPlaybackStatusUpdate={handlePlaybackStatus}
+                />
+              ) : (
+                <Image
+                  source={selectedMedia.url}
+                  style={styles.modalMedia}
+                />
+              )}
+              <TouchableOpacity onPress={CloseModal} style={styles.closeButton}>
+                <Text style={styles.closeButtonText}>CLOSE</Text>
+              </TouchableOpacity>
+            </View>
+          </Modal>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -342,7 +409,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 50, 0, 0.45)', // Semi-transparent overlay
+    backgroundColor: "white", // Semi-transparent overlay
   },
   separator: {
     height: 10,
@@ -370,6 +437,43 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
   },
+  expanded: {
+    width: ScreenWidth / 3,
+    height: ScreenWidth / 3,
+
+  },
+  collapsed: {
+    width: 200,  // Example width
+    height: 200, // Example height
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+  },
+  modalMedia: {
+    width: ScreenWidth,
+    height: ScreenHeight,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 40,
+    right: 20,
+    padding: 10,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  VideoModal:{
+    width: ScreenWidth,
+    height: ScreenHeight,
+  }
 
 });
 
