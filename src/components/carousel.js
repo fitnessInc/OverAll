@@ -85,14 +85,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   button: {
-    alignItems: 'center',
-    margin: 5,
-    fontSize: '50',
-    fontWeight: '900',
-    padding: '40',
-    borderRadius: 20,
-    borderBottomRightRadius:10,
-    borderBottomLeftRadius:10
+    
     
     
 

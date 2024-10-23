@@ -16,7 +16,7 @@ const ScreenHeight = Dimensions.get("window").height;
 const Height = Math.round(ScreenHeight * 0.3);
 
 
-const Pro = ({ route }) => {
+const Pro = ({ route ,navigation}) => {
   const { item } = route.params;
   const [modal, setModal] = useState(false);
   const [selectedValue, setSelectedValue] = useState("default");
@@ -180,12 +180,14 @@ const Pro = ({ route }) => {
   return (
     <SafeAreaView>
       <View >
+        
         <View style={styles.image}>
+          <TouchableOpacity onPress={()=>navigation.navigate('editPro',{item})}>
           <Image
             source={item.url}
             style={styles.image}
           />
-
+          </TouchableOpacity>
         </View>
         <View style={styles.info}>
           <Text style={styles.text}>{item.First_Name}</Text>
@@ -316,7 +318,7 @@ const Pro = ({ route }) => {
                   isMuted={false}
                   shouldPlay={false}
                   useNativeControls
-                  // onPlaybackStatusUpdate={handlePlaybackStatus}
+                  
                 />
               ) : (
                 <Image
