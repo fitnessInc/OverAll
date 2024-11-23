@@ -1,24 +1,44 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button } from 'react-native';
 import io from 'socket.io-client';
+import axios from 'axios';
 
 
-const clientConnection = () => {
+const clientConnection = ({ username}) => {
     const [socket, setSocket] = useState(null);
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
-    const [username, setUsername] = useState('');
+
+
+
+
+      
+
+
 
 
     useEffect(() => {
 
+
+        // if(!username) return
+
         const newSocket = io('http://localhost:3000');
         setSocket(newSocket);
+        // newSocket.emit('registerUser', username);
 
-       
+        newSocket.on('connect',()=>{
+             console.log(`socket connected ${username}`, newSocket.id );
+             if (username) {
+                newSocket.emit('registerUser', username); // Register the user once connected
+            }
+        });
+
+
+    
+
+
 
         // Listen for incoming messages
-        newSocket.on('content', (data) => {
+        newSocket.on('newMessage', (data) => {
             setMessages((prevMessages) => [...prevMessages, data]);
         });
 
@@ -37,28 +57,40 @@ const clientConnection = () => {
 
 
 
-    }, [])
+    }, [username]);
+    const sendMessages = async () => {
+        if (socket & username & message.trim()) {
+
+            const data = {
+                sender:username,
+                content:message,
+                recipient:'RecipientUsername',
+                timestamp: new Date(),
+            };
+            
+
+            try {
+                socket.emit('newMessage',(data))
+                      
+                // Send the message via Axios to your backend API
+                await axios.post('http://localhost:3000/api/messages', data); // Adjust URL to your backend route
+                setMessage('');// Clear the message input after sending
+                setMessages((prevMessages) => [...prevMessages, data]) // updating the locale state  messages with rhe new one 
+            } catch (error) {
+                console.error('Error sending message:', error);
+            }
+
+
+        }
+    }
+
+    return {
+        sendMessages,
+        setMessage,
+        message,
+        registerUser:(username) => socket?.emit('registerUser', username),
+    };
 
 };
 
-const  sendMessages = async()=>{
-     if (socket & username & message){
-
-        const data = {
-            username,
-            message,
-            timestamp: new Date(),
-        };
-
-        try {
-            // Send the message via Axios to your backend API
-            await axios.post('http://localhost:3000/api/messages', data); // Adjust URL to your backend route
-            setMessage('');// Clear the message input after sending
-            setMessages((prevMessages)=>[...prevMessages,data]) // updating the locale state  messages with rhe new one 
-        } catch (error) {
-            console.error('Error sending message:', error);
-        }
-    
-
-     }
-}
+export default clientConnection;
