@@ -111,7 +111,7 @@ const ChatScreen = ({ onsendMessage, onAttach }) => {
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
               <View style={styles.messageContainer}>
-                <Text>{item.from}: {item.content}</Text>
+                <Text>{item.sender}: {item.content}</Text>
               </View>
             )}
           />
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
   registerButton: {
     backgroundColor: '#007BFF',
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 10,
   },
   registerButtonText: {
     color: 'black',
@@ -165,8 +165,9 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    height: 40,
+    height: 50,
     borderColor: 'black',
+    fontSize:40,
     borderWidth: 1,
     borderRadius: 5,
     paddingLeft: 10,
@@ -179,13 +180,15 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   sendButtonText: {
-    color: 'white',
-    fontSize: 16,
+    color: 'black',
+    fontSize: 25,
   },
   messageContainer: {
     padding: 40,
     borderBottomWidth: 1,
     borderBottomColor: 'black',
+    marginTop: 40
+    
   },
   attachButton: {
     marginRight: 10,
