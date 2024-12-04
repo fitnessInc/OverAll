@@ -16,7 +16,7 @@ const ChatScreen = ({ onsendMessage, onAttach }) => {
 
   const [username, setUsername] = useState('User');
   const [messages, setMessages] = useState([]);
-  const { sendMessages, setMessage, message,registerUser} = clientConnection(setMessages, username)
+  const { sendMessages, setMessage, message, registerUser } = clientConnection(setMessages, username)
 
 
   useEffect(() => {
@@ -62,62 +62,68 @@ const ChatScreen = ({ onsendMessage, onAttach }) => {
     setUsername(text);
   };
 
-     
+  const renderMessageItem = ({ item }) => (
+    <View style={styles.messageContainer}>
+      <Text>{item.sender}: {item.content}</Text>
+    </View>
+  );
 
+
+  const renderInputMessage = () => (
+    <View style={styles.inputContainer}>
+      {/* Attachment Button */}
+      <TouchableOpacity onPress={handleAttach} style={styles.attachButton}>
+        <Image source={require('../../assets/images/attachmentIcon.png')} style={styles.attachIcon} />
+      </TouchableOpacity>
+
+      {/* Text Input */}
+      <TextInput
+        style={styles.textInput}
+        placeholder="Type a message..."
+        value={message}
+        onChangeText={inputChange}
+        onSubmitEditing={sendMessage}
+        returnKeyType="send"
+      />
+
+      {/* Send Button */}
+      <TouchableOpacity onPress={sendMessage} style={styles.sendButton} disabled={!message.trim()}>
+        <Text style={styles.sendButtonText}>Send</Text>
+      </TouchableOpacity>
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
-        <View style={styles.registrationContainer}>
-          <TextInput
-            style={styles.usernameInput}
-            placeholder="Enter username"
-            value={username}
-            onChangeText={handleUsernameChange}
-            returnKeyType="done"
-            onSubmitEditing={handleRegister} // Register when the "done" button is pressed
-          />
-          <TouchableOpacity onPress={handleRegister} style={styles.registerButton}>
-            <Text style={styles.registerButtonText}>Register</Text>
-          </TouchableOpacity>
-        </View>
-      
-        <View>
-          {/* Chat Input Section */}
-          <View style={styles.inputContainer}>
-            {/* Attachment Button */}
-            <TouchableOpacity onPress={handleAttach} style={styles.attachButton}>
-              <Image source={require('../../assets/images/attachmentIcon.png')} style={styles.attachIcon} />
-            </TouchableOpacity>
+      {/* Registration Form */}
 
-            {/* Text Input */}
-            <TextInput
-              style={styles.textInput}
-              placeholder="Type a message..."
-              value={message}
-              onChangeText={inputChange}
-              onSubmitEditing={sendMessage} // Allow message sending when Enter is pressed
-              returnKeyType="send" // Show send button on the keyboard
-            />
+      <View style={styles.registrationContainer}>
+        <TextInput
+          style={styles.usernameInput}
+          placeholder="Enter username"
+          value={username}
+          onChangeText={handleUsernameChange}
+          returnKeyType="done"
+          onSubmitEditing={handleRegister} // Register when the "done" button is pressed
+        />
+        <TouchableOpacity onPress={handleRegister} style={styles.registerButton}>
+          <Text style={styles.registerButtonText}>Register</Text>
+        </TouchableOpacity>
+      </View>
 
-            {/* Send Button */}
-            <TouchableOpacity onPress={sendMessage} style={styles.sendButton} disabled={!message.trim()}>
-              <Text style={styles.sendButtonText}>Send</Text>
-            </TouchableOpacity>
-          </View>
 
-          {/* Display Messages */}
-          <FlatList
-            data={messages}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.messageContainer}>
-                <Text>{item.sender}: {item.content}</Text>
-              </View>
-            )}
-          />
-        </View>
-    
+      {/* Chat Box */}
+      <FlatList
+        data={[...messages, { sender: username, content: message }]} // Add input message to data
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={renderMessageItem}
+        ListFooterComponent={renderInputMessage} // The input message will be rendered here
+        contentContainerStyle={styles.messageList}
+      />
     </SafeAreaView>
+
+
+
   );
 
 
@@ -133,15 +139,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 20,
+    marginTop: 50
   },
   registrationContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom:3,
+    marginBottom: 50,
   },
   usernameInput: {
-    width: '80%',
+    width: 50,
     height: 50,
     borderColor: 'black',
     borderWidth: 5,
@@ -167,7 +174,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 50,
     borderColor: 'black',
-    fontSize:40,
+    fontSize: 40,
     borderWidth: 1,
     borderRadius: 5,
     paddingLeft: 10,
@@ -188,7 +195,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: 'black',
     marginTop: 40
-    
+
   },
   attachButton: {
     marginRight: 10,
@@ -197,6 +204,11 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
   },
+
+  receivedMessage: {
+    backgroundColor: '#e2e3e5', // Light gray for received messages
+    alignSelf: 'flex'
+  }  
 });
 
 export default ChatScreen

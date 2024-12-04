@@ -1,74 +1,3 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Socket.IO Client</title>
-    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>  <!-- Include Socket.IO client library -->
-<!-- </head>
-<body>
-    <h1>Socket.IO Client</h1>
-    <p>Open the console to see messages.</p>
-
-    <div>
-        <input type="text" id="username" placeholder="Enter username">
-        <input type="text" id="recipient" placeholder="Enter recipient username">
-        <textarea id="message" placeholder="Type your message"></textarea>
-        <button id="sendMessage">Send Message</button>
-    </div>
-
-    <div id="messages"></div>
-    
-    <script>
-        // Connect to your Socket.IO server (replace with your server's URL)
-        const socket = io('http://localhost:3000');  // Assuming your Socket.IO server is running on localhost:3000;
-
-        const usernameInput = document.getElementById('username');
-        const recipientInput = document.getElementById('recipient');
-        const messageInput = document.getElementById('message');
-        const sendButton = document.getElementById('sendMessage');
-        const messagesDiv = document.getElementById('messages');
-
-        // Emit a message to the server when connected
-        socket.on('connect', () => {
-            console.log('Connected to Socket.IO server with ID:', socket.id);
-
-            // Register the user after they provide their username
-            sendButton.addEventListener('click', () => {
-                const username = usernameInput.value;
-                const recipient = recipientInput.value;
-                const message = messageInput.value;
-
-                if (username && recipient && message) {
-                    socket.emit('registerUser', username);
-                    socket.emit('newMessage', {
-                        sender: username,
-                        recipient: recipient,
-                        content: message
-                    });
-
-                    // Optionally display the sent message immediately
-                    const messageDiv = document.createElement('div');
-                    messageDiv.textContent = `You sent to ${recipient}: ${message}`;
-                    messagesDiv.appendChild(messageDiv);
-                    messageInput.value = ''; // Clear the message input
-                }
-
-            // Emit a custom event
-            socket.emit('newMessage', {
-                sender: 'User1',
-                recipient: 'User2',
-                content: 'Hello from the browser client!'
-            });
-        });
-
-        // Listen for incoming messages from the server
-        socket.on('newMessage', (message) => {
-            console.log('Received message:', message);
-        });
-    </script>
-</body>
-</html> --> -->
 
 
 <!DOCTYPE html>
@@ -123,6 +52,8 @@
                         content: message,
                         timestamp: new Date(),
                     });
+
+                     console.log(`sender:${sender}, message:${message}`)
 
                     // Optionally display the sent message immediately
                     const messageDiv = document.createElement('div');
