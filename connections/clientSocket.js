@@ -3,15 +3,12 @@ import io from 'socket.io-client';
 import axios from 'axios';
 
 
-const clientConnection = ({ username}) => {
+const clientConnection = ( username, setMessages) => {
     const [socket, setSocket] = useState(null);
     const [message, setMessage] = useState('');
-    const [messages, setMessages] = useState([]);
-
-
-
-
-      
+    const [recipient, setRecipient] = useState(''); 
+   
+   
 
 
 
@@ -58,19 +55,22 @@ const clientConnection = ({ username}) => {
 
 
     }, [username]);
-    const sendMessages = async () => {
-        if (socket & username & message.trim()) {
+
+
+    const sendMessages = async (recipient) => {
+        if (socket && username && recipient&& message.trim()) {
 
             const data = {
                 sender:username,
                 content:message,
-                recipient:'RecipientUsername',
+                recipient:recipient,
                 timestamp: new Date(),
             };
             
 
             try {
                 socket.emit('newMessage',(data))
+                console.log(`Message sent to ${recipient}: ${message}`);
                       
                 // Send the message via Axios to your backend API
                 await axios.post('http://localhost:3000/api/messages', data); // Adjust URL to your backend route
@@ -88,7 +88,8 @@ const clientConnection = ({ username}) => {
         sendMessages,
         setMessage,
         message,
-        registerUser:(username) => socket?.emit('registerUser', username),
+        registerUser:(username)=> socket?.emit('registerUser',username),
+        setRecipient
     };
 
 };

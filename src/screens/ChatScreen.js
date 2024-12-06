@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, FlatList, SafeAreaView, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, Image } from 'react-native';
 import clientConnection from '../../connections/clientSocket';
+import { set } from 'react-hook-form';
 
 
 const ScreenWidth = Dimensions.get('window').width;
@@ -16,7 +17,8 @@ const ChatScreen = ({ onsendMessage, onAttach }) => {
 
   const [username, setUsername] = useState('User');
   const [messages, setMessages] = useState([]);
-  const { sendMessages, setMessage, message, registerUser } = clientConnection(setMessages, username)
+  const [recipient, setRecipient] = useState('');
+  const { sendMessages, setMessage, message, registerUser, } = clientConnection(setMessages, username)
 
 
   useEffect(() => {
@@ -32,15 +34,12 @@ const ChatScreen = ({ onsendMessage, onAttach }) => {
     setMessage(text);
   };
   const sendMessage = () => {
-    if (message.trim()) {
-      try {
-        sendMessages();
-        setMessage('');
+    if (message.trim()&& recipient.trim()) {
 
-      } catch (error) {
-        console.log("error sanding message", error)
+      sendMessages(recipient);
+      setMessage('');
 
-      }
+
     } else {
       console.log('message cannot be empty ')
     }
@@ -57,6 +56,8 @@ const ChatScreen = ({ onsendMessage, onAttach }) => {
     } else {
       console.log("Username is required for registration");
     }
+
+  
   };
   const handleUsernameChange = (text) => {
     setUsername(text);
@@ -106,6 +107,16 @@ const ChatScreen = ({ onsendMessage, onAttach }) => {
           returnKeyType="done"
           onSubmitEditing={handleRegister} // Register when the "done" button is pressed
         />
+        <TextInput
+          style={styles.usernameInput}
+          placeholder="Enter recipient"
+          value={recipient}
+          onChangeText={setRecipient}  // Update the recipient state
+          returnKeyType="done"
+          onSubmitEditing={handleRegister} // Register when the "done" button is pressed
+        />
+
+
         <TouchableOpacity onPress={handleRegister} style={styles.registerButton}>
           <Text style={styles.registerButtonText}>Register</Text>
         </TouchableOpacity>
@@ -114,7 +125,7 @@ const ChatScreen = ({ onsendMessage, onAttach }) => {
 
       {/* Chat Box */}
       <FlatList
-        data={[...messages, { sender: username, content: message }]} // Add input message to data
+        data={messages} // Add input message to data
         keyExtractor={(item, index) => index.toString()}
         renderItem={renderMessageItem}
         ListFooterComponent={renderInputMessage} // The input message will be rendered here
@@ -208,7 +219,7 @@ const styles = StyleSheet.create({
   receivedMessage: {
     backgroundColor: '#e2e3e5', // Light gray for received messages
     alignSelf: 'flex'
-  }  
+  }
 });
 
 export default ChatScreen
