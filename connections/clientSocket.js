@@ -73,7 +73,7 @@ const clientConnection = ( username, setMessages) => {
                 console.log(`Message sent to ${recipient}: ${message}`);
                       
                 // Send the message via Axios to your backend API
-                await axios.post('http://localhost:3000/api/messages', data); // Adjust URL to your backend route
+                await axios.post('http://localhost:3000/messages', data); // Adjust URL to your backend route
                 setMessage('');// Clear the message input after sending
                 setMessages((prevMessages) => [...prevMessages, data]) // updating the locale state  messages with rhe new one 
             } catch (error) {

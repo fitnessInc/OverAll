@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, FlatList, SafeAreaView, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, Image } from 'react-native';
 import clientConnection from '../../connections/clientSocket';
-import { set } from 'react-hook-form';
+
 
 
 const ScreenWidth = Dimensions.get('window').width;
