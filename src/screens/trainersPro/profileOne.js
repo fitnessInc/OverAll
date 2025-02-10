@@ -190,10 +190,9 @@ const Pro = ({ route ,navigation}) => {
           </TouchableOpacity>
         </View>
         <View style={styles.info}>
-          <Text style={styles.text}>{item.First_Name}</Text>
-          <Text style={styles.text}>{item.Last_Name}</Text>
+          <Text style={styles.text}>{item.Full_Name}</Text>
           <Text style={styles.text}>{item.Address}</Text>
-          <Text style={styles.text}>{item.Field}</Text>
+          <Text style={styles.text}>{item.Function}</Text>
           <Text style={styles.text}>{item.Certification}</Text>
         </View>
         <View style={styles.container}>

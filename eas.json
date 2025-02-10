@@ -1,0 +1,28 @@
+{
+    "build":{
+
+        "ios": {
+      "development": {
+        "buildType": "development",
+        "distribution": "internal",
+        "simulator": true
+      },
+      "production": {
+        "buildType": "release",
+        "distribution": "app-store"
+      }
+    },
+
+    "android": {
+      "development": {
+        "buildType": "app-bundle",
+        "distribution": "internal"
+      },
+      "production": {
+        "buildType": "app-bundle",
+        "distribution": "play-store"
+      }
+    }
+
+    }
+}

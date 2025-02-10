@@ -19,7 +19,7 @@ const Height = Math.round(ScreenHeight * 0.3);
 
 
 
-const editProfile = ({ route, navigation }) => {
+const EditProfile = ({ route, navigation }) => {
 
     const { item } = route.params;
     
@@ -140,4 +140,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default editProfile;
+export default EditProfile;

@@ -19,7 +19,7 @@ import Food from '../screens/food';
 import Order from '../screens/Order';
 import Profiles from '../screens/Profiles';
 import Pro from '../screens/trainersPro/profileOne'
-import editPro from '../screens/trainersPro/trainerEdiPro'
+import EditPro from '../screens/trainersPro/trainerEdiPro'
 
 
 
@@ -111,8 +111,8 @@ export default function Navigation() {
                         tabBarButton: (props) => null,
                     }}
                 />
-                <Tab.Screen name="editPro"
-                    component={editPro}
+                <Tab.Screen name="EditPro"
+                    component={EditPro}
                     options={{
                         headerShown: false,
                         tabBarLabel: () => null,

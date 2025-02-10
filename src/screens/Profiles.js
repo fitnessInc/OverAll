@@ -10,37 +10,36 @@ import { ListItem, Avatar, Button } from 'react-native-elements'
 const data = [
     {
         id: '1',
-        First_Name: ' First_NAme: nanito',
-        Last_Name: 'Last_Name: azarag',
-        Address: 'Address: inconito',
+        Full_Name: 'nanito Nanitosse',
+     
+        Address: 'inconito',
        
-        Field: 'Field: Calisthenics',
+        Function: 'Calisthenics',
         Certification: ' Certification: Nasam',
         url:require('../../assets/icon.png'),
-        subTitle: 'Function: trainer'
+      
 
 
     },
     {
         id: '2',
-        First_Name: ' First_Name Aicha',
-        Last_Name: 'Ahmat',
+        Full_Name: 'Aicha Ahmat',
+      
         Address: ' Address: 646 berge ave NJ',
-        Field: 'Field :weight ',
+        Function: ' body weight trainer ',
         Certification: 'Nasam',
         url: require('../../assets/favicon.png'),
-        subTitle: 'trainer'
+       
 
     },
     {
         id: '3',
-        First_Name: ' First_Name:Alato',
-        Last_Name: 'Last_Name :Migo',
+        Full_Name: 'Alato Sow',
         Address: ' Address: 646 berge ave NJ',
-        Field: 'Field :weight ',
+        Function: ' weight trainer ',
         Certification: 'Certification: Nasam',
         url: require('../../assets/photo.jpg'),
-        subTitle: 'trainer'
+       
 
     },
 ];
@@ -66,8 +65,9 @@ const Profiles = ({ navigation }) => {
                 rounded
             />
             <ListItem.Content>
-                <ListItem.Title>{item.First_Name}</ListItem.Title>
-                <ListItem.Title>{item.subTitle}</ListItem.Title>
+                <ListItem.Title>{item.Full_Name}</ListItem.Title>
+                <ListItem.Title>{item.Function}</ListItem.Title>
+                <ListItem.Title>{item.Certification}</ListItem.Title>
             </ListItem.Content>
         </ListItem>
 
