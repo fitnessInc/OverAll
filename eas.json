@@ -1,28 +1,28 @@
 {
-    "build":{
-
+      "cli": {
+    "appVersionSource": "local"
+  },
+  
+    "build": {
+      "development": {
+        "android": {
+          "buildType": "apk",
+          "distribution": "internal"
+        },
         "ios": {
-      "development": {
-        "buildType": "development",
-        "distribution": "internal",
-        "simulator": true
+          "simulator": true,
+          "distribution": "internal"
+        }
       },
       "production": {
-        "buildType": "release",
-        "distribution": "app-store"
-      }
-    },
-
-    "android": {
-      "development": {
-        "buildType": "app-bundle",
-        "distribution": "internal"
-      },
-      "production": {
-        "buildType": "app-bundle",
-        "distribution": "play-store"
+        "android": {
+          "buildType": "app-bundle",
+          "distribution": "store"
+        },
+        "ios": {
+          "distribution": "store"
+         
+        }
       }
     }
-
-    }
-}
+  }

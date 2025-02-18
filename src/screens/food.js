@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, Text, Button } from "@rneui/themed";
 import { View, ScrollView, ImageBackground, Image, SafeAreaView } from 'react-native'
-import { Modal, TouchableWithoutFeedback, TouchableOpacity, FlatList, StyleSheet, Dimensions } from 'react-native';
+import { Modal, TouchableOpacity, FlatList, StyleSheet, Dimensions } from 'react-native';
 
 
 import { CardDivider } from "@rneui/base/dist/Card/Card.Divider";

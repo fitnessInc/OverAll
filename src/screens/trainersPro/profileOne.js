@@ -24,7 +24,6 @@ const Pro = ({ route ,navigation}) => {
   const [trainees, Setrainees] = useState(1)
   const [location, Setlocation] = useState('')
   const [showPicker, setShowpicker] = useState(false);
-  // const [isExpanded, setIsExpanded] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [status,SetStatus]= useState({});
@@ -359,7 +358,8 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontVariant: ['small-caps', 'lining-nums'],
     fontWeight: 'bold',
-    fontSize: "italic",
+    // fontSize: "italic",
+  fontStyle: 'italic'
 
   },
   container: {

@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef, } from "react";
 import { View, ScrollView, StyleSheet, Dimensions, TouchableOpacity, Text, Button, } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
-import Carousel, { Pagination } from "react-native-snap-carousel";
-// import CarouselCardItem, { SliderWidth, ItemWidth } from "/CarouselCardItem";
+import Carousel, { Pagination } from "react-native-reanimated-carousel";
 import CarouselCardItem from "./CarouselItem";
 import { SliderWidth, ItemWidth } from "./CarouselItem";
 import Data from "../../assets/data";

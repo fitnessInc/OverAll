@@ -52,16 +52,6 @@ space: {
 
 
 
-// const Styles = StyleSheet.create({
-//   Card: {
-
-//     shadowColor: 'rgba(0,0,0, .2)',
-//     shadowOffset: { height: 0, width: 0 },
-//     shadowOpacity: 0, //default is 1
-//     shadowRadius: 0//default is 1
-//   }
-
-// })
 
 
 export default HomeScreen

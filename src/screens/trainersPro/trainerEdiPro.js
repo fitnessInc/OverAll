@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text,Pressable, Image, StyleSheet, Dimensions, SafeAreaView, TouchableOpacity, Modal, FlatList,Button } from 'react-native';
 import * as Yup from 'yup';
 import { useForm, Controller } from 'react-hook-form';
@@ -20,6 +20,8 @@ const Height = Math.round(ScreenHeight * 0.3);
 
 
 const EditProfile = ({ route, navigation }) => {
+
+    
 
     const { item } = route.params;
     
