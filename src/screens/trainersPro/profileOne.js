@@ -179,16 +179,17 @@ const Pro = ({ route ,navigation}) => {
   return (
     <SafeAreaView>
       <View >
-        
+
         <View style={styles.image}>
-          <TouchableOpacity onPress={()=>navigation.navigate('editPro',{item})}>
           <Image
             source={item.url}
             style={styles.image}
           />
-          </TouchableOpacity>
         </View>
         <View style={styles.info}>
+          <TouchableOpacity  onPress={()=>navigation.navigate("EditPro")}>
+            <Text  style ={styles.Edit}> EDITE PROFILE</Text>
+          </TouchableOpacity>
           <Text style={styles.text}>{item.Full_Name}</Text>
           <Text style={styles.text}>{item.Address}</Text>
           <Text style={styles.text}>{item.Function}</Text>
@@ -355,11 +356,11 @@ const styles = StyleSheet.create({
 
   },
   text: {
-    lineHeight: 24,
-    fontVariant: ['small-caps', 'lining-nums'],
-    fontWeight: 'bold',
-    // fontSize: "italic",
-  fontStyle: 'italic'
+    fontSize:15,
+    fontWeight: "bold",
+    fontStyle:"italic",
+    fontWeight:'condensed'
+    
 
   },
   container: {
@@ -474,6 +475,17 @@ const styles = StyleSheet.create({
   VideoModal:{
     width: ScreenWidth,
     height: ScreenHeight,
+  },
+  Edit:{
+    color: "black",
+    fontSize:25,
+    fontWeight: "bold",
+    fontStyle:"italic",
+    fontWeight:'condensed'
+
+       
+
+
   }
 
 });
