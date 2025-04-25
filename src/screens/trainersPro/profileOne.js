@@ -17,7 +17,9 @@ const Height = Math.round(ScreenHeight * 0.3);
 
 
 const Pro = ({ route ,navigation}) => {
-  const { item } = route.params;
+  const { item } = route.params || {}
+  console.log("Received item in Pro:", item);
+
   const [modal, setModal] = useState(false);
   const [selectedValue, setSelectedValue] = useState("default");
   const [date, setDate] = useState(new Date());
@@ -62,39 +64,68 @@ const Pro = ({ route ,navigation}) => {
   const data = [
     {
       id: 1,
+      Full_Name: 'nanito Nanitosse',
       title: "hanibal",
       url: require('../../../assets/images/Hannibal.jpg'),
-      type: 'image'
+      type: 'image',
+      url: require('../../../assets/images/pushup.jpg'),
+      Address: 'inconito',
+      Function: 'Calisthenics',
+      Certification: ' Certification: Nasam'
     },
     {
       id: 2,
+      Full_Name: 'nanito Nanitosse',
       title: 'Pushup',
       url: require('../../../assets/images/pushup.jpg'),
-      type: 'image'
+      type: 'image',
+      Address: 'inconito',
+      Function: 'Calisthenics',
+      Certification: ' Certification: Nasam'
     },
     {
       id: 3,
+      Full_Name: 'nanito Nanitosse',
       title: "hanibal",
       url: require('../../../assets/videos/nutrution.mp4'),
-      type: 'video'
+      type: 'video',
+      uRL:  require('../../../assets/images/pushup.jpg'),
+      Address: 'inconito',
+      Function: 'Calisthenics',
+      Certification: ' Certification: Nasam',
     },
     {
       id: 4,
+      Full_Name: 'nanito Nanitosse',
       title: "hanibal",
       url: require('../../../assets/images/Hannibal.jpg'),
-      type: 'image'
+      type: 'image',
+      uRL:  require('../../../assets/images/pushup.jpg'),
+      Address: 'inconito',
+      Function: 'Calisthenics',
+      Certification: ' Certification: Nasam',
     },
     {
       id: 5,
+      Full_Name: 'nanito Nanitosse',
       title: "hanibal",
       url: require('../../../assets/videos/nutrution.mp4'),
-      type: 'video'
+      type: 'video',
+      uRL:  require('../../../assets/images/pushup.jpg'),
+      Address: 'inconito',
+      Function: 'Calisthenics',
+      Certification: ' Certification: Nasam',
     },
     {
       id: 6,
+      Full_Name: 'nanito Nanitosse',
       title: "hanibal",
       url: require('../../../assets/images/Hannibal.jpg'),
-      type: 'image'
+      type: 'image',
+      uRL:  require('../../../assets/images/pushup.jpg'),
+      Address: 'inconito',
+      Function: 'Calisthenics',
+      Certification: ' Certification: Nasam',
     },
 
   ]
@@ -182,7 +213,7 @@ const Pro = ({ route ,navigation}) => {
 
         <View style={styles.image}>
           <Image
-            source={item.url}
+            source={require('../../../assets/images/Hannibal.jpg')}
             style={styles.image}
           />
         </View>
@@ -321,7 +352,7 @@ const Pro = ({ route ,navigation}) => {
                 />
               ) : (
                 <Image
-                  source={selectedMedia.url}
+                  source={item.url}
                   style={styles.modalMedia}
                 />
               )}

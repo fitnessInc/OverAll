@@ -1,35 +1,33 @@
 
-import React, { useState } from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, SafeAreaView } from "react-native";
-import { ListItem, Avatar, Button } from 'react-native-elements'
-
-
-
+import React from "react";
+import { FlatList, StyleSheet, SafeAreaView } from "react-native";
+import { ListItem, Avatar, } from 'react-native-elements';
 
 
 const data = [
     {
         id: '1',
         Full_Name: 'nanito Nanitosse',
-     
+
         Address: 'inconito',
-       
         Function: 'Calisthenics',
         Certification: ' Certification: Nasam',
-        url:require('../../assets/icon.png'),
-      
+        meta: null,
+        url: require('../../assets/images/Hannibal.jpg')
+
 
 
     },
     {
         id: '2',
         Full_Name: 'Aicha Ahmat',
-      
+
         Address: ' Address: 646 berge ave NJ',
         Function: ' body weight trainer ',
         Certification: 'Nasam',
-        url: require('../../assets/favicon.png'),
-       
+        meta: null,
+        url: require('../../assets/images/Hannibal.jpg')
+
 
     },
     {
@@ -38,27 +36,37 @@ const data = [
         Address: ' Address: 646 berge ave NJ',
         Function: ' weight trainer ',
         Certification: 'Certification: Nasam',
-        url: require('../../assets/photo.jpg'),
-       
+        meta: null,
+        url: require('../../assets/images/Hannibal.jpg')
+
 
     },
+
 ];
 
 
 
-const Profiles = ({ navigation }) => {
 
-
+const Profiles = ({ navigation, route, }) => {
+    //   const {item} = route.params|| {};
+    //   console.log("Received item in Pro:", item);
 
 
     const renderItem = ({ item }) => (
-
-
-
-
-        <ListItem bottomDivider onPress={() => navigation.navigate('Pro', { item })}>
+        <ListItem bottomDivider onPress={() => navigation.navigate('Pro',
+            {
+                item:
+                {
+                    Full_Name: item.Full_Name,
+                    Address: item.Address,
+                    Function: item.Function,
+                    Certification: item.Certification,
+                    
+                }
+            }
+        )}>
             <Avatar
-                source={  item.url }
+                source={item.url}
                 size="medium"
                 icon={{ name: 'person', type: 'material', color: 'white' }}
                 overlayContainerStyle={{ backgroundColor: 'black' }}
@@ -71,7 +79,6 @@ const Profiles = ({ navigation }) => {
             </ListItem.Content>
         </ListItem>
 
-
     )
 
 
@@ -83,7 +90,7 @@ const Profiles = ({ navigation }) => {
         >
             <FlatList
                 data={data}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item, index) => (item?.id ? item.id.toString() : index.toString())}
                 renderItem={renderItem}
 
 
