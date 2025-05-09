@@ -6,6 +6,7 @@ import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Button } from 'react-native-elements';
 import { Video } from 'expo-av';
+import { useSelector } from 'react-redux';
 
 
 
@@ -19,6 +20,7 @@ const Height = Math.round(ScreenHeight * 0.3);
 const Pro = ({ route ,navigation}) => {
   const { item } = route.params || {}
   console.log("Received item in Pro:", item);
+  const profilePicture = useSelector(state=>state.image.profile);
 
   const [modal, setModal] = useState(false);
   const [selectedValue, setSelectedValue] = useState("default");
@@ -213,7 +215,7 @@ const Pro = ({ route ,navigation}) => {
 
         <View style={styles.image}>
           <Image
-            source={require('../../../assets/images/Hannibal.jpg')}
+            source={{uri: profilePicture?.meta}}
             style={styles.image}
           />
         </View>

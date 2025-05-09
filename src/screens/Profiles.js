@@ -2,6 +2,7 @@
 import React from "react";
 import { FlatList, StyleSheet, SafeAreaView } from "react-native";
 import { ListItem, Avatar, } from 'react-native-elements';
+import { useSelector } from "react-redux";
 
 
 const data = [
@@ -48,8 +49,9 @@ const data = [
 
 
 const Profiles = ({ navigation, route, }) => {
-    //   const {item} = route.params|| {};
-    //   console.log("Received item in Pro:", item);
+
+    const profilePIcture = useSelector(state=>state.image.profile)
+    
 
 
     const renderItem = ({ item }) => (
@@ -66,7 +68,7 @@ const Profiles = ({ navigation, route, }) => {
             }
         )}>
             <Avatar
-                source={item.url}
+                source={{uri:profilePIcture?.meta}}
                 size="medium"
                 icon={{ name: 'person', type: 'material', color: 'white' }}
                 overlayContainerStyle={{ backgroundColor: 'black' }}

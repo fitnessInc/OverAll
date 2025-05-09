@@ -7,6 +7,8 @@ import image from './assets/images/soccer.png';
 import 'react-native-gesture-handler';
 import MealStackNavigator from './src/navigation/MealStackNavigator';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import  store  from './redux/store'
+import { Provider } from 'react-redux'
 
 
 
@@ -15,14 +17,13 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 export default function App() {
   return (
     <>
-      
+
+      <Provider store={store}>
         <SafeAreaProvider>
           <ImageBackground
-
             source={image}
             style={{
               flex: 1,
-              // resizeMode:'cover',
               justifyContent: 'center',
 
             }}
@@ -31,7 +32,8 @@ export default function App() {
             <Navigation />
           </ ImageBackground>
         </SafeAreaProvider>
-      
+      </Provider>
+
     </>
   );
 }
