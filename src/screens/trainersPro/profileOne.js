@@ -18,7 +18,11 @@ const Height = Math.round(ScreenHeight * 0.3);
 
 
 const Pro = ({ route ,navigation}) => {
-  const { item } = route.params || {}
+  // const { item } = route.params || {};
+  const { itemId } = route.params;
+
+  const item = useSelector(state => state.info.infoPro[itemId] || {});
+
   console.log("Received item in Pro:", item);
   const profilePicture = useSelector(state=>state.image.profile);
 

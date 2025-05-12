@@ -50,11 +50,15 @@ const data = [
 
 const Profiles = ({ navigation, route, }) => {
 
-    const profilePIcture = useSelector(state=>state.image.profile)
+    const profilePIcture = useSelector(state=>state.image.profile);
+
+    
+    const item = useSelector(state => state.info.infoPro);
+    const itemCon = Object.entries(item);
     
 
 
-    const renderItem = ({ item }) => (
+    const renderItem = ( {item}) => (
         <ListItem bottomDivider onPress={() => navigation.navigate('Pro',
             {
                 item:
@@ -75,9 +79,9 @@ const Profiles = ({ navigation, route, }) => {
                 rounded
             />
             <ListItem.Content>
-                <ListItem.Title>{item.Full_Name}</ListItem.Title>
-                <ListItem.Title>{item.Function}</ListItem.Title>
-                <ListItem.Title>{item.Certification}</ListItem.Title>
+                <ListItem.Title>{itemCon.infoPro?.Full_Name}</ListItem.Title>
+                <ListItem.Title>{itemCon.infoPro?.Function}</ListItem.Title>
+                <ListItem.Title>{itemCon.infoPro?.Certification}</ListItem.Title>
             </ListItem.Content>
         </ListItem>
 

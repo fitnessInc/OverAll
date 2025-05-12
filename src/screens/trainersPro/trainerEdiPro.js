@@ -8,6 +8,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { Video } from "expo-av";
 import { useSelector, useDispatch } from "react-redux";
 import { setProfileMeta, clearProfileMeta } from "../../../redux/slices/imageSlice";
+import { updateInfoPro } from "../../../redux/slices/infoSlice";
+import Pro from "./profileOne";
 
 const data = [
     {
@@ -52,7 +54,7 @@ const Height = Math.round(ScreenHeight * 0.3);
 
 
 
-const EditProfile = ({ item }) => {
+const EditProfile = ({ item, navigation }) => {
 
     const [selectedMeta, setSelectedMeta] = useState("");
     const dispatch = useDispatch();
@@ -61,7 +63,8 @@ const EditProfile = ({ item }) => {
 
 
 
-    const imageUri = useSelector(state => state.image.image)
+    const imageUri = useSelector(state => state.image.image);
+    const profiles = useSelector(state => state.info.infoPro); 
 
 
     const pickMedia = async () => {
@@ -92,20 +95,29 @@ const EditProfile = ({ item }) => {
         dispatch(setProfileMeta({ ...item, meta: selectedMeta }))
 
     };
-    const infoSave = (id) => {
-        const updateInfo = text[id];
-        if (updateInfo) {
-            console.log(id)
+    const infoSave = () => {
 
-        }
+        Object.entries(text).forEach(([id,newData])=>{
+            dispatch(updateInfoPro({id,newData}))
+        })
+       
+         
+                     
+        
+
+          navigation.navigate('Pro',{itemId:Object.keys(text)[0]});
+
+         
 
     }
+
+    
     const renderItem = ({ item }) => (
         <View style={styles.info}>
             <TextInput
                 editable
                 value={text[item.id]?.Full_Name || ''}
-                onChange={(value) =>
+                onChangeText={(value) =>
                     setText((prev) => ({
                         ...prev,
                         [item.id]: { ...prev[item.id], Full_Name: value }
@@ -118,7 +130,7 @@ const EditProfile = ({ item }) => {
             <TextInput
                 editable
                 value={text[item.id]?.address || ''}
-                onChange={(value) =>
+                onChangeText={(value) =>
                     setText((prev) => ({
                         ...prev,
                         [item.id]: { ...prev[item.id], address: value }
@@ -131,7 +143,7 @@ const EditProfile = ({ item }) => {
             <TextInput
                 editable
                 value={text[item.id]?.Certification || ''}
-                onChange={(value) =>
+                onChangeText={(value) =>
                     setText((prev) => ({
                         ...prev,
                         [item.id]: { ...prev[item.id], Certification: value }
@@ -144,7 +156,7 @@ const EditProfile = ({ item }) => {
             <TextInput
                 editable
                 value={text[item.id]?.Function || ''}
-                onChange={(value) =>
+                onChangeText={(value) =>
                     setText((prev) => ({
                         ...prev,
                         [item.id]: { ...prev[item.id], Function: value }
@@ -154,19 +166,15 @@ const EditProfile = ({ item }) => {
                 placeholder="Function"
                 style={styles.input}
             />
-            <TouchableOpacity
-                onPress={() => infoSave(item.id)}
-                style={styles.saveButton}
-            >
-                <Text style={styles.texta}>SaveInfo</Text>
-
-            </TouchableOpacity>
+           
+            
 
         </View>
 
 
 
-    )
+    );
+    const profileArray = Object.values(profiles)
 
 
     return (
@@ -189,11 +197,15 @@ const EditProfile = ({ item }) => {
                     data={data}
                     renderItem={renderItem}
                     keyExtractor={(item) => item.id.toString()}
-
+                    contentContainerStyle={{ paddingBottom: 50 }}
 
                 />
             </View>
-
+            <View>
+            <Button   onPress={infoSave} style={styles.saveButton}>
+                <Text  style={styles.texto}>Save INfo</Text>
+            </Button>
+            </View>
         </SafeAreaView >
     )
 
@@ -208,7 +220,7 @@ const styles = StyleSheet.create({
         fontSize: 25,
         fontWeight: "bold",
         fontStyle: "italic",
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
 
     info: {
@@ -286,11 +298,14 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         marginTop: 10,
         alignItems: 'center',
+        color:"blue"
     },
 
     saveButtonText: {
         color: 'blue',
         fontWeight: 'bold',
+        textAlign:"center",
+        
     },
 
 
