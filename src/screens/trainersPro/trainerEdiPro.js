@@ -99,13 +99,19 @@ const EditProfile = ({ item, navigation }) => {
 
         Object.entries(text).forEach(([id,newData])=>{
             dispatch(updateInfoPro({id,newData}))
-        })
+        });
+
+        const [itemId,newData] = Object.entries(text)[0]
        
          
                      
         
 
-          navigation.navigate('Pro',{itemId:Object.keys(text)[0]});
+          navigation.navigate('Pro',{itemId});
+
+          setTimeout(()=>{
+            navigation.navigate('Profiles',{itemId})
+          },600)
 
          
 

@@ -18,8 +18,9 @@ const Height = Math.round(ScreenHeight * 0.3);
 
 
 const Pro = ({ route ,navigation}) => {
-  // const { item } = route.params || {};
-  const { itemId } = route.params;
+  
+  const  itemId = route?.params?.itemId;
+  console.log('routePArams',route?.params)
 
   const item = useSelector(state => state.info.infoPro[itemId] || {});
 
