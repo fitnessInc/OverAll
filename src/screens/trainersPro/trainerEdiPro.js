@@ -95,6 +95,12 @@ const EditProfile = ({ item, navigation }) => {
         dispatch(setProfileMeta({ ...item, meta: selectedMeta }))
 
     };
+
+       
+         
+                     
+    
+   
     const infoSave = () => {
 
         Object.entries(text).forEach(([id,newData])=>{
@@ -111,7 +117,7 @@ const EditProfile = ({ item, navigation }) => {
 
           setTimeout(()=>{
             navigation.navigate('Profiles',{itemId})
-          },600)
+          },600);
 
          
 

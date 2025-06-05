@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux';
 
 
 
+
 const ScreenWidth = Dimensions.get('window').width;
 const Width = Math.round(ScreenWidth * 1);
 const ScreenHeight = Dimensions.get("window").height;
@@ -19,8 +20,8 @@ const Height = Math.round(ScreenHeight * 0.3);
 
 const Pro = ({ route ,navigation}) => {
   
-  const  itemId = route?.params?.itemId;
-  console.log('routePArams',route?.params)
+  const { itemId } = route.params;
+  console.log('routePArams',route?.params);
 
   const item = useSelector(state => state.info.infoPro[itemId] || {});
 

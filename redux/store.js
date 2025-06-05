@@ -8,7 +8,7 @@ import infoReducer   from "./slices/infoSlice"
   const store = configureStore({
     reducer:{
         image:imagereducer,
-        info: infoReducer
+        info: infoReducer,
     }
 
       
