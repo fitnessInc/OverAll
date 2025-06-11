@@ -18,9 +18,14 @@ const infoSlices = createSlice({
 
         updateInfoPro(state,action){
             const {id,newData}=action.payload;
-            state.infoPro[id] = {
-                ...state.infoPro[id],
-                ...newData,
+            state.infoPro = {
+                ...state.infoPro,
+                [id]:{
+                    ...state.infoPro[id],
+                    ...newData
+
+                }
+                
               };
             
 

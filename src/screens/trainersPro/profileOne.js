@@ -27,6 +27,7 @@ const Pro = ({ route ,navigation}) => {
 
   console.log("Received item in Pro:", item);
   const profilePicture = useSelector(state=>state.image.profile);
+  console.log('profilePictures', profilePicture)
 
   const [modal, setModal] = useState(false);
   const [selectedValue, setSelectedValue] = useState("default");

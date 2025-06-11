@@ -48,6 +48,38 @@ space: {
 },
 });
 
+// This is the most robust solution — use a factory function to create a selector instance per component (so React doesn't share cache across usages):
+
+// js
+// Copy
+// Edit
+// export const makeSelectPro = () =>
+//   createSelector(
+//     [selInfoData],
+//     (infoPro) =>
+//       Object.entries(infoPro).map(([id, value]) => ({
+//         id,
+//         ...value,
+//       }))
+//   );
+// Then in your component:
+
+// js
+// Copy
+// Edit
+// import { makeSelectPro } from '../path/to/selector';
+// import { useMemo } from 'react';
+// import { useSelector } from 'react-redux';
+
+// const Profiles = ({ navigation }) => {
+//   const selectPro = useMemo(makeSelectPro, []);
+//   const profileList = useSelector(selectPro);
+//   ...
+// };
+// This ensures each Profiles component gets its own memoized selector instance, preventing cross-component cache pollution.
+
+
+
 
 
 
