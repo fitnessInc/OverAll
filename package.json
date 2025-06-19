@@ -24,6 +24,7 @@
     "expo": "^53.0.0",
     "expo-av": "~15.1.6",
     "expo-blur": "~14.1.5",
+    "expo-dev-client": "~5.2.1",
     "expo-image": "~2.3.0",
     "expo-image-manipulator": "~13.1.7",
     "expo-image-picker": "~16.1.4",
@@ -51,8 +52,7 @@
     "react-native-vector-icons": "^10.2.0",
     "react-redux": "^9.2.0",
     "socket.io-client": "^4.8.1",
-    "yup": "^1.6.1",
-    "expo-dev-client": "~5.2.1"
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@babel/core": "^7.26.8",
@@ -60,6 +60,7 @@
     "@react-native/metro-config": "^0.74.89",
     "babel-preset-expo": "~12.0.0",
     "patch-package": "^8.0.0",
+    "postinstall-postinstall": "^2.1.0",
     "react-native-svg-transformer": "^1.5.0"
   },
   "private": true
