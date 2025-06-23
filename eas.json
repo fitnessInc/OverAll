@@ -19,15 +19,10 @@
         "distribution": "store"
       },
       "ios": {
-        "distribution": "store"
+        "distribution": "store",
+        "simulator": true,
+        "buildConfiguration": "Debug"
       }
     }
   }
 }
-    
-
-
-
-
-
-        
