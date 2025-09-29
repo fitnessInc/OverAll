@@ -57,7 +57,7 @@ export default function Navigation() {
                         iconName= Images.chatIcon
                     }
 
-                    return <Image className="w-6 h-6" source={iconName} style={{ tintColor: focused ? 'white:' : "white" }}
+                    return <Image source={iconName} style={{ tintColor: focused ? 'white:' : "white", width:30,height:30 }}
                     />;
                     
                 },
