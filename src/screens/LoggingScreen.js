@@ -5,7 +5,7 @@ import { Svg } from "react-native-svg";
 import { Dimensions } from 'react-native';
 import { BackgroundImage } from "@rneui/base";
 import { useState } from 'react';
-import { Ionicons } from '@expo/vector-icons';
+// import { Ionicons } from '@expo/vector-icons';
 
 
 

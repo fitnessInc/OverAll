@@ -13,7 +13,7 @@ import WorkoutScreen from '../screens/WorkoutScreen';
 import ChatScreen from '../screens/ChatScreen';
 import { BlurView } from 'expo-blur';
 import { DefaultTheme } from "@react-navigation/native"
-import LoggingScreen from '../screens/LoggingScreen';
+// import LoggingScreen from '../screens/LoggingScreen';
 import CarouselCard from '../components/carousel';
 import Food from '../screens/food';
 import Order from '../screens/Order';
@@ -86,7 +86,7 @@ export default function Navigation() {
                 <Tab.Screen name="Meal" component={CarouselCard} options={{ headerShown: false }} />
                 <Tab.Screen name="Chat" component={ChatScreen} options={{ headerShown: false }} />
                 <Tab.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
-                <Tab.Screen name="Logging" component={LoggingScreen} options={{ headerShown: false }} />
+                {/* <Tab.Screen name="Logging" component={LoggingScreen} options={{ headerShown: false }} /> */}
                 <Tab.Screen name="Food"
                     component={Food}
                     options={{
