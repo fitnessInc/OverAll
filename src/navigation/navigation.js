@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator, } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
 import SettingsScreen from '../screens/SettingsScreen';
-import Ionicons from 'react-native-vector-icons/Ionicons'
+import Ionicons from 'react-native-vector-icons'
 import { Images } from '../config/images';
 import { Image, View } from 'react-native';
 import CalisthenicScreen from '../screens/CalisthenicScreen';
@@ -13,7 +13,7 @@ import WorkoutScreen from '../screens/WorkoutScreen';
 import ChatScreen from '../screens/ChatScreen';
 import { BlurView } from 'expo-blur';
 import { DefaultTheme } from "@react-navigation/native"
-// import LoggingScreen from '../screens/LoggingScreen';
+import LoggingScreen from '../screens/LoggingScreen';
 import CarouselCard from '../components/carousel';
 import Food from '../screens/food';
 import Order from '../screens/Order';
