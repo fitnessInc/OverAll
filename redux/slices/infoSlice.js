@@ -13,9 +13,6 @@ const infoSlices = createSlice({
     initialState,
     reducers:{
 
-
-
-
         updateInfoPro(state,action){
             const {id,newData}=action.payload;
             state.infoPro = {
