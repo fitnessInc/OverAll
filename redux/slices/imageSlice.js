@@ -1,25 +1,23 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState={
-    profile:{},
+const initialState = {
+  profiles: {} // Store images by profile ID
 };
 
-
-const imageSlices = createSlice({
-    name:"image",
-    initialState,
-    reducers:{
-        setProfileMeta(state,action){
-            state.profile = action.payload;
-        }
-
+const imageSlice = createSlice({
+  name: 'image',
+  initialState,
+  reducers: {
+    setProfileMeta: (state, action) => {
+      const { id, meta } = action.payload;
+      state.profiles[id] = meta;
     },
-    //  clearProfileMeta(state){
-       
-    //     state.profile=null;
-    //  }
+    clearProfileMeta: (state, action) => {
+      const { id } = action.payload;
+      delete state.profiles[id];
+    },
+  },
 });
 
-
-export const{ setProfileMeta}= imageSlices.actions;
-export default  imageSlices.reducer
+export const { setProfileMeta, clearProfileMeta } = imageSlice.actions;
+export default imageSlice.reducer;

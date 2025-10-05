@@ -49,15 +49,16 @@ import { selectPro } from "../../redux/reselect"
 
 
 
-const Profiles = ({ navigation, route, }) => {
+const Profiles = ({ navigation,route }) => {
 
-  const profilePicture = useSelector(state => state.image.profile);
+  const profilePicture = useSelector(state => state.image.profiles);
   console.log('profile content ', profilePicture)
   const itemId = route?.params?.itemId ?? null;
   console.log('routePArams', route?.params);
   const profileList = useSelector(selectPro);
   console.log('liste of profile', profileList)
-  const item = useSelector((state) => state.info.infoPro[itemId] || {});
+  // const item = useSelector((state) => state.info.infoPro[itemId] || {});
+   const item = useSelector((state) => state.info.infoPro);
 
 
   const infoData = useSelector(state => state.info.infoPro);
