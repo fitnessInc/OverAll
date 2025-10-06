@@ -11,6 +11,7 @@ const imageSlice = createSlice({
     setProfileMeta: (state, action) => {
       const { id, meta } = action.payload;
       state.profiles[id] = meta;
+      console.log('setProfileMeta',{id,meta})
     },
     clearProfileMeta: (state, action) => {
       const { id } = action.payload;

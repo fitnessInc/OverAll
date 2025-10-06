@@ -83,7 +83,8 @@ const Profiles = ({ navigation,route }) => {
       }
     )}>
       <Avatar
-        source={{ uri: profilePicture?.meta }}
+        // source={{ uri: profilePicture?.meta }}
+        source={{ uri: profilePicture }}
         size="medium"
         icon={{ name: 'person', type: 'material', color: 'white' }}
         overlayContainerStyle={{ backgroundColor: 'black' }}

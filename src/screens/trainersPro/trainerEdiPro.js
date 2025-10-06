@@ -13,7 +13,7 @@ import Pro from "./profileOne";
 
 const data = [
     {
-        id: '1',
+        id: 'user1',
         Full_Name: 'nanito',
         Address: 'xxx',
         Function: 'Calisthenics',
@@ -23,7 +23,7 @@ const data = [
 
     },
     {
-        id: '2',
+        id: 'user2',
         Full_Name: 'Aicha Ahmat',
         Address: ' Address: 646 berge ave NJ',
         Function: '  weight trainer ',
@@ -33,7 +33,7 @@ const data = [
 
     },
     {
-        id: '3',
+        id: 'user3',
         Full_Name: 'Alato Sow',
         Address: ' Address: 646 berge ave NJ',
         Function: ' weight trainer ',
@@ -92,11 +92,11 @@ const Height = Math.round(ScreenHeight * 0.3);
 
 //     };
 
-       
-         
-                     
-    
-   
+
+
+
+
+
 //     const infoSave = () => {
 
 //         Object.entries(text).forEach(([id,newData])=>{
@@ -104,10 +104,10 @@ const Height = Math.round(ScreenHeight * 0.3);
 //         });
 
 //         const [itemId,newData] = Object.entries(text)[0]
-       
-         
-                     
-        
+
+
+
+
 
 //           navigation.navigate('Pro',{itemId});
 
@@ -115,11 +115,11 @@ const Height = Math.round(ScreenHeight * 0.3);
 //             navigation.navigate('Profiles',{itemId})
 //           },600);
 
-         
+
 
 //     }
 
-    
+
 //     const renderItem = ({ item }) => (
 //         <View style={styles.info}>
 //             <TextInput
@@ -174,8 +174,8 @@ const Height = Math.round(ScreenHeight * 0.3);
 //                 placeholder="Function"
 //                 style={styles.input}
 //             />
-           
-            
+
+
 
 //         </View>
 
@@ -314,7 +314,7 @@ const Height = Math.round(ScreenHeight * 0.3);
 //         color: 'blue',
 //         fontWeight: 'bold',
 //         textAlign:"center",
-        
+
 //     },
 
 
@@ -322,245 +322,263 @@ const Height = Math.round(ScreenHeight * 0.3);
 
 // export default EditProfile;
 const EditProfile = ({ navigation, route }) => {
-  const [selectedMeta, setSelectedMeta] = useState({}); // Store images by ID
-  const [text, setText] = useState({});
-  const dispatch = useDispatch();
+    //   const [selectedMeta, setSelectedMeta] = useState({}); // Store images by ID
+    //   const [text, setText] = useState({});
+    const dispatch = useDispatch();
 
-  // Get data from Redux
-  const profileImages = useSelector(state => state.image.profiles);
-  const profiles = useSelector(state => state.info.infoPro);
+    // Get data from Redux
+    const profileImages = useSelector(state => state.image.profiles);
+    console.log('image profile', profileImages)
+    const infoProfiles = useSelector(state => state.info.infoPro);
 
-  const pickMedia = async (profileId) => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      alert('Permission to access media library is required!');
-      return;
-    }
+    const pickMedia = async (profileId) => {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            alert('Permission to access media library is required!');
+            return;
+        }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
 
-    if (!result.canceled && result.assets?.length > 0) {
-      const uri = result.assets[0].uri;
-      setSelectedMeta(prev => ({ ...prev, [profileId]: uri }));
-    }
-  };
-
-  const saveProfile = (profileId) => {
-    if (selectedMeta[profileId]) {
-      dispatch(setProfileMeta({ 
-        id: profileId, 
-        meta: selectedMeta[profileId] 
-      }));
-      alert('Image saved for profile ' + profileId);
-    }
-  };
-
-  const infoSave = () => {
-    // Save all text changes to Redux
-    Object.entries(text).forEach(([id, newData]) => {
-      if (newData && Object.keys(newData).length > 0) {
-        dispatch(updateInfoPro({ id, newData }));
-      }
-    });
-
-    // Navigate to profile screen
-    const firstItemId = Object.keys(text)[0] || data[0].id;
-    
-    navigation.navigate('Pro', { itemId: firstItemId });
-    
-    setTimeout(() => {
-      navigation.navigate('Profiles', { itemId: firstItemId });
-    }, 600);
-  };
-
-  const renderItem = ({ item }) => (
-    <View style={styles.profileContainer}>
-      {/* Profile Image Section */}
-      <View style={styles.imageSection}>
-        <Image
-          source={
-            selectedMeta[item.id] 
-              ? { uri: selectedMeta[item.id] }
-              : profileImages[item.id]
-                ? { uri: profileImages[item.id] }
-                : require('../../../assets/images/food.jpg')
-          }
-          style={styles.profileImage}
-          resizeMode="cover"
-        />
-        <TouchableOpacity 
-          onPress={() => pickMedia(item.id)} 
-          style={styles.pickButton}
-        >
-          <Text style={styles.buttonText}>Pick Image</Text>
-        </TouchableOpacity>
-        <Button 
-          title="Save Image" 
-          onPress={() => saveProfile(item.id)}
-          buttonStyle={styles.imageSaveButton}
-        />
-      </View>
-
-      {/* Profile Info Section */}
-      <View style={styles.infoSection}>
-        <Text style={styles.profileTitle}>Editing Profile: {item.id}</Text>
-        
-        <TextInput
-          value={text[item.id]?.Full_Name || item.Full_Name}
-          onChangeText={(value) =>
-            setText(prev => ({
-              ...prev,
-              [item.id]: { ...prev[item.id], Full_Name: value }
+        if (!result.canceled && result.assets?.length > 0) {
+            const metaUri = result.assets[0].uri;
+            //   setSelectedMeta(prev => ({ ...prev, [profileId]: metaUri }));
+            dispatch(setProfileMeta({
+                id: profileId,
+                meta: metaUri
             }))
-          }
-          placeholder="Full Name"
-          style={styles.input}
-        />
+        }
+    };
 
-        <TextInput
-          value={text[item.id]?.Address || item.Address}
-          onChangeText={(value) =>
-            setText(prev => ({
-              ...prev,
-              [item.id]: { ...prev[item.id], Address: value }
-            }))
-          }
-          placeholder="Address"
-          style={styles.input}
-        />
+    //    const saveImagePro = () => {
+    //     //  if (selectedMeta[profileId]) {
+    //     //     dispatch(setProfileMeta({ 
+    //     //      id: profileId, 
+    //     //      meta: selectedMeta[profileId] 
+    //     //     }));
+    //     //    alert('Image saved for profile ' + profileId);
+    //     //  }
 
-        <TextInput
-          value={text[item.id]?.Function || item.Function}
-          onChangeText={(value) =>
-            setText(prev => ({
-              ...prev,
-              [item.id]: { ...prev[item.id], Function: value }
-            }))
-          }
-          placeholder="Function"
-          style={styles.input}
-        />
+    //       return  pickMedia
+    //   };
 
-        <TextInput
-          value={text[item.id]?.Certification || item.Certification}
-          onChangeText={(value) =>
-            setText(prev => ({
-              ...prev,
-              [item.id]: { ...prev[item.id], Certification: value }
-            }))
-          }
-          placeholder="Certification"
-          style={styles.input}
-        />
-      </View>
-    </View>
-  );
+    const infoSave = () => {
+        // Save all text changes to Redux
+        Object.entries(text).forEach(([id, newData]) => {
+            if (newData && Object.keys(newData).length > 0) {
+                dispatch(updateInfoPro({ id, newData }));
+            }
+        });
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <FlatList
-        data={data}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-      />
-      
-      <View style={styles.saveAllContainer}>
-        <Button 
-          title="Save All Changes" 
-          onPress={infoSave}
-          buttonStyle={styles.saveAllButton}
-          titleStyle={styles.saveAllButtonText}
-        />
-      </View>
-    </SafeAreaView>
-  );
+        // Navigate to profile screen
+        const firstItemId = Object.keys(text)[0] || data[0].id;
+
+        navigation.navigate('Pro', { itemId: firstItemId });
+
+        setTimeout(() => {
+            navigation.navigate('Profiles', { itemId: firstItemId });
+        }, 600);
+    };
+
+
+
+    const renderItem = ({ item }) => {
+
+        const UserId = item.id;
+        const UserProfiles = profileImages[UserId]
+
+        return (
+            <View style={styles.profileContainer}>
+                {/* Profile Image Section */}
+                <View style={styles.imageSection}>
+                    <Image
+                        // source={
+                        //     selectedMeta[item.id]
+                        //         ? { uri: selectedMeta[item.id] }
+                        //         : profileImages[item.id]
+                        //             ? { uri: profileImages[item.id] }
+                        //             : require('../../../assets/images/food.jpg')
+                        // }
+                        source={UserProfiles}
+                        style={styles.profileImage}
+                        resizeMode="cover"
+                    />
+                    <TouchableOpacity
+                        onPress={() => pickMedia(item.id)}
+                        style={styles.pickButton}
+                    >
+                        <Text style={styles.buttonText}>Pick Image</Text>
+                    </TouchableOpacity>
+                    {/* <Button
+                        title="Save Image"
+                        onPress={() => saveProfile(item.id)}
+                        buttonStyle={styles.imageSaveButton}
+                    /> */}
+                </View>
+
+                {/* Profile Info Section */}
+                {/* <View style={styles.infoSection}>
+                    <Text style={styles.profileTitle}>Editing Profile: {item.id}</Text>
+
+                    <TextInput
+                        value={text[item.id]?.Full_Name || item.Full_Name}
+                        onChangeText={(value) =>
+                            setText(prev => ({
+                                ...prev,
+                                [item.id]: { ...prev[item.id], Full_Name: value }
+                            }))
+                        }
+                        placeholder="Full Name"
+                        style={styles.input}
+                    />
+
+                    <TextInput
+                        value={text[item.id]?.Address || item.Address}
+                        onChangeText={(value) =>
+                            setText(prev => ({
+                                ...prev,
+                                [item.id]: { ...prev[item.id], Address: value }
+                            }))
+                        }
+                        placeholder="Address"
+                        style={styles.input}
+                    />
+
+                    <TextInput
+                        value={text[item.id]?.Function || item.Function}
+                        onChangeText={(value) =>
+                            setText(prev => ({
+                                ...prev,
+                                [item.id]: { ...prev[item.id], Function: value }
+                            }))
+                        }
+                        placeholder="Function"
+                        style={styles.input}
+                    />
+
+                    <TextInput
+                        value={text[item.id]?.Certification || item.Certification}
+                        onChangeText={(value) =>
+                            setText(prev => ({
+                                ...prev,
+                                [item.id]: { ...prev[item.id], Certification: value }
+                            }))
+                        }
+                        placeholder="Certification"
+                        style={styles.input}
+                    />
+                </View> */}
+            </View>
+
+        )
+
+    };
+
+    return (
+        <SafeAreaView style={styles.container}>
+            <FlatList
+                data={data}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={styles.listContent}
+                showsVerticalScrollIndicator={false}
+            />
+
+            <View style={styles.saveAllContainer}>
+                <Button
+                    title="Save All Changes"
+                    onPress={infoSave}
+                    buttonStyle={styles.saveAllButton}
+                    titleStyle={styles.saveAllButtonText}
+                />
+            </View>
+        </SafeAreaView>
+    );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  listContent: {
-    padding: 10,
-  },
-  profileContainer: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  imageSection: {
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  profileImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    marginBottom: 10,
-  },
-  pickButton: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 5,
-    marginBottom: 5,
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  imageSaveButton: {
-    backgroundColor: '#34C759',
-    paddingHorizontal: 15,
-  },
-  infoSection: {
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
-    paddingTop: 15,
-  },
-  profileTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
-    fontSize: 16,
-  },
-  saveAllContainer: {
-    padding: 15,
-    backgroundColor: 'white',
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
-  },
-  saveAllButton: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  saveAllButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#f5f5f5',
+    },
+    listContent: {
+        padding: 10,
+    },
+    profileContainer: {
+        backgroundColor: 'white',
+        borderRadius: 10,
+        padding: 15,
+        marginBottom: 15,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    imageSection: {
+        alignItems: 'center',
+        marginBottom: 15,
+    },
+    profileImage: {
+        width: 120,
+        height: 120,
+        borderRadius: 60,
+        marginBottom: 10,
+    },
+    pickButton: {
+        backgroundColor: '#007AFF',
+        paddingHorizontal: 15,
+        paddingVertical: 8,
+        borderRadius: 5,
+        marginBottom: 5,
+    },
+    buttonText: {
+        color: 'white',
+        fontWeight: 'bold',
+    },
+    imageSaveButton: {
+        backgroundColor: '#34C759',
+        paddingHorizontal: 15,
+    },
+    infoSection: {
+        borderTopWidth: 1,
+        borderTopColor: '#e0e0e0',
+        paddingTop: 15,
+    },
+    profileTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        textAlign: 'center',
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: '#ddd',
+        borderRadius: 5,
+        padding: 10,
+        marginBottom: 10,
+        fontSize: 16,
+    },
+    saveAllContainer: {
+        padding: 15,
+        backgroundColor: 'white',
+        borderTopWidth: 1,
+        borderTopColor: '#e0e0e0',
+    },
+    saveAllButton: {
+        backgroundColor: '#007AFF',
+        paddingVertical: 12,
+        borderRadius: 8,
+    },
+    saveAllButtonText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
 });
 
 export default EditProfile;
