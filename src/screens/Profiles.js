@@ -55,6 +55,8 @@ const Profiles = ({ navigation,route }) => {
   console.log('profile content ', profilePicture)
   const itemId = route?.params?.itemId ?? null;
   console.log('routePArams', route?.params);
+  console.log('ItemId',itemId);
+
   const profileList = useSelector(selectPro);
   console.log('liste of profile', profileList)
   // const item = useSelector((state) => state.info.infoPro[itemId] || {});
