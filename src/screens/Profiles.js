@@ -3,7 +3,7 @@ import React from "react";
 import { FlatList, StyleSheet, SafeAreaView } from "react-native";
 import { ListItem, Avatar, } from 'react-native-elements';
 import { useSelector } from "react-redux";
-import { selectPro } from "../../redux/reselect"
+// import { selectPro } from "../../redux/reselect"
 
 
 // const data = [
@@ -52,18 +52,19 @@ import { selectPro } from "../../redux/reselect"
 const Profiles = ({ navigation,route }) => {
 
   const profilePicture = useSelector(state => state.image.profiles);
+  const profileInfo= useSelector(state=>state.info.infoPro);
+  console.log('info',profileInfo);
   console.log('profile content ', profilePicture)
   const itemId = route?.params?.itemId ?? null;
   console.log('routePArams', route?.params);
-  console.log('ItemId',itemId);
-
-  const profileList = useSelector(selectPro);
-  console.log('liste of profile', profileList)
+v
+  // const profileList = useSelector(selectPro);
+  // console.log('liste of profile', profileList)
   // const item = useSelector((state) => state.info.infoPro[itemId] || {});
-   const item = useSelector((state) => state.info.infoPro);
+  //  const item = useSelector((state) => state.info.infoPro);
 
 
-  const infoData = useSelector(state => state.info.infoPro);
+  // const infoData = useSelector(state => state.info.infoPro);
 
   // const profilesList = selectPro.map(([id, value]) => ({
   //   id,
