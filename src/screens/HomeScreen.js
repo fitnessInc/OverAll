@@ -6,9 +6,12 @@ import { Tile } from '@rneui/themed';
 import gym from '../../assets/images/gym.jpg';
 import nutrition from '../../assets/images/nutrution.jpg';
 import Profiles from './Profiles';
+import { useRoute } from '@react-navigation/native';
 
 
 const HomeScreen = ({navigation}) => {
+  const route = useRoute();
+  console.log('route object', route)
 
 
 

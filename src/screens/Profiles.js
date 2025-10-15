@@ -3,6 +3,7 @@ import React from "react";
 import { FlatList, StyleSheet, SafeAreaView } from "react-native";
 import { ListItem, Avatar, } from 'react-native-elements';
 import { useSelector } from "react-redux";
+import { useRoute } from "@react-navigation/native";
 // import { selectPro } from "../../redux/reselect"
 
 
@@ -50,6 +51,8 @@ import { useSelector } from "react-redux";
 
 
 const Profiles = ({ navigation }) => {
+   const route = useRoute();
+   console.log("objectRoute",route)
 
   const profilePicture = useSelector(state => state.image.profiles);
   const profileInfo= useSelector(state=>state.info.infoPro);

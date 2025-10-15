@@ -7,6 +7,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { Button } from 'react-native-elements';
 import { Video } from 'expo-av';
 import { useSelector } from 'react-redux';
+import { useRoute } from '@react-navigation/native';
 
 
 
@@ -18,8 +19,9 @@ const ScreenHeight = Dimensions.get("window").height;
 const Height = Math.round(ScreenHeight * 0.3);
 
 
-const Pro = ({ route ,navigation}) => {
-  
+const Pro = ({navigation}) => {
+  const route = useRoute();
+  console.log('routeObject',route)
   const { profileData,profileId } = route.params;
   console.log('routePArams',route?.params);
 

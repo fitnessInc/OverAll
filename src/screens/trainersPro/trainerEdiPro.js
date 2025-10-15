@@ -10,6 +10,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setProfileMeta, clearProfileMeta } from "../../../redux/slices/imageSlice";
 import { updateInfoPro } from "../../../redux/slices/infoSlice";
 import Pro from "./profileOne";
+import { useRoute } from "@react-navigation/native";
 
 const data = [
     {
@@ -321,17 +322,23 @@ const Height = Math.round(ScreenHeight * 0.3);
 // });
 
 // export default EditProfile;
-const EditProfile = ({ navigation, route }) => {
+const EditProfile = ({ route,navigation}) => {
     //   const [selectedMeta, setSelectedMeta] = useState({}); // Store images by ID
     //   const [text, setText] = useState({});
+
+    const routeHook = useRoute();
+    console.log('routeObject',routeHook)
     const dispatch = useDispatch();
-    const { profileId, profileData } = route.params;
+    // const { profileId, profileData } = route.params;
+    dispatch(updateInfo({ id: profileId, newInfo }));
+    dispatch(updateImage({ id: profileId, newImage }));
+    dispatch(updateVideo({ id: profileId, newVideo }));
 
     // Get data from Redux
     const profileImages = useSelector(state => state.image.profiles);
     console.log('image profile', profileImages)
     const infoProfiles = useSelector(state => state.info.infoPro);
-    console.log('info',infoPro)
+    console.log('info', infoPro)
 
     const pickMedia = async (profileId) => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
