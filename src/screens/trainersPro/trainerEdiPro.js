@@ -325,11 +325,13 @@ const EditProfile = ({ navigation, route }) => {
     //   const [selectedMeta, setSelectedMeta] = useState({}); // Store images by ID
     //   const [text, setText] = useState({});
     const dispatch = useDispatch();
+    const { profileId, profileData } = route.params;
 
     // Get data from Redux
     const profileImages = useSelector(state => state.image.profiles);
     console.log('image profile', profileImages)
     const infoProfiles = useSelector(state => state.info.infoPro);
+    console.log('info',infoPro)
 
     const pickMedia = async (profileId) => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();

@@ -20,13 +20,12 @@ const Height = Math.round(ScreenHeight * 0.3);
 
 const Pro = ({ route ,navigation}) => {
   
-  const { itemId } = route.params;
+  const { profileData,profileId } = route.params;
   console.log('routePArams',route?.params);
 
-  const item = useSelector(state => state.info.infoPro[itemId] || {});
-
+  const item = useSelector(state => state.info.infoPro[profileId] || {});
   console.log("Received item in Pro:", item);
-  const profilePicture = useSelector(state=>state.image.profile);
+  const profilePicture = useSelector(state=>state.image.profile[profileId]);
   console.log('profilePictures', profilePicture)
 
   const [modal, setModal] = useState(false);
@@ -215,6 +214,7 @@ const Pro = ({ route ,navigation}) => {
     )
 
   };
+    
 
   return (
     <SafeAreaView>
@@ -224,6 +224,7 @@ const Pro = ({ route ,navigation}) => {
           <Image
             source={{uri: profilePicture?.meta}}
             style={styles.image}
+            defaultSource={require('../../../assets/images/salad.jpg')}
           />
         </View>
         <View style={styles.info}>

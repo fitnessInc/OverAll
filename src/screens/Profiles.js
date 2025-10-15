@@ -49,16 +49,33 @@ import { useSelector } from "react-redux";
 
 
 
-const Profiles = ({ navigation,route }) => {
+const Profiles = ({ navigation }) => {
 
   const profilePicture = useSelector(state => state.image.profiles);
   const profileInfo= useSelector(state=>state.info.infoPro);
   console.log('info',profileInfo);
   console.log('profile content ', profilePicture)
-  const itemId = route?.params?.itemId ?? null;
-  console.log('routePArams', route?.params);
-v
+  // const itemId = route?.params?.itemId ?? null;
+  // console.log('routePArams', route?.params);
+
   // const profileList = useSelector(selectPro);
+
+  const combinedProfiles = Object.entries(profileInfo).map(([id, info]) => {
+    return {
+      id: id,
+      Full_Name: info.Full_Name,
+      Address: info.Address,
+      Function: info.Function,
+      // Certification: info.Certification,
+      // Add the corresponding image - adjust based on your data structure
+      profileImage: profilePicture?.[id] ||profilePicture?.uri ||profilePicture||null
+                   
+                    
+                   
+    };
+  });
+
+    console.log('Combined Profiles Array:', combinedProfiles);
   // console.log('liste of profile', profileList)
   // const item = useSelector((state) => state.info.infoPro[itemId] || {});
   //  const item = useSelector((state) => state.info.infoPro);
@@ -72,35 +89,61 @@ v
   // }));
 
 
-  const renderItem = ({ item:infoData }) => (
-    <ListItem bottomDivider onPress={() => navigation.navigate('Pro',
-      {
-        item:
-        {
-          Full_Name: item.Full_Name,
-          Address: item.Address,
-          Function: item.Function,
-          Certification: item.Certification,
+  // const renderItem = ({ item:infoData }) => (
+  //   <ListItem bottomDivider onPress={() => navigation.navigate('Pro',
+  //     {
+  //       item:
+  //       {
+  //         Full_Name: item.Full_Name,
+  //         Address: item.Address,
+  //         Function: item.Function,
+  //         Certification: item.Certification,
 
-        }
-      }
-    )}>
+  //       }
+  //     }
+  //   )}>
+  //     <Avatar
+  //       // source={{ uri: profilePicture?.meta }}
+  //       source={{ uri: profilePicture }}
+  //       size="medium"
+  //       icon={{ name: 'person', type: 'material', color: 'white' }}
+  //       overlayContainerStyle={{ backgroundColor: 'black' }}
+  //       rounded
+  //     />
+  //     <ListItem.Content>
+  //       <ListItem.Title>{item.Full_Name}</ListItem.Title>
+  //       <ListItem.Title>{item.Function}</ListItem.Title>
+  //       <ListItem.Title>{item.Certification}</ListItem.Title>
+  //     </ListItem.Content>
+  //   </ListItem>
+
+  // )
+    const renderItem = ({ item }) => (
+    <ListItem 
+      bottomDivider 
+      onPress={() => navigation.navigate('Pro', {
+        profileId: item.id,
+        profileData: item
+      })}
+    >
+      {/* Avatar with image from combined data */}
       <Avatar
-        // source={{ uri: profilePicture?.meta }}
-        source={{ uri: profilePicture }}
+        source={{ uri: item.profileImage }}
         size="medium"
         icon={{ name: 'person', type: 'material', color: 'white' }}
         overlayContainerStyle={{ backgroundColor: 'black' }}
         rounded
       />
+      
+      {/* Profile information from combined data */}
       <ListItem.Content>
         <ListItem.Title>{item.Full_Name}</ListItem.Title>
-        <ListItem.Title>{item.Function}</ListItem.Title>
-        <ListItem.Title>{item.Certification}</ListItem.Title>
+        <ListItem.Subtitle>{item.Function}</ListItem.Subtitle>
+        <ListItem.Subtitle>{item.Certification}</ListItem.Subtitle>
       </ListItem.Content>
     </ListItem>
+  );
 
-  )
 
 
 
@@ -109,7 +152,7 @@ v
     <SafeAreaView
       style={{ flex: 1, marginTop: 70 }}
     >
-      <FlatList
+       {/* <FlatList
         data={selectPro}
         keyExtractor={(item, index) => (item?.id ? item.id.toString() : index.toString())}
         renderItem={renderItem}
@@ -120,8 +163,13 @@ v
         data={profileList} // ✅ Now you are passing a valid array
         keyExtractor={(item, index) => item?.id?.toString() ?? index.toString()}
         renderItem={renderItem}
+      /> */}
+       <FlatList
+        data={combinedProfiles}  // Single combined array
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderItem}
       />
-    </SafeAreaView >
+    </SafeAreaView > 
 
   )
 
@@ -168,6 +216,8 @@ v
   //   </SafeAreaView>
   // );
 };
+
+ 
 
 const styles = StyleSheet.create({
   avatar: {
