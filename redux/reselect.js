@@ -18,10 +18,7 @@ const selInfoData = state=> state.info.infoPro;
 
         }))
     }
-    // (infoPro)=>  Object.entries(infoPro).map(([id,value])=>({
-    //     id,
-    //     ...value
-    // }))
+  
 
 
  );

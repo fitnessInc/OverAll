@@ -69,12 +69,8 @@ const Profiles = ({ navigation }) => {
       Full_Name: info.Full_Name,
       Address: info.Address,
       Function: info.Function,
-      // Certification: info.Certification,
-      // Add the corresponding image - adjust based on your data structure
       profileImage: profilePicture?.[id] ||profilePicture?.uri ||profilePicture||null
-                   
-                    
-                   
+                                             
     };
   });
 
@@ -131,7 +127,7 @@ const Profiles = ({ navigation }) => {
     >
       {/* Avatar with image from combined data */}
       <Avatar
-        source={{ uri: item.profileImage }}
+        source={item.profileImage?{ uri: item.profileImage }: require('../assets/images/meal.png')}
         size="medium"
         icon={{ name: 'person', type: 'material', color: 'white' }}
         overlayContainerStyle={{ backgroundColor: 'black' }}
@@ -141,8 +137,8 @@ const Profiles = ({ navigation }) => {
       {/* Profile information from combined data */}
       <ListItem.Content>
         <ListItem.Title>{item.Full_Name}</ListItem.Title>
+        <ListItem.Subtitle>{item.Address}</ListItem.Subtitle>
         <ListItem.Subtitle>{item.Function}</ListItem.Subtitle>
-        <ListItem.Subtitle>{item.Certification}</ListItem.Subtitle>
       </ListItem.Content>
     </ListItem>
   );
@@ -154,19 +150,7 @@ const Profiles = ({ navigation }) => {
   return (
     <SafeAreaView
       style={{ flex: 1, marginTop: 70 }}
-    >
-       {/* <FlatList
-        data={selectPro}
-        keyExtractor={(item, index) => (item?.id ? item.id.toString() : index.toString())}
-        renderItem={renderItem}
-
-
-      />
-      <FlatList
-        data={profileList} // ✅ Now you are passing a valid array
-        keyExtractor={(item, index) => item?.id?.toString() ?? index.toString()}
-        renderItem={renderItem}
-      /> */}
+    > 
        <FlatList
         data={combinedProfiles}  // Single combined array
         keyExtractor={(item) => item.id.toString()}

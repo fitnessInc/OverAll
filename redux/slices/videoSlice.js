@@ -1,21 +1,21 @@
  import { createSlice } from '@reduxjs/toolkit';
 
 const initialState={
-    videoPro:{},
+   metaPro:{}
 };
 
- const  videoSlice=createSlice({
-    name:video,
+ const  metaSlice=createSlice({
+    name:'meta',
     initialState,
     reducers:{
-        videoProfile:(state,action)=>{
-            const {id,meta}= action.payload;
-            state.videoPro = meta 
+        metaProfile:(state,action)=>{
+            const {id,newMeta}= action.payload;
+            state.metaPro[id] = newMeta
         }
     }
 
     
  })
 
- export const {videoProfile}= videoSlice.actions;
- export default videoSlice.reducer
+ export const {metaProfile}= metaSlice.actions;
+ export default metaSlice.reducer

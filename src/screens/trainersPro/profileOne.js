@@ -19,16 +19,17 @@ const ScreenHeight = Dimensions.get("window").height;
 const Height = Math.round(ScreenHeight * 0.3);
 
 
-const Pro = ({navigation}) => {
-  const route = useRoute();
-  console.log('routeObject',route)
-  const { profileData,profileId } = route.params;
+const Pro = ({navigation,route}) => {
+  const routy = useRoute();
+  console.log('routeObject',routy)
+  const { profileId } = route.params;
   console.log('routePArams',route?.params);
 
-  const item = useSelector(state => state.info.infoPro[profileId] || {});
-  console.log("Received item in Pro:", item);
+  const infoSelected = useSelector(state => state.info.infoPro[profileId] || {});
+  console.log("Received item in Pro:", infoSelected);
   const profilePicture = useSelector(state=>state.image.profile[profileId]);
-  console.log('profilePictures', profilePicture)
+  console.log('profilePictures', profilePicture);
+  const metadata= useSelector(state=>state.meta.metaPro[profileId])
 
   const [modal, setModal] = useState(false);
   const [selectedValue, setSelectedValue] = useState("default");
