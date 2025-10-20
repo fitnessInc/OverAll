@@ -8,22 +8,26 @@ const initialState={
         'user1':{
             'Full_Name':'nanito Ahmat',
             'Address':'test',
-            'Function':'trainer'
+            'Function':'trainer',
+            'certification':'Nasam'
         },
         'user2':{
             'Full_Name':'Aicha Ahmat',
             'Address':'test',
-            'Function':'client'
+            'Function':'client',
+            'certification':'N/A'
         },
         'user3':{
             'Full_Name':'lilAms',
             'Address':'test',
-            'Function':'client'
+            'Function':'client',
+            'certification':'N/a'
         },
          'user4':{
             'Full_Name':'test',
             'Address':'test',
-            'Function':'client'
+            'Function':'client',
+            'certification':'N/A'
         },
     },
 };

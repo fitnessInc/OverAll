@@ -90,7 +90,7 @@ const EditProfile = ({ route,navigation}) => {
         }
     };
 
-    //    const saveImagePro = () => {
+    
     //     //  if (selectedMeta[profileId]) {
     //     //     dispatch(setProfileMeta({ 
     //     //      id: profileId, 

@@ -5,9 +5,6 @@ import { ListItem, Avatar, } from 'react-native-elements';
 import { useSelector } from "react-redux";
 import { useRoute } from "@react-navigation/native";
 // import { selectPro } from "../../redux/reselect"
-
-
-// const data = [
 //     {
 //         id: '1',
 //         Full_Name: 'nanito Nanitosse',
@@ -58,11 +55,7 @@ const Profiles = ({ navigation }) => {
   const profileInfo= useSelector(state=>state.info.infoPro);
   console.log('info',profileInfo);
   console.log('profile content ', profilePicture)
-  // const itemId = route?.params?.itemId ?? null;
-  // console.log('routePArams', route?.params);
-
-  // const profileList = useSelector(selectPro);
-
+  
   const combinedProfiles = Object.entries(profileInfo).map(([id, info]) => {
     return {
       id: id,
@@ -75,48 +68,7 @@ const Profiles = ({ navigation }) => {
   });
 
     console.log('Combined Profiles Array:', combinedProfiles);
-  // console.log('liste of profile', profileList)
-  // const item = useSelector((state) => state.info.infoPro[itemId] || {});
-  //  const item = useSelector((state) => state.info.infoPro);
-
-
-  // const infoData = useSelector(state => state.info.infoPro);
-
-  // const profilesList = selectPro.map(([id, value]) => ({
-  //   id,
-  //   ...value,
-  // }));
-
-
-  // const renderItem = ({ item:infoData }) => (
-  //   <ListItem bottomDivider onPress={() => navigation.navigate('Pro',
-  //     {
-  //       item:
-  //       {
-  //         Full_Name: item.Full_Name,
-  //         Address: item.Address,
-  //         Function: item.Function,
-  //         Certification: item.Certification,
-
-  //       }
-  //     }
-  //   )}>
-  //     <Avatar
-  //       // source={{ uri: profilePicture?.meta }}
-  //       source={{ uri: profilePicture }}
-  //       size="medium"
-  //       icon={{ name: 'person', type: 'material', color: 'white' }}
-  //       overlayContainerStyle={{ backgroundColor: 'black' }}
-  //       rounded
-  //     />
-  //     <ListItem.Content>
-  //       <ListItem.Title>{item.Full_Name}</ListItem.Title>
-  //       <ListItem.Title>{item.Function}</ListItem.Title>
-  //       <ListItem.Title>{item.Certification}</ListItem.Title>
-  //     </ListItem.Content>
-  //   </ListItem>
-
-  // )
+  
     const renderItem = ({ item }) => (
     <ListItem 
       bottomDivider 
@@ -125,7 +77,7 @@ const Profiles = ({ navigation }) => {
         profileData: item
       })}
     >
-      {/* Avatar with image from combined data */}
+  
       <Avatar
         source={item.profileImage?{ uri: item.profileImage }: require('../assets/images/meal.png')}
         size="medium"
@@ -161,7 +113,7 @@ const Profiles = ({ navigation }) => {
   )
 
 
-  // const renderItem = ({ item }) => (
+ 
   //   <ListItem
   //     bottomDivider
   //     onPress={() =>

@@ -11,23 +11,24 @@ import { useRoute } from '@react-navigation/native';
 
 
 
-
-
 const ScreenWidth = Dimensions.get('window').width;
 const Width = Math.round(ScreenWidth * 1);
 const ScreenHeight = Dimensions.get("window").height;
 const Height = Math.round(ScreenHeight * 0.3);
 
 
-const Pro = ({navigation,route}) => {
+const Pro = (prop) => {
+  const {navigation,route}= prop
+  
   const routy = useRoute();
   console.log('routeObject',routy)
-  const { profileId } = route.params;
-  console.log('routePArams',route?.params);
+  const {profileId}=  route.params
+
+  
 
   const infoSelected = useSelector(state => state.info.infoPro[profileId] || {});
   console.log("Received item in Pro:", infoSelected);
-  const profilePicture = useSelector(state=>state.image.profile[profileId]);
+  const profilePicture = useSelector(state=>state.image.profiles[profileId]);
   console.log('profilePictures', profilePicture);
   const metadata= useSelector(state=>state.meta.metaPro[profileId])
 
@@ -70,78 +71,23 @@ const Pro = ({navigation,route}) => {
     }
   }
 
+   const combinedProfiles = Object.entries(infoSelected).map(([id, info]) => {
+    return {
+      id: id,
+      Full_Name: info.Full_Name,
+      Address: info.Address,
+      Function: info.Function,
+      Certification:info.Certification,
+      profileImage: profilePicture?.[id] ||profilePicture?.uri ||profilePicture||null,
+      profileMeta: metadata?.[id]||metadata?.uri||metadata||null
+                                             
+    };
+  });
+  console.log('Combined Profiles Array:', combinedProfiles);
 
 
-  const data = [
-    {
-      id: 1,
-      Full_Name: 'nanito Nanitosse',
-      title: "hanibal",
-      url: require('../../../assets/images/Hannibal.jpg'),
-      type: 'image',
-      url: require('../../../assets/images/pushup.jpg'),
-      Address: 'inconito',
-      Function: 'Calisthenics',
-      Certification: ' Certification: Nasam'
-    },
-    {
-      id: 2,
-      Full_Name: 'nanito Nanitosse',
-      title: 'Pushup',
-      url: require('../../../assets/images/pushup.jpg'),
-      type: 'image',
-      Address: 'inconito',
-      Function: 'Calisthenics',
-      Certification: ' Certification: Nasam'
-    },
-    {
-      id: 3,
-      Full_Name: 'nanito Nanitosse',
-      title: "hanibal",
-      url: require('../../../assets/videos/nutrution.mp4'),
-      type: 'video',
-      uRL:  require('../../../assets/images/pushup.jpg'),
-      Address: 'inconito',
-      Function: 'Calisthenics',
-      Certification: ' Certification: Nasam',
-    },
-    {
-      id: 4,
-      Full_Name: 'nanito Nanitosse',
-      title: "hanibal",
-      url: require('../../../assets/images/Hannibal.jpg'),
-      type: 'image',
-      uRL:  require('../../../assets/images/pushup.jpg'),
-      Address: 'inconito',
-      Function: 'Calisthenics',
-      Certification: ' Certification: Nasam',
-    },
-    {
-      id: 5,
-      Full_Name: 'nanito Nanitosse',
-      title: "hanibal",
-      url: require('../../../assets/videos/nutrution.mp4'),
-      type: 'video',
-      uRL:  require('../../../assets/images/pushup.jpg'),
-      Address: 'inconito',
-      Function: 'Calisthenics',
-      Certification: ' Certification: Nasam',
-    },
-    {
-      id: 6,
-      Full_Name: 'nanito Nanitosse',
-      title: "hanibal",
-      url: require('../../../assets/images/Hannibal.jpg'),
-      type: 'image',
-      uRL:  require('../../../assets/images/pushup.jpg'),
-      Address: 'inconito',
-      Function: 'Calisthenics',
-      Certification: ' Certification: Nasam',
-    },
 
-  ]
-
-  const renderItem = ({ item }) => (
+  const renderItem = ({item}) => (
 
 
     <View style={{ width: ScreenWidth / 3, height: ScreenWidth / 3, }}>
@@ -149,7 +95,7 @@ const Pro = ({navigation,route}) => {
         {item.type === 'video' ? (
           <Video
             ref={VideoRef}
-            source={item.url}
+            source={{uri:item.profileMeta}}
             rate={1.0}
             volume={1.0}
             isMuted={false}
@@ -161,7 +107,7 @@ const Pro = ({navigation,route}) => {
           />
         ) : (
           <Image
-            source={item.url}
+            source={{uri:item.profileMeta}}
             style={{
               width: '100%',  // Take full width of parent container
               height: '100%', // Take full height of parent container
@@ -225,7 +171,7 @@ const Pro = ({navigation,route}) => {
 
         <View style={styles.image}>
           <Image
-            source={{uri: profilePicture?.meta}}
+            source={{uri: profilePicture}}
             style={styles.image}
             defaultSource={require('../../../assets/images/salad.jpg')}
           />
@@ -234,10 +180,10 @@ const Pro = ({navigation,route}) => {
           <TouchableOpacity  onPress={()=>navigation.navigate("EditPro")}>
             <Text  style ={styles.Edit}> EDITE PROFILE</Text>
           </TouchableOpacity>
-          <Text style={styles.text}>{item.Full_Name}</Text>
-          <Text style={styles.text}>{item.Address}</Text>
-          <Text style={styles.text}>{item.Function}</Text>
-          <Text style={styles.text}>{item.Certification}</Text>
+          <Text style={styles.text}>{infoSelected.Full_Name}</Text>
+          <Text style={styles.text}>{infoSelected.Address}</Text>
+          <Text style={styles.text}>{infoSelected.Function}</Text>
+          <Text style={styles.text}>{infoSelected.certification}</Text>
         </View>
         <View style={styles.container}>
           <View style={styles.box}>
@@ -334,7 +280,7 @@ const Pro = ({navigation,route}) => {
           </View>
         </View>
         <FlatList
-          data={data}
+          data={combinedProfiles}
           renderItem={renderItem}
           keyExtractor={(item, index) => index.toString()}
           numColumns={3}
@@ -365,7 +311,7 @@ const Pro = ({navigation,route}) => {
                 />
               ) : (
                 <Image
-                  source={item.url}
+                  source={{uri:metadata}}
                   style={styles.modalMedia}
                 />
               )}
