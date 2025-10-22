@@ -49,7 +49,16 @@
           "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone"
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      "expo-video",
+      "expo-video",
+      {
+        "supportsBackgroundPlayback": true,
+         "supportsPictureInPicture": true
+      }
+      
+
+      
     ]
   }
 }
