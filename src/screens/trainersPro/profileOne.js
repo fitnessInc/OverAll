@@ -8,6 +8,8 @@ import { Button } from 'react-native-elements';
 import { Video } from 'expo-av';
 import { useSelector } from 'react-redux';
 import { useRoute } from '@react-navigation/native';
+import { useEvent } from 'expo';
+import { useVideoPlayer, VideoView } from 'expo-video';
 
 
 
@@ -18,19 +20,34 @@ const Height = Math.round(ScreenHeight * 0.3);
 
 
 const Pro = (prop) => {
-  const {navigation,route}= prop
-  
-  const routy = useRoute();
-  console.log('routeObject',routy)
-  const {profileId}=  route.params
+  const { navigation, route } = prop
 
-  
+  const routy = useRoute();
+  console.log('routeObject', routy)
+  const { profileId } = route.params
+
+
 
   const infoSelected = useSelector(state => state.info.infoPro[profileId] || {});
   console.log("Received item in Pro:", infoSelected);
-  const profilePicture = useSelector(state=>state.image.profiles[profileId]);
+  const profilePicture = useSelector(state => state.image.profiles[profileId]);
   console.log('profilePictures', profilePicture);
-  const metadata= useSelector(state=>state.meta.metaPro[profileId])
+  const metadata = useSelector(state => state.meta.metaPro[profileId]);
+  console.log('meta fro profile', metadata);
+
+
+  const videoRef = useRef(null)
+  const isVideo = metadata?.endsWith(".mp4") || metadata?.endsWith('.mov');
+  const videoSource = isVideo ? metadata : null
+
+  const player = useVideoPlayer(videoSource, playerInstance => {
+    playerInstance.loop = true;
+    playerInstance.play();
+    playerInstance.pause()
+
+
+  });
+
 
   const [modal, setModal] = useState(false);
   const [selectedValue, setSelectedValue] = useState("default");
@@ -40,7 +57,7 @@ const Pro = (prop) => {
   const [showPicker, setShowpicker] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState(null);
-  const [status,SetStatus]= useState({});
+  const [status, SetStatus] = useState({});
 
   const VideoRef = useRef(null);
   const toggleExpand = () => {
@@ -55,66 +72,52 @@ const Pro = (prop) => {
     console.log(selectedDate)
   };
 
-  const handlePlaybackStatus=(status)=>{
-    SetStatus(status)
-  };
-
-  const handlePlayPause=()=>{
-    if(VideoRef.current){
-      if(status.isPlaying){
-         VideoRef.current.pauseAsync();
-      }else{
-        VideoRef.current.playAsync();
 
 
-      }
-    }
-  }
 
-   const combinedProfiles = Object.entries(infoSelected).map(([id, info]) => {
+
+  const combinedProfiles = Object.entries(infoSelected).map(([id, info]) => {
     return {
       id: id,
       Full_Name: info.Full_Name,
       Address: info.Address,
       Function: info.Function,
-      Certification:info.Certification,
-      profileImage: profilePicture?.[id] ||profilePicture?.uri ||profilePicture||null,
-      profileMeta: metadata?.[id]||metadata?.uri||metadata||null
-                                             
+      Certification: info.Certification,
+      profileImage: profilePicture?.[id] || profilePicture?.uri || profilePicture || null,
+      profileMeta: metadata?.[id] || metadata?.uri || metadata || null
+
     };
   });
   console.log('Combined Profiles Array:', combinedProfiles);
 
 
 
-  const renderItem = ({item}) => (
+  const renderItem = ({ item }) => (
 
 
     <View style={{ width: ScreenWidth / 3, height: ScreenWidth / 3, }}>
       <TouchableOpacity onPress={() => OpenModal(item)} >
-        {item.type === 'video' ? (
-          <Video
-            ref={VideoRef}
-            source={{uri:item.profileMeta}}
-            rate={1.0}
-            volume={1.0}
-            isMuted={false}
-            resizeMode="cover"
-            shouldPlay={false}
-            useNativeControls
+        {isVideo?(
+          <VideoView
+            ref={videoRef}         // Important!
+            source={{videoSource}}
+            player={ player }
+            nativeControls
+            allowsFullscreen
+            allowsPictureInPicture
             style={{ width: '100%', height: '100%', borderRadius: 15 }}
 
           />
-        ) : (
-          <Image
-            source={{uri:item.profileMeta}}
-            style={{
-              width: '100%',  // Take full width of parent container
-              height: '100%', // Take full height of parent container
-              backgroundColor: 'transparent',
-              borderRadius: 15,
-            }}
-          />
+         ): (
+        <Image
+          source={{ uri: item.profileMeta }}
+          style={{
+            width: '100%',  // Take full width of parent container
+            height: '100%', // Take full height of parent container
+            backgroundColor: 'transparent',
+            borderRadius: 15,
+          }}
+        />
         )}
 
 
@@ -163,7 +166,7 @@ const Pro = (prop) => {
     )
 
   };
-    
+
 
   return (
     <SafeAreaView>
@@ -171,14 +174,14 @@ const Pro = (prop) => {
 
         <View style={styles.image}>
           <Image
-            source={{uri: profilePicture}}
+            source={{ uri: profilePicture }}
             style={styles.image}
             defaultSource={require('../../../assets/images/salad.jpg')}
           />
         </View>
         <View style={styles.info}>
-          <TouchableOpacity  onPress={()=>navigation.navigate("EditPro")}>
-            <Text  style ={styles.Edit}> EDITE PROFILE</Text>
+          <TouchableOpacity onPress={() => navigation.navigate("EditPro")}>
+            <Text style={styles.Edit}> EDITE PROFILE</Text>
           </TouchableOpacity>
           <Text style={styles.text}>{infoSelected.Full_Name}</Text>
           <Text style={styles.text}>{infoSelected.Address}</Text>
@@ -297,21 +300,21 @@ const Pro = (prop) => {
             <View style={styles.modalContainer}>
               {selectedMedia.type === 'video' ? (
                 <Video
-                  source={ selectedMedia.url }
+                  source={selectedMedia.url}
                   style={styles.VideoModal}
                   resizeMode="contain"
-                  controls={true} 
+                  controls={true}
                   ref={VideoRef}
                   rate={1.0}
                   volume={1.0}
                   isMuted={false}
                   shouldPlay={false}
                   useNativeControls
-                  
+
                 />
               ) : (
                 <Image
-                  source={{uri:metadata}}
+                  source={{ uri: metadata }}
                   style={styles.modalMedia}
                 />
               )}
@@ -346,11 +349,11 @@ const styles = StyleSheet.create({
 
   },
   text: {
-    fontSize:15,
+    fontSize: 15,
     fontWeight: "bold",
-    fontStyle:"italic",
-    fontWeight:'condensed'
-    
+    fontStyle: "italic",
+    fontWeight: 'condensed'
+
 
   },
   container: {
@@ -462,18 +465,18 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
   },
-  VideoModal:{
+  VideoModal: {
     width: ScreenWidth,
     height: ScreenHeight,
   },
-  Edit:{
+  Edit: {
     color: "black",
-    fontSize:25,
+    fontSize: 25,
     fontWeight: "bold",
-    fontStyle:"italic",
-    fontWeight:'condensed'
+    fontStyle: "italic",
+    fontWeight: 'condensed'
 
-       
+
 
 
   }

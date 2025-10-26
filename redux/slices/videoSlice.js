@@ -3,9 +3,9 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   metaPro: {
-    'user1': 'https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
+    'user1': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
     'user2': 'https://randomuser.me/api/portraits/women/2.jpg',
-    'user3': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    'user3': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.m',
     'user4': 'https://randomuser.me/api/portraits/men/1.jpg',
   }
 };
