@@ -1,11 +1,13 @@
 
 import { createSlice } from '@reduxjs/toolkit';
+import {Asset } from 'expo-asset';
+const videoAsset = Asset.fromModule(require('../../assets/videos/nutrution.mp4'))
 
 const initialState = {
   metaPro: {
-    'user1': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-    'user2': 'https://randomuser.me/api/portraits/women/2.jpg',
-    'user3': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.m',
+    'user1': '../../assets/videos/nutrution.mp4',
+    'user2': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    'user3': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
     'user4': 'https://randomuser.me/api/portraits/men/1.jpg',
   }
 };
