@@ -19,12 +19,26 @@ import Food from '../screens/food';
 import Order from '../screens/Order';
 import Profiles from '../screens/Profiles';
 import Pro from '../screens/trainersPro/profileOne'
-import EditPro from '../screens/trainersPro/trainerEdiPro'
+import EditPro from '../screens/trainersPro/trainerEdiPro';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 
 
 
 const Tab = createBottomTabNavigator();
+const ProfileStack = createNativeStackNavigator();
+
+function ProfileStackScreen() {
+    return (
+        <ProfileStack.Navigator>
+            <ProfileStack.Screen name="Food" component={Food} options={{ headerShown: false }} />
+            <ProfileStack.Screen name="Profiles" component={Profiles} options={{ headerShown: false }} />
+            <ProfileStack.Screen name="Pro" component={Pro} options={{ headerShown: false }} />
+            <ProfileStack.Screen name="EditPro" component={EditPro} options={{ headerShown: false }} />
+            
+        </ProfileStack.Navigator>
+    );
+}
 
 
 export default function Navigation() {
@@ -48,18 +62,18 @@ export default function Navigation() {
                     } else if (route.name == "Food") {
                         iconName: () => null;
 
-                    }else if (route.name==='Order'){
-                        iconName:()=>null;
-                    }else if(route.name ==='Profiles'){
+                    } else if (route.name === 'Order') {
+                        iconName: () => null;
+                    } else if (route.name === 'Profiles') {
                         iconName: () => null;
 
-                    }else{
-                        iconName= Images.chatIcon
+                    } else {
+                        iconName = Images.chatIcon
                     }
 
-                    return <Image source={iconName} style={{ tintColor: focused ? 'white:' : "white", width:30,height:30 }}
+                    return <Image source={iconName} style={{ tintColor: focused ? 'white:' : "white", width: 30, height: 30 }}
                     />;
-                    
+
                 },
 
                 tabBarInactiveTintColor: 'black',
@@ -87,7 +101,7 @@ export default function Navigation() {
                 <Tab.Screen name="Chat" component={ChatScreen} options={{ headerShown: false }} />
                 <Tab.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
                 {/* <Tab.Screen name="Logging" component={LoggingScreen} options={{ headerShown: false }} /> */}
-                <Tab.Screen name="Food"
+                {/* <Tab.Screen name="Food"
                     component={Food}
                     options={{
                         headerShown: false,
@@ -113,6 +127,15 @@ export default function Navigation() {
                 />
                 <Tab.Screen name="EditPro"
                     component={EditPro}
+                    options={{
+                        headerShown: false,
+                        tabBarLabel: () => null,
+                        tabBarButton: (props) => null,
+                    }}
+                /> */}
+                <Tab.Screen
+                    name="ProfilesTab"
+                    component={ProfileStackScreen}
                     options={{
                         headerShown: false,
                         tabBarLabel: () => null,

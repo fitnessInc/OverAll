@@ -12,6 +12,7 @@ import { updateInfoPro } from "../../../redux/slices/infoSlice";
 import Pro from "./profileOne";
 import { useRoute } from "@react-navigation/native";
 import { metaProfile } from "../../../redux/slices/videoSlice";
+import { combineReducers } from "@reduxjs/toolkit";
 
 // const data = [
 //     {
@@ -51,21 +52,20 @@ const ScreenHeight = Dimensions.get("window").height;
 const Height = Math.round(ScreenHeight * 0.3);
 
 
-const EditProfile = ({ route,navigation}) => {
-
-
-
+const EditPro = ({ route,navigation}) => {
+    // PARAMS AND USEROUTEHOOK
     const routeHook = useRoute();
     console.log('routeObject',routeHook)
     const dispatch = useDispatch();
     const { profileId, profileData } = route.params;
-
-    // Get data from Redux
+    // Get data from Redux USESELECTOR
     const profileImages = useSelector(state => state.image.profiles[profileId]);
     console.log('image profile', profileImages)
     const infoProfiles = useSelector(state => state.info.infoPro[profileId]);
-    console.log('info', infoPro)
-
+    console.log('info', infoProfiles);
+    const metadata = useSelector(state => state.meta.metaPro[profileId]);
+      console.log('meta fro profile', metadata);
+    //METADATAPICKER
     const pickMedia = async (profileId) => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
@@ -90,18 +90,7 @@ const EditProfile = ({ route,navigation}) => {
         }
     };
 
-    
-    //     //  if (selectedMeta[profileId]) {
-    //     //     dispatch(setProfileMeta({ 
-    //     //      id: profileId, 
-    //     //      meta: selectedMeta[profileId] 
-    //     //     }));
-    //     //    alert('Image saved for profile ' + profileId);
-    //     //  }
-
-    //       return  pickMedia
-    //   };
-
+    // EVENT TO SAVE INFO-PROFILE
     const infoSave = () => {
         // Save all text changes to Redux
         Object.entries(text).forEach(([id, newData]) => {
@@ -119,7 +108,19 @@ const EditProfile = ({ route,navigation}) => {
             navigation.navigate('Profiles', { itemId: firstItemId });
         }, 600);
     };
+    //RENDER ITEM
+    const combinedProfiles = Object.entries(infoProfiles).map(([id, info]) => {
+    return {
+      id: id,
+      Full_Name: infoProfiles.Full_Name,
+      Address: infoProfiles.Address,
+      Function: infoProfiles.Function,
+      Certification: infoProfiles.Certification,
+      profileImage: profileImages?.[id] || profileImages?.uri || profileImages || null,
+      profileMeta: metadata?.[id] || metadata?.uri || metadata || null
 
+    };
+  });
 
 
     const renderItem = ({ item }) => {
@@ -139,7 +140,7 @@ const EditProfile = ({ route,navigation}) => {
                         //             ? { uri: profileImages[item.id] }
                         //             : require('../../../assets/images/food.jpg')
                         // }
-                        source={UserProfiles}
+                        source={{uri:profileImage}}
                         style={styles.profileImage}
                         resizeMode="cover"
                     />
@@ -158,11 +159,11 @@ const EditProfile = ({ route,navigation}) => {
         )
 
     };
-
+    // RETURN
     return (
         <SafeAreaView style={styles.container}>
             <FlatList
-                data={data}
+                data={combinedProfiles}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={styles.listContent}
@@ -261,6 +262,6 @@ const styles = StyleSheet.create({
     },
 });
 
-export default EditProfile;
+export default EditPro;
 
 
