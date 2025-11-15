@@ -167,7 +167,13 @@ const Pro = (prop) => {
           />
         </View>
         <View style={styles.info}>
-          <TouchableOpacity onPress={(item) => navigation.navigate("EditPro",{profileId:item.id,profileData:item})}>
+          <TouchableOpacity onPress={(item) => navigation.navigate("ProfilesTab",{
+              screen:'EditPro',
+              params:{
+                profileId:item.id,
+                profileData:item
+              }
+          })}>
             <Text style={styles.Edit}> EDITE PROFILE</Text>
           </TouchableOpacity>
           <Text style={styles.text}>{infoSelected.Full_Name}</Text>

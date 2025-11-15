@@ -1,5 +1,5 @@
 import { View, Text, SafeAreaView, ScrollView, Image, StyleSheet } from 'react-native'
-import React from 'react'
+import React, { Component } from 'react'
 import { Card } from '@rneui/themed';
 import Calisthenics from "../../assets/images/calisImg.jpg"
 import { Tile } from '@rneui/themed';
@@ -22,7 +22,10 @@ const HomeScreen = ({navigation}) => {
         imageSrc={Calisthenics}
         featured
         height={200}
-         onPress={() => navigation.navigate('Profiles')}
+         onPress={() => navigation.navigate('ProfilesTab',{
+          screen:"Profiles"
+            
+         })}
       />
       
       <View style={styles.space} />

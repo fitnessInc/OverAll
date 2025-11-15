@@ -48,44 +48,48 @@ import { useRoute } from "@react-navigation/native";
 
 
 const Profiles = ({ navigation }) => {
-   const route = useRoute();
-   console.log("objectRoute",route)
+  const route = useRoute();
+  console.log("objectRoute", route)
 
   const profilePicture = useSelector(state => state.image.profiles);
-  const profileInfo= useSelector(state=>state.info.infoPro);
-  console.log('info',profileInfo);
+  const profileInfo = useSelector(state => state.info.infoPro);
+  console.log('info', profileInfo);
   console.log('profile content ', profilePicture)
-  
+
   const combinedProfiles = Object.entries(profileInfo).map(([id, info]) => {
     return {
       id: id,
       Full_Name: info.Full_Name,
       Address: info.Address,
       Function: info.Function,
-      profileImage: profilePicture?.[id] ||profilePicture?.uri ||profilePicture||null
-                                             
+      profileImage: profilePicture?.[id] || profilePicture?.uri || profilePicture || null
+
     };
   });
 
-    console.log('Combined Profiles Array:', combinedProfiles);
-  
-    const renderItem = ({ item }) => (
-    <ListItem 
-      bottomDivider 
-      onPress={() => navigation.navigate('Pro', {
-        profileId: item.id,
-        profileData: item
+  console.log('Combined Profiles Array:', combinedProfiles);
+
+  const renderItem = ({ item }) => (
+    <ListItem
+      bottomDivider
+      onPress={() => navigation.navigate('ProfilesTab', {
+        screen: 'Pro',
+        params: {
+          profileId: item.id,
+          profileData: item
+        }
+
       })}
     >
-  
+
       <Avatar
-        source={item.profileImage?{ uri: item.profileImage }: require('../assets/images/meal.png')}
+        source={item.profileImage ? { uri: item.profileImage } : require('../assets/images/meal.png')}
         size="medium"
         icon={{ name: 'person', type: 'material', color: 'white' }}
         overlayContainerStyle={{ backgroundColor: 'black' }}
         rounded
       />
-      
+
       {/* Profile information from combined data */}
       <ListItem.Content>
         <ListItem.Title>{item.Full_Name}</ListItem.Title>
@@ -102,18 +106,18 @@ const Profiles = ({ navigation }) => {
   return (
     <SafeAreaView
       style={{ flex: 1, marginTop: 70 }}
-    > 
-       <FlatList
+    >
+      <FlatList
         data={combinedProfiles}  // Single combined array
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
       />
-    </SafeAreaView > 
+    </SafeAreaView >
 
   )
 
 
- 
+
   //   <ListItem
   //     bottomDivider
   //     onPress={() =>
@@ -156,7 +160,7 @@ const Profiles = ({ navigation }) => {
   // );
 };
 
- 
+
 
 const styles = StyleSheet.create({
   avatar: {
