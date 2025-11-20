@@ -19,10 +19,10 @@ const Height = Math.round(ScreenHeight * 0.3);
 
 
 
- 
+
 const Pro = (prop) => {
   const { navigation, route } = prop;
-// PARAMS SECTION
+  // PARAMS SECTION
   const routy = useRoute();
   console.log('routeObject', routy)
   const { profileId } = route.params;
@@ -31,17 +31,17 @@ const Pro = (prop) => {
 
   const infoSelected = useSelector(state => state.info.infoPro[profileId] || {});
   console.log("Received item in Pro:", infoSelected);
-  const profilePicture = useSelector(state => state.image.profiles[profileId]);
+  const profilePicture = useSelector(state => state.image.profiles[profileId]||{});
   console.log('profilePictures', profilePicture);
-  const metadata = useSelector(state => state.meta.metaPro[profileId]);
+  const metadata = useSelector(state => state.meta.metaPro[profileId]||{});
   console.log('meta fro profile', metadata);
-  
+
   // VIDEO CONTROLLER INSTENCE SECTION
 
   const videoRef = useRef(null)
   const isVideo = metadata?.endsWith(".mp4") || metadata?.endsWith('.mov');
   const videoSource = isVideo ? metadata : null;
- 
+
   const player = useVideoPlayer(videoSource, player => {
     player.loop = true;
     player.play();
@@ -50,7 +50,7 @@ const Pro = (prop) => {
 
   });
 
-// USE STATE HOOK SECTION
+  // USE STATE HOOK SECTION
   const [modal, setModal] = useState(false);
   const [selectedValue, setSelectedValue] = useState("default");
   const [date, setDate] = useState(new Date());
@@ -60,6 +60,7 @@ const Pro = (prop) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [status, SetStatus] = useState({});
+  const [selectedItem, setSelectedItem] = useState(null)
 
   //   Book NOW EVENT SECTION
   const onChange = (event, selectedDate) => {
@@ -70,11 +71,11 @@ const Pro = (prop) => {
   };
 
 
-//renderItem SECTION
+  //renderItem SECTION
 
   const combinedProfiles = Object.entries(infoSelected).map(([id, info]) => {
     return {
-      id: id,
+      id: profileId,
       Full_Name: infoSelected.Full_Name,
       Address: infoSelected.Address,
       Function: infoSelected.Function,
@@ -89,7 +90,7 @@ const Pro = (prop) => {
 
 
   const renderItem = ({ item }) => {
-  
+
     return (
       <View style={{ width: ScreenWidth / 3, height: ScreenWidth / 3 }}>
         <TouchableOpacity onPress={() => OpenModal(item)}>
@@ -114,18 +115,19 @@ const Pro = (prop) => {
   }
 
 
-// Modal section
+  // Modal section
 
   const OpenModal = (item) => {
     setModalVisible(true);
     setSelectedMedia(item.profileMeta);
+    setSelectedItem(item)
   };
 
   const CloseModal = () => {
     setModalVisible(false);
     setSelectedMedia(null);
   };
- 
+
 
   const openModal = () => {
     setModal(true);
@@ -151,9 +153,9 @@ const Pro = (prop) => {
     )
 
   };
-   const isModalVideo = selectedMedia?.endsWith('.mp4')||selectedMedia?.endsWith(".mov");
+  const isModalVideo = selectedMedia?.endsWith('.mp4') || selectedMedia?.endsWith(".mov");
 
-// RETURN SECTION
+  // RETURN SECTION
 
   return (
     <SafeAreaView>
@@ -167,13 +169,21 @@ const Pro = (prop) => {
           />
         </View>
         <View style={styles.info}>
-          <TouchableOpacity onPress={(item) => navigation.navigate("ProfilesTab",{
-              screen:'EditPro',
-              params:{
-                profileId:item.id,
-                profileData:item
+          <TouchableOpacity onPress={() => {
+            if (!selectedItem) {
+              alert('No profiles available to edit.');
+              return;
+            }
+
+            navigation.navigate("ProfilesTab", {
+              screen: "EditPro",
+              params: {
+                profileId: selectedItem.id,
+                profileData: selectedItem
               }
-          })}>
+            });
+          }}
+          >
             <Text style={styles.Edit}> EDITE PROFILE</Text>
           </TouchableOpacity>
           <Text style={styles.text}>{infoSelected.Full_Name}</Text>
@@ -288,7 +298,7 @@ const Pro = (prop) => {
                   player={player}
                   allowsFullscreen={true}
                   style={styles.expandedMedia}
-                 
+
 
                 />
               ) : (
@@ -304,15 +314,15 @@ const Pro = (prop) => {
           </Modal>
         )}
       </View>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 };
 
 
-        
 
-               
-                  
+
+
+
 
 const styles = StyleSheet.create({
 

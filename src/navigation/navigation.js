@@ -26,17 +26,18 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 
 const Tab = createBottomTabNavigator();
-const ProfileStack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator();
 
 function ProfileStackScreen() {
     return (
-        <ProfileStack.Navigator>
-            <ProfileStack.Screen name="Food" component={Food} options={{ headerShown: false }} />
-            <ProfileStack.Screen name="Profiles" component={Profiles} options={{ headerShown: false }} />
-            <ProfileStack.Screen name="Pro" component={Pro} options={{ headerShown: false }} />
-            <ProfileStack.Screen name="EditPro" component={EditPro} options={{ headerShown: false }} />
-            
-        </ProfileStack.Navigator>
+        
+            <Stack.Navigator>
+                <Stack.Screen name="Food" component={Food} options={{ headerShown: false }} />
+                <Stack.Screen name="Profiles" component={Profiles} options={{ headerShown: false }} />
+                <Stack.Screen name="Pro" component={Pro} options={{ headerShown: false }} />
+                <Stack.Screen name="EditPro" component={EditPro} options={{ headerShown: false }} />
+            </Stack.Navigator>
+        
     );
 }
 
@@ -100,39 +101,6 @@ export default function Navigation() {
                 <Tab.Screen name="Meal" component={CarouselCard} options={{ headerShown: false }} />
                 <Tab.Screen name="Chat" component={ChatScreen} options={{ headerShown: false }} />
                 <Tab.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
-                {/* <Tab.Screen name="Logging" component={LoggingScreen} options={{ headerShown: false }} /> */}
-                {/* <Tab.Screen name="Food"
-                    component={Food}
-                    options={{
-                        headerShown: false,
-                        tabBarLabel: () => null,
-                        tabBarButton: (props) => null,
-                    }}
-                />
-                <Tab.Screen name="Profiles"
-                    component={Profiles}
-                    options={{
-                        headerShown: false,
-                        tabBarLabel: () => null,
-                        tabBarButton: (props) => null,
-                    }}
-                />
-                <Tab.Screen name="Pro"
-                    component={Pro}
-                    options={{
-                        headerShown: false,
-                        tabBarLabel: () => null,
-                        tabBarButton: (props) => null,
-                    }}
-                />
-                <Tab.Screen name="EditPro"
-                    component={EditPro}
-                    options={{
-                        headerShown: false,
-                        tabBarLabel: () => null,
-                        tabBarButton: (props) => null,
-                    }}
-                /> */}
                 <Tab.Screen
                     name="ProfilesTab"
                     component={ProfileStackScreen}

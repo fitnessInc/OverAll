@@ -15,6 +15,7 @@ const imageSlice = createSlice({
   reducers: {
     setProfileMeta: (state, action) => {
       const { id, newImage } = action.payload;
+      state.profiles[id] = newImage;
       console.log('setProfileMeta',{id,newImage})
     },
     clearProfileMeta: (state, action) => {

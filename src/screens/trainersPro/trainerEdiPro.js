@@ -10,11 +10,12 @@ import { useSelector, useDispatch } from "react-redux";
 import { setProfileMeta, clearProfileMeta } from "../../../redux/slices/imageSlice";
 import { updateInfoPro } from "../../../redux/slices/infoSlice";
 import Pro from "./profileOne";
-import { useRoute } from "@react-navigation/native";
+import { useRoute, useNavigation } from "@react-navigation/native";
 import { metaProfile } from "../../../redux/slices/videoSlice";
 import { combineReducers } from "@reduxjs/toolkit";
 
-// const data = [
+
+
 //     {
 //         id: 'user1',
 //         Full_Name: 'nanito',
@@ -52,19 +53,24 @@ const ScreenHeight = Dimensions.get("window").height;
 const Height = Math.round(ScreenHeight * 0.3);
 
 
-const EditPro = ({ route,navigation}) => {
-    // PARAMS AND USEROUTEHOOK
-    const routeHook = useRoute();
-    console.log('routeObject',routeHook)
+const EditPro = (prop) => {
+
+    // const safeParams = route?.params?.params || {};
+    const navigation = useNavigation();
+    const route = useRoute();
+    console.log('routeObject', route)
     const dispatch = useDispatch();
-    const { profileId, profileData } = route.params;
-    // Get data from Redux USESELECTOR
-    const profileImages = useSelector(state => state.image.profiles[profileId]);
-    console.log('image profile', profileImages)
-    const infoProfiles = useSelector(state => state.info.infoPro[profileId]);
-    console.log('info', infoProfiles);
-    const metadata = useSelector(state => state.meta.metaPro[profileId]);
-      console.log('meta fro profile', metadata);
+    const { profileId, profileData } = route.params || {};
+    console.log('profileId:', profileId);
+    console.log('profileData', profileData);
+
+    //  USESELECTOR SECTION
+    const profileImages = useSelector(state => state.image.profiles[profileId] || {});
+    console.log('ProfileImages:', profileImages)
+    const infoProfiles = useSelector(state => state.info.infoPro[profileId] || {});
+    console.log('infoProfiles:', infoProfiles);
+    const metadata = useSelector(state => state.meta.metaPro[profileId] || {});
+    console.log('metadata', metadata);
     //METADATAPICKER
     const pickMedia = async (profileId) => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -74,7 +80,7 @@ const EditPro = ({ route,navigation}) => {
         }
 
         const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            mediaTypes: ImagePicker.MediaType,
             allowsEditing: true,
             aspect: [4, 3],
             quality: 1,
@@ -102,45 +108,47 @@ const EditPro = ({ route,navigation}) => {
         // Navigate to profile screen
         const firstItemId = Object.keys(text)[0] || data[0].id;
 
-        navigation.navigate('Pro', { itemId: firstItemId });
+        navigation.navigate('ProfilesTab', {
+            screen: 'Pro',
+            params: {
+                itemId: firstItemId
+            }
+        });
 
         setTimeout(() => {
-            navigation.navigate('Profiles', { itemId: firstItemId });
+            navigation.navigate('ProfilesTab', {
+                screen: 'Profiles',
+                params: {
+                    itemId: firstItemId
+
+                }
+            });
         }, 600);
     };
     //RENDER ITEM
     const combinedProfiles = Object.entries(infoProfiles).map(([id, info]) => {
-    return {
-      id: id,
-      Full_Name: infoProfiles.Full_Name,
-      Address: infoProfiles.Address,
-      Function: infoProfiles.Function,
-      Certification: infoProfiles.Certification,
-      profileImage: profileImages?.[id] || profileImages?.uri || profileImages || null,
-      profileMeta: metadata?.[id] || metadata?.uri || metadata || null
+        return {
+            id: profileId,
+            Full_Name: infoProfiles.Full_Name,
+            Address: infoProfiles.Address,
+            Function: infoProfiles.Function,
+            Certification: infoProfiles.Certification,
+            profileImage: profileImages?.[id] || profileImages?.uri || profileImages || null,
+            profileMeta: metadata?.[id] || metadata?.uri || metadata || null
 
-    };
-  });
+        };
+    });
 
 
     const renderItem = ({ item }) => {
 
-        const UserId = item.id;
-        const UserProfiles = profileImages[UserId]
-
+       
         return (
             <View style={styles.profileContainer}>
                 {/* Profile Image Section */}
                 <View style={styles.imageSection}>
                     <Image
-                        // source={
-                        //     selectedMeta[item.id]
-                        //         ? { uri: selectedMeta[item.id] }
-                        //         : profileImages[item.id]
-                        //             ? { uri: profileImages[item.id] }
-                        //             : require('../../../assets/images/food.jpg')
-                        // }
-                        source={{uri:profileImage}}
+                        source={{ uri: item.profileImage }}
                         style={styles.profileImage}
                         resizeMode="cover"
                     />
@@ -150,10 +158,10 @@ const EditPro = ({ route,navigation}) => {
                     >
                         <Text style={styles.buttonText}>Pick Image</Text>
                     </TouchableOpacity>
-                   
+
                 </View>
 
-               
+
             </View>
 
         )
