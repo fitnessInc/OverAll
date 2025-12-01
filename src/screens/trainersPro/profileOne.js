@@ -9,6 +9,8 @@ import { useSelector } from 'react-redux';
 import { useRoute } from '@react-navigation/native';
 import { useEvent } from 'expo';
 import { useVideoPlayer, VideoView } from 'expo-video';
+import { setSelectedProfile } from '../../../redux/slices/selectedSlice';
+import { useDispatch } from 'react-redux';
 
 
 
@@ -27,15 +29,19 @@ const Pro = (prop) => {
   console.log('routeObject', routy)
   const { profileId } = route.params;
 
+  // Dispatch;
+  const dispatch = useDispatch();
+
   // USESELECTOR SECTION
 
   const infoSelected = useSelector(state => state.info.infoPro[profileId] || {});
   console.log("Received item in Pro:", infoSelected);
-  const profilePicture = useSelector(state => state.image.profiles[profileId]||{});
+  const profilePicture = useSelector(state => state.image.profiles[profileId] || {});
   console.log('profilePictures', profilePicture);
-  const metadata = useSelector(state => state.meta.metaPro[profileId]||{});
+  const metadata = useSelector(state => state.meta.metaPro[profileId] || {});
   console.log('meta fro profile', metadata);
-
+  const ProfileSelected = useSelector(state => state.proSelected.selectedProfile);
+  console.log("the profile selected:", ProfileSelected)
   // VIDEO CONTROLLER INSTENCE SECTION
 
   const videoRef = useRef(null)
@@ -60,7 +66,7 @@ const Pro = (prop) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [status, SetStatus] = useState({});
-  const [selectedItem, setSelectedItem] = useState(null)
+  // const [selectedItem, setSelectedItem] = useState(null)
 
   //   Book NOW EVENT SECTION
   const onChange = (event, selectedDate) => {
@@ -120,7 +126,7 @@ const Pro = (prop) => {
   const OpenModal = (item) => {
     setModalVisible(true);
     setSelectedMedia(item.profileMeta);
-    setSelectedItem(item)
+
   };
 
   const CloseModal = () => {
@@ -169,7 +175,22 @@ const Pro = (prop) => {
           />
         </View>
         <View style={styles.info}>
-          <TouchableOpacity onPress={() => {
+          <TouchableOpacity
+            onPress={()=>{
+            //  let  item = null;
+            // if (combinedProfiles.length === 0) {
+            //   alert("No data available");
+            // } else if (combinedProfiles.length > 0) {
+            //    item = combinedProfiles[0];
+            if (combinedProfiles===0){
+              alert ('no data my friend');
+              return
+            }
+             const item = combinedProfiles[0]
+              
+            
+            dispatch(setSelectedProfile({ id: item.id, selectedPro: item }));
+            const selectedItem = ProfileSelected[item.id]
             if (!selectedItem) {
               alert('No profiles available to edit.');
               return;
@@ -188,8 +209,8 @@ const Pro = (prop) => {
           </TouchableOpacity>
           <Text style={styles.text}>{infoSelected.Full_Name}</Text>
           <Text style={styles.text}>{infoSelected.Address}</Text>
+          <Text style={styles.text}>{infoSelected.Certification}</Text>
           <Text style={styles.text}>{infoSelected.Function}</Text>
-          <Text style={styles.text}>{infoSelected.certification}</Text>
         </View>
         <View style={styles.container}>
           <View style={styles.box}>

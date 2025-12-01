@@ -16,6 +16,7 @@ import { combineReducers } from "@reduxjs/toolkit";
 
 
 
+
 //     {
 //         id: 'user1',
 //         Full_Name: 'nanito',
@@ -64,6 +65,12 @@ const EditPro = (prop) => {
     console.log('profileId:', profileId);
     console.log('profileData', profileData);
 
+    // useState Hook  Section
+    const [Full_Name, setFull_Name] = useState('Edite-fullName');
+    const [Address, setAddress]= useState('Edite_Address');
+    const [Certification, setCertification ]= useState('Edite-Certification');
+    const [Function, setFunction]= useState('Edite_Function')
+
     //  USESELECTOR SECTION
     const profileImages = useSelector(state => state.image.profiles[profileId] || {});
     console.log('ProfileImages:', profileImages)
@@ -88,7 +95,7 @@ const EditPro = (prop) => {
 
         if (!result.canceled && result.assets?.length > 0) {
             const metaUri = result.assets[0].uri;
-            //   setSelectedMeta(prev => ({ ...prev, [profileId]: metaUri }));
+        
             dispatch(setProfileMeta({
                 id: profileId,
                 newImage: metaUri
@@ -97,33 +104,43 @@ const EditPro = (prop) => {
     };
 
     // EVENT TO SAVE INFO-PROFILE
+
+    const  newData ={
+        Full_Name,
+         Address,
+         Certification,
+         Function
+    }
+         
+
+         
+    
     const infoSave = () => {
-        // Save all text changes to Redux
-        Object.entries(text).forEach(([id, newData]) => {
-            if (newData && Object.keys(newData).length > 0) {
-                dispatch(updateInfoPro({ id, newData }));
-            }
-        });
+         //Save all text changes to Redux
+        //  Object.entries(newData).forEach(([id, newData]) => {
+        //     if (newData && Object.keys(newData).length > 0) {
+        //          dispatch(updateInfoPro({ id:profileId, newData }));
+        //      }
+        //  });
 
         // Navigate to profile screen
-        const firstItemId = Object.keys(text)[0] || data[0].id;
+        // const firstItemId = Object.keys(updateInfo)[0] || data[0].id;
+         dispatch(updateInfoPro({id:profileId,newData}))
 
         navigation.navigate('ProfilesTab', {
-            screen: 'Pro',
-            params: {
-                itemId: firstItemId
-            }
+            screen: 'Profiles',
+            
         });
 
-        setTimeout(() => {
-            navigation.navigate('ProfilesTab', {
-                screen: 'Profiles',
-                params: {
-                    itemId: firstItemId
+        // setTimeout(() => {
+        //     navigation.navigate('ProfilesTab', {
+        //         screen: 'Profiles',
+        //         params: {
+        //             itemId: firstItemId
 
-                }
-            });
-        }, 600);
+        //         }
+        //     });
+        // }, 600);
     };
     //RENDER ITEM
     const combinedProfiles = Object.entries(infoProfiles).map(([id, info]) => {
@@ -160,8 +177,28 @@ const EditPro = (prop) => {
                     </TouchableOpacity>
 
                 </View>
-
-
+                <View>
+                    <TextInput
+                    style= {styles.input}
+                    onChangeText={setFull_Name}
+                    value={Full_Name}
+                    />
+                    <TextInput
+                      style= {styles.input}
+                      onChangeText={setAddress}
+                      value={Address}
+                    />
+                    <TextInput
+                      style= {styles.input}
+                      onChangeText={setCertification}
+                      value={Certification}
+                    />
+                    <TextInput
+                      style= {styles.input}
+                      onChangeText={setFunction}
+                      value={Function}
+                    />
+                </View>
             </View>
 
         )
@@ -268,6 +305,12 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
     },
+    input: {
+    padding: 10,
+    borderColor: '#000',
+    borderWidth: 1,
+    margin: 12,
+  },
 });
 
 export default EditPro;
