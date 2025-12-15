@@ -3,21 +3,17 @@ import { createSlice } from '@reduxjs/toolkit';
 import { Asset } from 'expo-asset';
 const videoAsset = Asset.fromModule(require('../../assets/videos/nutrution.mp4'))
 
-// const initialState = {
-//   metaPro: {
-//     'user1': '../../assets/videos/nutrution.mp4',
-//     'user2': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-//     'user3': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-//     'user4': 'https://randomuser.me/api/portraits/men/1.jpg',
-//   }
-// };
 
 const initialState = {
   metaPro: {
     user1: [
-      '../../assets/videos/nutrution.mp4',
+     'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+       'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
       'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
       'https://randomuser.me/api/portraits/men/1.jpg',
+       'https://randomuser.me/api/portraits/men/1.jpg',
+        'https://randomuser.me/api/portraits/men/1.jpg',
     ],
     user2: [
       '../../assets/videos/nutrution.mp4',
@@ -26,9 +22,25 @@ const initialState = {
 
     ],
     user3: [
-      '../../assets/videos/nutrution.mp4',
+      
+      'https://randomuser.me/api/portraits/men/1.jpg',
+      'https://randomuser.me/api/portraits/men/1.jpg',
+      'https://randomuser.me/api/portraits/men/1.jpg',
+      'https://randomuser.me/api/portraits/men/1.jpg',
+      'https://randomuser.me/api/portraits/men/1.jpg',
+      'https://randomuser.me/api/portraits/men/1.jpg',
+      'https://randomuser.me/api/portraits/men/1.jpg',
+      'https://randomuser.me/api/portraits/men/1.jpg',
+
+    ],
+    user4:[
+      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+       'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
       'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
       'https://randomuser.me/api/portraits/men/1.jpg',
+       'https://randomuser.me/api/portraits/men/1.jpg',
+        'https://randomuser.me/api/portraits/men/1.jpg',
 
     ]
   }

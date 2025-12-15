@@ -1,5 +1,5 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect,useMemo } from 'react';
 import { View, Text, Image, StyleSheet, Dimensions, SafeAreaView, TouchableOpacity, Modal, FlatList, } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Picker } from '@react-native-picker/picker';
@@ -11,6 +11,8 @@ import { useEvent } from 'expo';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { setSelectedProfile } from '../../../redux/slices/selectedSlice';
 import { useDispatch } from 'react-redux';
+import * as VideoThumbnails from 'expo-video-thumbnails';
+import * as FileSystem from 'expo-file-system';
 
 
 
@@ -31,31 +33,6 @@ const Pro = (prop) => {
 
   // Dispatch;
   const dispatch = useDispatch();
-
-  // USESELECTOR SECTION
-
-  const infoSelected = useSelector(state => state.info.infoPro[profileId] || {});
-  console.log("Received item in Pro:", infoSelected);
-  const profilePicture = useSelector(state => state.image.profiles[profileId] || {});
-  console.log('profilePictures', profilePicture);
-  const metadata = useSelector(state => state.meta.metaPro[profileId] || {});
-  console.log('meta fro profile', metadata);
-  const ProfileSelected = useSelector(state => state.proSelected.selectedProfile);
-  console.log("the profile selected:", ProfileSelected)
-  // VIDEO CONTROLLER INSTENCE SECTION
-
-  const videoRef = useRef(null)
-  const isVideo = metadata?.endsWith(".mp4") || metadata?.endsWith('.mov');
-  const videoSource = isVideo ? metadata : null;
-
-  const player = useVideoPlayer(videoSource, player => {
-    player.loop = true;
-    player.play();
-    player.pause()
-
-
-  });
-
   // USE STATE HOOK SECTION
   const [modal, setModal] = useState(false);
   const [selectedValue, setSelectedValue] = useState("default");
@@ -66,9 +43,54 @@ const Pro = (prop) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [status, SetStatus] = useState({});
+  const [image, setImage] = useState(null);
+  const [combinedProfiles, setCombinedProfiles] = useState([])
   // const [selectedItem, setSelectedItem] = useState(null)
 
-  //   Book NOW EVENT SECTION
+  // USESELECTOR SECTION
+
+  const infoSelected = useSelector(state => state.info.infoPro[profileId] || {});
+  console.log("Received item in Pro:", infoSelected);
+  const profilePicture = useSelector(state => state.image.profiles[profileId] || {});
+  console.log('profilePictures', profilePicture);
+  const metadata = useSelector(state => state.meta.metaPro[profileId] || []);
+  console.log('meta fro profile', metadata);
+  const ProfileSelected = useSelector(state => state.proSelected.selectedProfile);
+  console.log("the profile selected:", ProfileSelected)
+  // VIDEO CONTROLLER INSTENCE SECTION
+
+  const videoRef = useRef(null)
+  const isVideo = metadata.map(mediaUri => {
+    if (typeof mediaUri !== 'string') return null;
+
+    const lowerUri = mediaUri.toLowerCase();
+
+    if (lowerUri.endsWith('.mp4') ||
+      lowerUri.endsWith('.mov') ||
+      lowerUri.endsWith('.mkv') ||
+      lowerUri.endsWith('.webm')) {
+      return mediaUri;
+    }
+
+    return null;
+  });
+  // const videoSet = new Set(isVideo.filter(uri => uri))
+  const videoSet = useMemo(() => {
+    const isVideo = metadata.map(mediaUri => {
+      if (typeof mediaUri !== 'string') return null;
+      const lowerUri = mediaUri.toLowerCase();
+      return (lowerUri.endsWith('.mp4') ||
+        lowerUri.endsWith('.mov') ||
+        lowerUri.endsWith('.mkv') ||
+        lowerUri.endsWith('.webm')) ? mediaUri : null;
+    });
+    return new Set(isVideo.filter(uri => uri));
+  }, [metadata]);
+
+  
+
+
+ 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setDate(currentDate);
@@ -76,56 +98,142 @@ const Pro = (prop) => {
     console.log(selectedDate)
   };
 
-
   //renderItem SECTION
 
-  const combinedProfiles = Object.entries(infoSelected).map(([id, info]) => {
-    return {
-      id: profileId,
+  useEffect(() => {
+
+    var isMount = true
+    const mapped = metadata.map((mediaUri, index) => ({
+      id: `${profileId}-${index}`,
       Full_Name: infoSelected.Full_Name,
       Address: infoSelected.Address,
       Function: infoSelected.Function,
       Certification: infoSelected.Certification,
-      profileImage: profilePicture?.[id] || profilePicture?.uri || profilePicture || null,
-      profileMeta: metadata?.[id] || metadata?.uri || metadata || null
+      profileImage: profilePicture || null,
+      profileMeta: videoSet.has(mediaUri) ? null : mediaUri,
+      video: videoSet.has(mediaUri) ? mediaUri : null,
+      videoThumbnail: null
 
-    };
-  });
+    }));
+    if (isMount) {
+      setCombinedProfiles(mapped)
+    }
+
+  }, [metadata, infoSelected, videoSet, profileId,profilePicture])
   console.log('Combined Profiles Array:', combinedProfiles);
 
+ useEffect(() => {
+  let isMounted = true;
+  const abort = new AbortController();
+  
+  // Store generated thumbnail URIs for cleanup
+  const generatedThumbnails = new Set();
 
+  const generateThumbnail = async () => {
+    try {
+      // Process only a few items at a time (PREVENTS MEMORY OVERLOAD)
+      const itemsToProcess = combinedProfiles
+        .filter(item => item.video && !item.videoThumbnail)
+        .slice(0, 3); // LIMIT CONCURRENT PROCESSING!
+
+      if (itemsToProcess.length === 0) return;
+
+      const updatedMeta = [...combinedProfiles];
+      
+      // Process sequentially, not all at once
+      for (const item of itemsToProcess) {
+        if (!isMounted || abort.signal.aborted) break;
+
+        try {
+          const { uri } = await VideoThumbnails.getThumbnailAsync(item.video, {
+            time: 26000, // Reduced from 25000ms (25s) to 1000ms (1s) - earlier frame
+            quality: 0.6, // ADD QUALITY LIMIT
+          });
+
+          if (isMounted && !abort.signal.aborted) {
+            generatedThumbnails.add(uri);
+            
+            // Update only this specific item
+            const index = updatedMeta.findIndex(p => p.id === item.id);
+            if (index !== -1) {
+              updatedMeta[index] = { ...updatedMeta[index], videoThumbnail: uri };
+              
+              // Update state immediately for this item (not all at once)
+              setCombinedProfiles([...updatedMeta]);
+            }
+          }
+        } catch (e) {
+          if (e.name !== 'AbortError') {
+            console.log("Thumbnail generation failed for:", item.video, e);
+          }
+        }
+      }
+    } catch (e) {
+      if (isMounted && e.name !== 'AbortError') {
+        console.log("Error generating thumbnails:", e);
+      }
+    }
+  };
+
+  // Clean up function
+  const cleanupThumbnails = async () => {
+    console.log('Cleaning up thumbnails...');
+    for (const uri of generatedThumbnails) {
+      try {
+        if (uri && uri.startsWith('file://')) {
+          await FileSystem.deleteAsync(uri, { idempotent: true });
+        }
+      } catch (error) {
+        console.log('Failed to delete thumbnail:', uri, error);
+      }
+    }
+    generatedThumbnails.clear();
+  };
+
+  // Generate thumbnails only if needed
+  const hasUnprocessedVideos = combinedProfiles.some(
+    item => item.video && !item.videoThumbnail
+  );
+  
+  if (hasUnprocessedVideos) {
+    generateThumbnail();
+  }
+
+  return () => {
+    isMounted = false;
+    abort.abort();
+    
+    // Clean up on unmount
+    cleanupThumbnails();
+  };
+}, [combinedProfiles]); // Add dependency
+
+  
 
   const renderItem = ({ item }) => {
+    // Determine the URI to display
+    const displayUri = item.video ? item.videoThumbnail : item.profileMeta;
 
     return (
       <View style={{ width: ScreenWidth / 3, height: ScreenWidth / 3 }}>
         <TouchableOpacity onPress={() => OpenModal(item)}>
-          {isVideo ? (
-            <VideoView
-              player={player}
-              nativeControll
-              style={{ width: '100%', height: '100%', borderRadius: 14 }}
-            />
-          ) : (
+          {displayUri && (
             <Image
-              source={{ uri: item.profileMeta }}
+              source={{ uri: displayUri }}
               style={{ width: '100%', height: '100%', borderRadius: 15 }}
             />
           )}
         </TouchableOpacity>
       </View>
     );
-
-
-
-  }
+  };
 
 
   // Modal section
 
   const OpenModal = (item) => {
     setModalVisible(true);
-    setSelectedMedia(item.profileMeta);
+    setSelectedMedia(item);
 
   };
 
@@ -159,7 +267,15 @@ const Pro = (prop) => {
     )
 
   };
-  const isModalVideo = selectedMedia?.endsWith('.mp4') || selectedMedia?.endsWith(".mov");
+  // const isModalVideo = selectedMedia?.endsWith('.mp4') || selectedMedia?.endsWith(".mov");
+  const isModalVideo = selectedMedia?.video != null;
+
+  const player = isModalVideo
+    ? useVideoPlayer(selectedMedia.video, (player) => {
+      player.loop = true;
+      player.play();
+    })
+    : null;
 
   // RETURN SECTION
 
@@ -176,34 +292,30 @@ const Pro = (prop) => {
         </View>
         <View style={styles.info}>
           <TouchableOpacity
-            onPress={()=>{
-            //  let  item = null;
-            // if (combinedProfiles.length === 0) {
-            //   alert("No data available");
-            // } else if (combinedProfiles.length > 0) {
-            //    item = combinedProfiles[0];
-            if (combinedProfiles===0){
-              alert ('no data my friend');
-              return
-            }
-             const item = combinedProfiles[0]
-              
-            
-            dispatch(setSelectedProfile({ id: item.id, selectedPro: item }));
-            const selectedItem = ProfileSelected[item.id]
-            if (!selectedItem) {
-              alert('No profiles available to edit.');
-              return;
-            }
+            onPress={() => {
 
-            navigation.navigate("ProfilesTab", {
-              screen: "EditPro",
-              params: {
-                profileId: selectedItem.id,
-                profileData: selectedItem
+              if (combinedProfiles === 0) {
+                alert('no data my friend');
+                return
               }
-            });
-          }}
+              const item = combinedProfiles[0]
+
+
+              dispatch(setSelectedProfile({ id: item.id, selectedPro: item }));
+              const selectedItem = ProfileSelected[item.id]
+              if (!selectedItem) {
+                alert('No profiles available to edit.');
+                return;
+              }
+
+              navigation.navigate("ProfilesTab", {
+                screen: "EditPro",
+                params: {
+                  profileId: selectedItem.id,
+                  profileData: selectedItem
+                }
+              });
+            }}
           >
             <Text style={styles.Edit}> EDITE PROFILE</Text>
           </TouchableOpacity>
@@ -314,7 +426,7 @@ const Pro = (prop) => {
             animationType="fade"
           >
             <View style={styles.modalContainer}>
-              {isModalVideo ? (
+              {selectedMedia.video ? (
                 <VideoView
                   player={player}
                   allowsFullscreen={true}
@@ -324,7 +436,7 @@ const Pro = (prop) => {
                 />
               ) : (
                 <Image
-                  source={{ uri: metadata }}
+                  source={{ uri: selectedMedia.profileMeta }}
                   style={styles.modalMedia}
                 />
               )}
