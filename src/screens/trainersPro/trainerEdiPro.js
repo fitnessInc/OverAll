@@ -12,7 +12,7 @@ import { updateInfoPro } from "../../../redux/slices/infoSlice";
 import Pro from "./profileOne";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { metaProfile } from "../../../redux/slices/videoSlice";
-import { combineReducers } from "@reduxjs/toolkit";
+import { combineReducers, isImmutableDefault } from "@reduxjs/toolkit";
 
 
 
@@ -66,10 +66,11 @@ const EditPro = (prop) => {
     console.log('profileData', profileData);
 
     // useState Hook  Section
-    const [Full_Name, setFull_Name] = useState('Edite-fullName');
-    const [Address, setAddress]= useState('Edite_Address');
-    const [Certification, setCertification ]= useState('Edite-Certification');
-    const [Function, setFunction]= useState('Edite_Function')
+    const [Full_Name, setFull_Name] = useState('infoProfiles?.Full_Name');
+    const [Address, setAddress] = useState('infoProfiles?.Address');
+    const [Certification, setCertification] = useState('infoProfiles?.Certification');
+    const [Function, setFunction] = useState('infoProfiles?.Function');
+    // const [combinedProfiles, setCombinedProfiles] = useState([])
 
     //  USESELECTOR SECTION
     const profileImages = useSelector(state => state.image.profiles[profileId] || {});
@@ -78,7 +79,14 @@ const EditPro = (prop) => {
     console.log('infoProfiles:', infoProfiles);
     const metadata = useSelector(state => state.meta.metaPro[profileId] || {});
     console.log('metadata', metadata);
+    
     //METADATAPICKER
+
+
+
+
+
+
     const pickMedia = async (profileId) => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
@@ -95,7 +103,7 @@ const EditPro = (prop) => {
 
         if (!result.canceled && result.assets?.length > 0) {
             const metaUri = result.assets[0].uri;
-        
+
             dispatch(setProfileMeta({
                 id: profileId,
                 newImage: metaUri
@@ -105,61 +113,66 @@ const EditPro = (prop) => {
 
     // EVENT TO SAVE INFO-PROFILE
 
-    const  newData ={
+    const newData = {
         Full_Name,
-         Address,
-         Certification,
-         Function
+        Address,
+        Certification,
+        Function
     }
-         
 
-         
-    
+
+
+
     const infoSave = () => {
-         //Save all text changes to Redux
-        //  Object.entries(newData).forEach(([id, newData]) => {
-        //     if (newData && Object.keys(newData).length > 0) {
-        //          dispatch(updateInfoPro({ id:profileId, newData }));
-        //      }
-        //  });
-
-        // Navigate to profile screen
-        // const firstItemId = Object.keys(updateInfo)[0] || data[0].id;
-         dispatch(updateInfoPro({id:profileId,newData}))
+      
+        dispatch(updateInfoPro({ id: profileId, newData }))
+        
 
         navigation.navigate('ProfilesTab', {
             screen: 'Profiles',
-            
+
         });
 
-        // setTimeout(() => {
-        //     navigation.navigate('ProfilesTab', {
-        //         screen: 'Profiles',
-        //         params: {
-        //             itemId: firstItemId
-
-        //         }
-        //     });
-        // }, 600);
-    };
-    //RENDER ITEM
-    const combinedProfiles = Object.entries(infoProfiles).map(([id, info]) => {
-        return {
-            id: profileId,
-            Full_Name: infoProfiles.Full_Name,
-            Address: infoProfiles.Address,
-            Function: infoProfiles.Function,
-            Certification: infoProfiles.Certification,
-            profileImage: profileImages?.[id] || profileImages?.uri || profileImages || null,
-            profileMeta: metadata?.[id] || metadata?.uri || metadata || null
-
-        };
-    });
-
-
-    const renderItem = ({ item }) => {
+        
 
        
+    };
+   
+
+        
+
+
+// const combinedProfiles = Object.entries(infoProfiles).map(([id, index]) => {
+//         return {
+//             id: `${profileId}-${index}`,
+//             Full_Name: infoProfiles.Full_Name,
+//             Address: infoProfiles.Address,
+//             Function: infoProfiles.Function,
+//             Certification: infoProfiles.Certification,
+//             profileImage: profileImages?.[id] || profileImages?.uri || profileImages || null,
+//             profileMeta: metadata?.[id] || metadata?.uri || metadata || null
+
+//         };
+//     });
+const profileImage = profileData?.profileImage || profileImages?.uri || profileImages;
+
+const combinedProfiles = [{
+        id: profileId,
+        Full_Name: infoProfiles.Full_Name || Full_Name, // Fallback to local state
+        Address: infoProfiles.Address || Address,
+        Function: infoProfiles.Function || Function,
+        Certification: infoProfiles.Certification || Certification,
+        profileImage
+    }];
+
+
+
+
+
+    const renderItem = ({item}) => {
+        
+
+
         return (
             <View style={styles.profileContainer}>
                 {/* Profile Image Section */}
@@ -179,24 +192,24 @@ const EditPro = (prop) => {
                 </View>
                 <View>
                     <TextInput
-                    style= {styles.input}
-                    onChangeText={setFull_Name}
-                    value={Full_Name}
+                        style={styles.input}
+                        onChangeText={setFull_Name}
+                        value={Full_Name}
                     />
                     <TextInput
-                      style= {styles.input}
-                      onChangeText={setAddress}
-                      value={Address}
+                        style={styles.input}
+                        onChangeText={setAddress}
+                        value={Address}
                     />
                     <TextInput
-                      style= {styles.input}
-                      onChangeText={setCertification}
-                      value={Certification}
+                        style={styles.input}
+                        onChangeText={setCertification}
+                        value={Certification}
                     />
                     <TextInput
-                      style= {styles.input}
-                      onChangeText={setFunction}
-                      value={Function}
+                        style={styles.input}
+                        onChangeText={setFunction}
+                        value={Function}
                     />
                 </View>
             </View>
@@ -306,11 +319,11 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     input: {
-    padding: 10,
-    borderColor: '#000',
-    borderWidth: 1,
-    margin: 12,
-  },
+        padding: 10,
+        borderColor: '#000',
+        borderWidth: 1,
+        margin: 12,
+    },
 });
 
 export default EditPro;
