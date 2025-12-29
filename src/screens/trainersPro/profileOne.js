@@ -19,7 +19,7 @@ import * as FileSystem from 'expo-file-system';
 const ScreenWidth = Dimensions.get('window').width;
 const Width = Math.round(ScreenWidth * 1);
 const ScreenHeight = Dimensions.get("window").height;
-const Height = Math.round(ScreenHeight * 0.3);
+const Height = Math.round(ScreenHeight * 0.35);
 
 
 
@@ -302,8 +302,8 @@ const Pro = (prop) => {
             <TouchableOpacity activeOpacity={0.7} onPress={openModal}>
               <LinearGradient
                 colors={['white', 'silver', 'white']}
-                start={{ x: 1, y: 0 }}
-                end={{ x: 1, y: 3 }}
+                start={{ x: 3, y:-2 }}
+                end={{ x: 1, y: 1}}
                 style={styles.button}
               >
                 <Text style={styles.text}>Book Now</Text>
@@ -437,7 +437,7 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     width: Width,
     height: Height,
-    borderRadius: 25,
+    borderRadius: 27,
 
 
   },
@@ -449,10 +449,12 @@ const styles = StyleSheet.create({
 
   },
   text: {
-    fontSize: 15,
+    color:'black',
+    fontSize: 20,
     fontWeight: "bold",
     fontStyle: "italic",
-    fontWeight: 'condensed'
+    fontWeight: 'condensed',
+     autoCapitalize:"characters"
 
 
   },
@@ -467,22 +469,24 @@ const styles = StyleSheet.create({
   box: {
 
     width: 215,
-    height: 120,
+    height: 130,
+    marginTop:-4,
     backgroundColor: 'white',
     position: 'absolute',
-    right: 0,
+    right: -10,
     top: -115,
-    borderRadius: 20,
-    opacity: 0.45
+    borderRadius: 25,
+    opacity: 0.40
 
   },
   button: {
     alignItems: 'center',
     margin: 5,
-    fontSize: '50',
-    fontWeight: '900',
+    marginTop:5,
+    fontSize: '60',
+    fontWeight: '1000',
     padding: '40',
-    borderRadius: 20,
+    borderRadius: 25,
     borderBottomRightRadius: 10,
     borderBottomLeftRadius: 10
 
