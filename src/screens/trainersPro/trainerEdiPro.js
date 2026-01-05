@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Image, StyleSheet, Dimensions, SafeAreaView, TouchableOpacity, Modal, FlatList, } from 'react-native';
+import { View, Text, TextInput, Image, StyleSheet, Dimensions, SafeAreaView, TouchableOpacity, Modal, FlatList} from 'react-native';
 import * as Yup from 'yup';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -8,10 +8,10 @@ import * as ImagePicker from 'expo-image-picker';
 import { Video } from "expo-av";
 import { useSelector, useDispatch } from "react-redux";
 import { setProfileMeta, clearProfileMeta } from "../../../redux/slices/imageSlice";
+import { metaProfile } from "../../../redux/slices/videoSlice";
 import { updateInfoPro } from "../../../redux/slices/infoSlice";
 import Pro from "./profileOne";
 import { useRoute, useNavigation } from "@react-navigation/native";
-import { metaProfile } from "../../../redux/slices/videoSlice";
 import { combineReducers, isImmutableDefault } from "@reduxjs/toolkit";
 
 
@@ -79,7 +79,7 @@ const EditPro = (prop) => {
     console.log('infoProfiles:', infoProfiles);
     const metadata = useSelector(state => state.meta.metaPro[profileId] || {});
     console.log('metadata', metadata);
-    
+
     //METADATAPICKER
 
 
@@ -95,7 +95,8 @@ const EditPro = (prop) => {
         }
 
         const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaType,
+            // mediaTypes: ImagePicker.MediaType,
+            MediaTypeOptions: 'All', 
             allowsEditing: true,
             aspect: [4, 3],
             quality: 1,
@@ -111,6 +112,31 @@ const EditPro = (prop) => {
         }
     };
 
+    const addMeta= async(profileId)=>{
+         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            alert('Permission to access media library is required!');
+            return;
+        }
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            MediaTypeOptions: 'All', 
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.canceled && result.assets?.length > 0) {
+            const metaUri = result.assets[0].uri;
+
+            dispatch(metaProfile({
+                id: profileId,
+                newMeta: metaUri
+            }))
+        }
+
+    }
+
     // EVENT TO SAVE INFO-PROFILE
 
     const newData = {
@@ -124,39 +150,28 @@ const EditPro = (prop) => {
 
 
     const infoSave = () => {
-      
+
         dispatch(updateInfoPro({ id: profileId, newData }))
-        
+
 
         navigation.navigate('ProfilesTab', {
             screen: 'Profiles',
 
         });
 
-        
 
-       
+
+
     };
-   
-
-        
 
 
-// const combinedProfiles = Object.entries(infoProfiles).map(([id, index]) => {
-//         return {
-//             id: `${profileId}-${index}`,
-//             Full_Name: infoProfiles.Full_Name,
-//             Address: infoProfiles.Address,
-//             Function: infoProfiles.Function,
-//             Certification: infoProfiles.Certification,
-//             profileImage: profileImages?.[id] || profileImages?.uri || profileImages || null,
-//             profileMeta: metadata?.[id] || metadata?.uri || metadata || null
 
-//         };
-//     });
-const profileImage = profileData?.profileImage || profileImages?.uri || profileImages;
 
-const combinedProfiles = [{
+
+
+    const profileImage = profileData?.profileImage || profileImages?.uri || profileImages;
+
+    const combinedProfiles = [{
         id: profileId,
         Full_Name: infoProfiles.Full_Name || Full_Name, // Fallback to local state
         Address: infoProfiles.Address || Address,
@@ -169,8 +184,8 @@ const combinedProfiles = [{
 
 
 
-    const renderItem = ({item}) => {
-        
+    const renderItem = ({ item }) => {
+
 
 
         return (
@@ -212,32 +227,50 @@ const combinedProfiles = [{
                         value={Function}
                     />
                 </View>
+                <View>
+                <Button
+                    title="ADD PROFILE MEDIA"
+                    onPress={addMeta}
+                />
             </View>
+            <View style={{marginTop:6}}>
+                <Button
+                    title="ADD PROFILE LIVE MEDIA"
+                    onPress={addMeta}
+                />
+            </View>
+            <View style={{marginTop:6}}>
+                <Button
+                    title="DELET PROFILE MEDIA"
+                    onPress={() => alert('Simple Button pressed')}
+                />
+            </View>
+            </View >
 
         )
 
     };
-    // RETURN
-    return (
-        <SafeAreaView style={styles.container}>
-            <FlatList
-                data={combinedProfiles}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.id}
-                contentContainerStyle={styles.listContent}
-                showsVerticalScrollIndicator={false}
-            />
+// RETURN
+return (
+    <SafeAreaView style={styles.container}>
+        <FlatList
+            data={combinedProfiles}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.listContent}
+            showsVerticalScrollIndicator={false}
+        />
 
-            <View style={styles.saveAllContainer}>
-                <Button
-                    title="Save All Changes"
-                    onPress={infoSave}
-                    buttonStyle={styles.saveAllButton}
-                    titleStyle={styles.saveAllButtonText}
-                />
-            </View>
-        </SafeAreaView>
-    );
+        <View style={styles.saveAllContainer}>
+            <Button
+                title="Save All Changes"
+                onPress={infoSave}
+                buttonStyle={styles.saveAllButton}
+                titleStyle={styles.saveAllButtonText}
+            />
+        </View>
+    </SafeAreaView>
+);
 };
 
 const styles = StyleSheet.create({

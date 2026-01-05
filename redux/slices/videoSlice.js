@@ -37,7 +37,6 @@ const initialState = {
       'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
       'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
        'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
-      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
       'https://randomuser.me/api/portraits/men/1.jpg',
        'https://randomuser.me/api/portraits/men/1.jpg',
         'https://randomuser.me/api/portraits/men/1.jpg',
