@@ -1,0 +1,33 @@
+current directory: /Users/macbook/Desktop/space/OverAll/vendor/bundle/ruby/3.2.0/gems/json-2.21.2/ext/json/ext/parser
+/opt/local/bin/ruby3.2 extconf.rb
+checking for rb_enc_interned_str() in ruby/encoding.h... yes
+checking for rb_str_to_interned_str() in ruby.h... yes
+checking for rb_hash_new_capa() in ruby.h... yes
+checking for rb_hash_bulk_insert() in ruby.h... yes
+checking for ruby_xfree_sized() in ruby.h... no
+checking for x86intrin.h... yes
+checking for _lzcnt_u64() in x86intrin.h... yes
+checking for intrin.h... no
+checking for RUBY_TYPED_EMBEDDABLE in ruby.h... no
+checking for whether -std=c99 is accepted as CFLAGS... yes
+checking for whether -mno-outline is accepted as CFLAGS... yes
+checking for x86intrin.h... yes
+checking for cpuid.h... yes
+creating Makefile
+
+current directory: /Users/macbook/Desktop/space/OverAll/vendor/bundle/ruby/3.2.0/gems/json-2.21.2/ext/json/ext/parser
+make DESTDIR\= sitearchdir\=./.gem.20260814-7153-2axcls sitelibdir\=./.gem.20260814-7153-2axcls clean
+
+current directory: /Users/macbook/Desktop/space/OverAll/vendor/bundle/ruby/3.2.0/gems/json-2.21.2/ext/json/ext/parser
+make DESTDIR\= sitearchdir\=./.gem.20260814-7153-2axcls sitelibdir\=./.gem.20260814-7153-2axcls
+compiling parser.c
+linking shared-object json/ext/parser.bundle
+ld: warning: -multiply_defined is obsolete
+ld: warning: ignoring duplicate libraries: '-lruby.3.2'
+
+current directory: /Users/macbook/Desktop/space/OverAll/vendor/bundle/ruby/3.2.0/gems/json-2.21.2/ext/json/ext/parser
+make DESTDIR\= sitearchdir\=./.gem.20260814-7153-2axcls sitelibdir\=./.gem.20260814-7153-2axcls install
+/opt/local/libexec/macports/clonebin/install -m 0755 parser.bundle ./.gem.20260814-7153-2axcls/json/ext
+
+current directory: /Users/macbook/Desktop/space/OverAll/vendor/bundle/ruby/3.2.0/gems/json-2.21.2/ext/json/ext/parser
+make DESTDIR\= sitearchdir\=./.gem.20260814-7153-2axcls sitelibdir\=./.gem.20260814-7153-2axcls clean
