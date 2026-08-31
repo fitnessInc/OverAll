@@ -18,7 +18,10 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.nanitosse.fitness",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+         "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        }
       }
     },
     "android": {

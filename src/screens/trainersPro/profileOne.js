@@ -1,12 +1,12 @@
 
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { View, Text, Image, StyleSheet, Dimensions, SafeAreaView, TouchableOpacity, Modal, FlatList, } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Button } from 'react-native-elements';
 import { useSelector } from 'react-redux';
-import { useRoute } from '@react-navigation/native';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { useEvent } from 'expo';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { setSelectedProfile } from '../../../redux/slices/selectedSlice';
@@ -44,7 +44,9 @@ const Pro = (prop) => {
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [status, SetStatus] = useState({});
   const [image, setImage] = useState(null);
-  const [videoThumbnails, setVideoThumbnails] = useState({});
+   const [videoThumbnails, setVideoThumbnails] = useState({});
+  const [thumbnailObject, setThumbnailsObject] = useState({})
+  const [media, setMedia] = useState([])
   // const [combinedProfiles, setCombinedProfiles] = useState([])
   // const [selectedItem, setSelectedItem] = useState(null)
 
@@ -62,7 +64,7 @@ const Pro = (prop) => {
 
 
   const videoSet = useMemo(() => {
-    const isVideo = metadata.map(mediaUri => {
+    const isVideo = media.map(mediaUri => {
       if (typeof mediaUri !== 'string') return null;
       const lowerUri = mediaUri.toLowerCase();
       return (lowerUri.endsWith('.mp4') ||
@@ -71,7 +73,7 @@ const Pro = (prop) => {
         lowerUri.endsWith('.webm')) ? mediaUri : null;
     });
     return new Set(isVideo.filter(uri => uri));
-  }, [metadata]);
+  }, [media]);
 
 
 
@@ -86,67 +88,111 @@ const Pro = (prop) => {
 
   // thumbnail generator 
 
-  
-  useEffect(() => {
-    let isMounted = true;
-    const abort = new AbortController();
-    const generated = new Set();
 
-    const generateThumbnails = async () => {
-      const videosToProcess = metadata
-        .filter(uri => videoSet.has(uri) && !videoThumbnails[uri])
-        .slice(0, 3);
+  // useEffect(() => {
+  //   let isMounted = true;
+  //    const abort = new AbortController();
+  //   const generated = new Set();
 
-      if (videosToProcess.length === 0) return;
+  //   const generateThumbnails = async () => {
+  //     const videosToProcess = metadata
+  //       .filter(uri => videoSet.has(uri) && !videoThumbnails[uri])
+  //     .slice(0, 3);
 
-      for (const videoUri of videosToProcess) {
-        if (!isMounted || abort.signal.aborted) break;
+  //     if (videosToProcess.length === 0) return;
 
-        try {
-          const { uri: thumbUri } =
-            await VideoThumbnails.getThumbnailAsync(videoUri, {
-              time: 26000,
-              quality: 0.7,
-            });
+  //     for (const videoUri of videosToProcess) {
+  //        if (!isMounted || abort.signal.aborted) break;
 
-          if (!isMounted || abort.signal.aborted) return;
+  //        try {
+  //        const { uri: thumbUri } =
+  //           await VideoThumbnails.getThumbnailAsync(videoUri, {
+  //              time: 26000,
+  //            quality: 0.7,
+  //            });
 
-          generated.add(thumbUri);
+  //          if (!isMounted || abort.signal.aborted) return;
 
-          setVideoThumbnails(prev => ({
-            ...prev,
-            [videoUri]: thumbUri,
-          }));
-        } catch (e) {
-          console.log('Thumbnail failed:', videoUri, e);
-        }
-      }
-    };
+  //         generated.add(thumbUri);
 
-    generateThumbnails();
+  //          setVideoThumbnails(prev => ({
+  //           ...prev,
+  //           [videoUri]: thumbUri,
+  //          }));
+  //       } catch (e) {
+  //        console.log('Thumbnail failed:', videoUri, e);
+  //        }
+  //      }
+  //    };
 
-    return () => {
-      isMounted = false;
-      abort.abort();
+  //    generateThumbnails();
 
-      generated.forEach(uri => {
-        if (uri?.startsWith('file://')) {
-          FileSystem.deleteAsync(uri, { idempotent: true });
-        }
-      });
-    };
-  }, [metadata, videoSet, videoThumbnails]);
+  //    return () => {
+  //      isMounted = false;
+  //      abort.abort();
 
-  const mediaItems = metadata.map(uri => ({
+  //      generated.forEach(uri => {
+  //        if (uri?.startsWith('file://')) {
+  //          FileSystem.deleteAsync(uri, { idempotent: true });
+  //      }
+  //     });
+  //   };
+  //  }, [metadata, videoSet, videoThumbnails]);
+   useFocusEffect(
+
+     
+     useCallback(()=>{
+
+       var active= true
+     const FetchGallery = async () => {
+
+        const Ipaddress = 'http://192.168.1.173:3000';
+         const userId = '678022960d8769de83719f30'
+
+         try {
+           const request = await fetch(`${Ipaddress}/profiles/${userId}/gallery`)
+          const data = await request.json();
+
+          if (data.success) {
+           const uris = data.gallery.map(item => item.url);
+             const thumbs = {}
+             data.gallery.forEach(item => {
+               thumbs[item.url] = item.thumbnail || null
+             })
+
+            setMedia(uris);
+             setThumbnailsObject(thumbs)
+           };
+
+
+         } catch (e) {
+           console.log('data failed:', e)
+
+         }
+
+
+
+
+       }
+       FetchGallery()
+       return()=>{
+          active=false
+       }
+     },[profileId])
+    
+
+
+
+   );
+
+  const mediaItems = media.map(uri => ({
     id: uri,
     uri,
     isVideo: videoSet.has(uri),
-    isImage: videoSet.has(uri)?null:uri,
-    video:videoSet.has(uri)?uri:null,
-    thumbnail: videoThumbnails[uri] || null,
+    isImage: videoSet.has(uri) ? null : uri,
+    video: videoSet.has(uri) ? uri : null,
+    thumbnail: thumbnailObject[uri] || null,
   }));
-
-
 
 
   const renderItem = ({ item }) => {
@@ -170,6 +216,7 @@ const Pro = (prop) => {
       </View>
     );
   };
+ 
 
 
   // Modal section
@@ -211,7 +258,7 @@ const Pro = (prop) => {
 
   };
 
-// useEffect hydrate redux with the future unmounte profile  or selected profile 
+  // useEffect hydrate redux with the future unmounte profile  or selected profile 
 
   useEffect(() => {
 
@@ -256,14 +303,14 @@ const Pro = (prop) => {
   }, [profileId, infoSelected, profilePicture, metadata])
 
 
-// VideoPlayer Section 
- const player = useVideoPlayer(selectedMedia?.video, player => {
+  // VideoPlayer Section 
+  const player = useVideoPlayer(selectedMedia?.video, player => {
     player.loop = true;
     player.play();
   })
 
   // RETURN SECTION
- const  item=mediaItems
+  const item = mediaItems
   return (
     <SafeAreaView>
       <View >
@@ -279,7 +326,7 @@ const Pro = (prop) => {
           <TouchableOpacity
             onPress={() => {
 
-             
+
 
               navigation.navigate("ProfilesTab", {
                 screen: "EditPro",
@@ -302,8 +349,8 @@ const Pro = (prop) => {
             <TouchableOpacity activeOpacity={0.7} onPress={openModal}>
               <LinearGradient
                 colors={['white', 'silver', 'white']}
-                start={{ x: 3, y:-2 }}
-                end={{ x: 1, y: 1}}
+                start={{ x: 3, y: -2 }}
+                end={{ x: 1, y: 1 }}
                 style={styles.button}
               >
                 <Text style={styles.text}>Book Now</Text>
@@ -449,12 +496,12 @@ const styles = StyleSheet.create({
 
   },
   text: {
-    color:'black',
+    color: 'black',
     fontSize: 20,
     fontWeight: "bold",
     fontStyle: "italic",
     fontWeight: 'condensed',
-     autoCapitalize:"characters"
+    autoCapitalize: "characters"
 
 
   },
@@ -470,7 +517,7 @@ const styles = StyleSheet.create({
 
     width: 215,
     height: 130,
-    marginTop:-4,
+    marginTop: -4,
     backgroundColor: 'white',
     position: 'absolute',
     right: -10,
@@ -482,7 +529,7 @@ const styles = StyleSheet.create({
   button: {
     alignItems: 'center',
     margin: 5,
-    marginTop:5,
+    marginTop: 5,
     fontSize: '60',
     fontWeight: '1000',
     padding: '40',

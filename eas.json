@@ -10,7 +10,8 @@
         "buildType": "apk"
       },
       "ios": {
-        "simulator": true
+        "simulator": false,
+          "image": "macos-sequoia-15.5-xcode-16.4"
       }
     },
     "production": {
@@ -20,9 +21,10 @@
       },
       "ios": {
         "distribution": "store",
-        "simulator": true,
-        "buildConfiguration": "Debug"
+        "simulator": false,
+        "buildConfiguration": "Release"
       }
     }
   }
 }
+
