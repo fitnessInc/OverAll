@@ -8,7 +8,8 @@ import 'react-native-gesture-handler';
 import MealStackNavigator from './src/navigation/MealStackNavigator';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import  store  from './redux/store'
-import { Provider } from 'react-redux'
+import { Provider } from 'react-redux';
+import './global.css';
 
 
 
