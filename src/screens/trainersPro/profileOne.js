@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { View, Text, Image, StyleSheet, Dimensions, SafeAreaView, TouchableOpacity, Modal, FlatList, } from 'react-native';
+import { View, Text, Image, StyleSheet, Dimensions, SafeAreaView, TouchableOpacity, Modal, FlatList, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -10,6 +10,8 @@ import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { useEvent } from 'expo';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { setSelectedProfile } from '../../../redux/slices/selectedSlice';
+import { updateInfoPro } from '../../../redux/slices/infoSlice';
+import { setProfileMeta } from '../../../redux/slices/imageSlice';
 import { useDispatch } from 'react-redux';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import * as FileSystem from 'expo-file-system';
@@ -23,14 +25,17 @@ const Height = Math.round(ScreenHeight * 0.35);
 
 
 
+const EmptyObject = {};
+const EmptyArray = [];
+
+
 
 const Pro = (prop) => {
   const { navigation, route } = prop;
   // PARAMS SECTION
   const routy = useRoute();
   console.log('routeObject', routy)
-  const { profileId } = route.params;
-
+  const { profileId, profileData } = route.params;
   // Dispatch;
   const dispatch = useDispatch();
   // USE STATE HOOK SECTION
@@ -44,36 +49,42 @@ const Pro = (prop) => {
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [status, SetStatus] = useState({});
   const [image, setImage] = useState(null);
-   const [videoThumbnails, setVideoThumbnails] = useState({});
+  const [videoThumbnails, setVideoThumbnails] = useState({});
   const [thumbnailObject, setThumbnailsObject] = useState({})
   const [media, setMedia] = useState([])
-  // const [combinedProfiles, setCombinedProfiles] = useState([])
-  // const [selectedItem, setSelectedItem] = useState(null)
 
   // USESELECTOR SECTION
 
-  const infoSelected = useSelector(state => state.info.infoPro[profileId] || {});
+  const infoSelected = useSelector(state => state.info.infoPro[profileId] || EmptyObject);
   console.log("Received item in Pro:", infoSelected);
-  const profilePicture = useSelector(state => state.image.profiles[profileId] || {});
+  const profilePicture = useSelector(state => state.image.profiles[profileId] || EmptyObject);
   console.log('profilePictures', profilePicture);
-  const metadata = useSelector(state => state.meta.metaPro[profileId] || []);
-  console.log('meta fro profile', metadata);
-  const ProfileSelected = useSelector(state => state.proSelected.selectedProfile || {});
+  const ProfileSelected = useSelector(state => state.proSelected.selectedProfile || EmptyObject);
   console.log("the profile selected:", ProfileSelected)
   // VIDEO CONTROLLER INSTENCE SECTION
 
 
+  // const videoSet = useMemo(() => {
+  //   const isVideo = media.map(mediaUri => {
+  //     if (typeof mediaUri !== 'string') return null;
+  //     const lowerUri = mediaUri.toLowerCase();
+  //     return (lowerUri.endsWith('.mp4') ||
+  //       lowerUri.endsWith('.mov') ||
+  //       lowerUri.endsWith('.mkv') ||
+  //       lowerUri.endsWith('.webm')) ? mediaUri : null;
+  //   });
+  //   return new Set(isVideo.filter(uri => uri));
+  // }, [media]);
+
+  // useMemo let's you catch  a result of expensive calculation between rerender   in other term it memoizes  function  result
+  //  and newSet() method return an array  whit  unique element  it discards deplucation 
   const videoSet = useMemo(() => {
-    const isVideo = media.map(mediaUri => {
-      if (typeof mediaUri !== 'string') return null;
-      const lowerUri = mediaUri.toLowerCase();
-      return (lowerUri.endsWith('.mp4') ||
-        lowerUri.endsWith('.mov') ||
-        lowerUri.endsWith('.mkv') ||
-        lowerUri.endsWith('.webm')) ? mediaUri : null;
-    });
-    return new Set(isVideo.filter(uri => uri));
-  }, [media]);
+    const videoUris = media
+      .filter(item => item === 'video')
+      .map(item => item.url)
+    return new Set(videoUris)
+
+  }, [media])
 
 
 
@@ -86,112 +97,89 @@ const Pro = (prop) => {
     console.log(selectedDate)
   };
 
-  // thumbnail generator 
+
+  const deleteMedia = async (mediaId) => {
+    console.log('Attempting to delete mediaId:', mediaId); 
+    try {
+      const res = await fetch(`http://192.168.1.173:3000/profiles/${profileId}/gallery/${mediaId}`, {
+        method: 'DELETE',
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        console.log('Deleted:', data.message);
+        // the filter prev take previous state  and filter to return a state without item deleted 
+        setMedia(prev => prev.filter(item => item.id !== mediaId)); // instant UI update
+        CloseModal();
+      } else {
+        console.log('Delete failed:', data.message);
+      }
+    } catch (e) {
+      console.log('Delete error:', e);
+    }
+  };
+
+  const handleDelete = (mediaId) => {
+    Alert.alert(
+      'Delete this item?',
+      'This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: () => deleteMedia(mediaId) }
+      ]
+    );
+  };
 
 
-  // useEffect(() => {
-  //   let isMounted = true;
-  //    const abort = new AbortController();
-  //   const generated = new Set();
 
-  //   const generateThumbnails = async () => {
-  //     const videosToProcess = metadata
-  //       .filter(uri => videoSet.has(uri) && !videoThumbnails[uri])
-  //     .slice(0, 3);
+  useFocusEffect(
 
-  //     if (videosToProcess.length === 0) return;
 
-  //     for (const videoUri of videosToProcess) {
-  //        if (!isMounted || abort.signal.aborted) break;
+    useCallback(() => {
 
-  //        try {
-  //        const { uri: thumbUri } =
-  //           await VideoThumbnails.getThumbnailAsync(videoUri, {
-  //              time: 26000,
-  //            quality: 0.7,
-  //            });
-
-  //          if (!isMounted || abort.signal.aborted) return;
-
-  //         generated.add(thumbUri);
-
-  //          setVideoThumbnails(prev => ({
-  //           ...prev,
-  //           [videoUri]: thumbUri,
-  //          }));
-  //       } catch (e) {
-  //        console.log('Thumbnail failed:', videoUri, e);
-  //        }
-  //      }
-  //    };
-
-  //    generateThumbnails();
-
-  //    return () => {
-  //      isMounted = false;
-  //      abort.abort();
-
-  //      generated.forEach(uri => {
-  //        if (uri?.startsWith('file://')) {
-  //          FileSystem.deleteAsync(uri, { idempotent: true });
-  //      }
-  //     });
-  //   };
-  //  }, [metadata, videoSet, videoThumbnails]);
-   useFocusEffect(
-
-     
-     useCallback(()=>{
-
-       var active= true
-     const FetchGallery = async () => {
+      var active = true
+      const FetchGallery = async () => {
 
         const Ipaddress = 'http://192.168.1.173:3000';
-         const userId = '678022960d8769de83719f30'
 
-         try {
-           const request = await fetch(`${Ipaddress}/profiles/${userId}/gallery`)
+        try {
+          const request = await fetch(`${Ipaddress}/profiles/${profileId}/gallery`)
           const data = await request.json();
 
           if (data.success) {
-           const uris = data.gallery.map(item => item.url);
-             const thumbs = {}
-             data.gallery.forEach(item => {
-               thumbs[item.url] = item.thumbnail || null
-             })
+            setMedia(data.gallery);
 
-            setMedia(uris);
-             setThumbnailsObject(thumbs)
-           };
+          };
 
 
-         } catch (e) {
-           console.log('data failed:', e)
+        } catch (e) {
+          console.log('data failed:', e)
 
-         }
+        }
 
 
 
 
-       }
-       FetchGallery()
-       return()=>{
-          active=false
-       }
-     },[profileId])
-    
+      }
+      FetchGallery()
+      return () => {
+        active = false
+      }
+    }, [profileId])
 
 
 
-   );
 
-  const mediaItems = media.map(uri => ({
-    id: uri,
-    uri,
-    isVideo: videoSet.has(uri),
-    isImage: videoSet.has(uri) ? null : uri,
-    video: videoSet.has(uri) ? uri : null,
-    thumbnail: thumbnailObject[uri] || null,
+  );
+
+  const mediaItems = media.map(item => ({
+    id: item.id,
+    uri: item.url,
+    isVideo: item.type === 'video',
+    isImage: item.type == 'video' ? null : item.url,
+    video: item.type == 'video' ? item.url : null,
+    thumbnail: item.thumbnail || null,
   }));
 
 
@@ -216,7 +204,7 @@ const Pro = (prop) => {
       </View>
     );
   };
- 
+
 
 
   // Modal section
@@ -258,50 +246,6 @@ const Pro = (prop) => {
 
   };
 
-  // useEffect hydrate redux with the future unmounte profile  or selected profile 
-
-  useEffect(() => {
-
-    // to check 
-    if (!profileId) return;
-
-    const hasInfo = state => state.info.infoPro?.[profileId];
-    // (we'll use selector instead of state here)
-
-    if (
-      !infoSelected?.Full_Name &&
-      (infoSelected || profilePicture || metadata?.length)
-    ) {
-      // INFO
-      dispatch(updateInfoPro({
-        id: profileId,
-        newData: {
-          Full_Name: infoSelected.Full_Name,
-          Address: infoSelected.Address,
-          Certification: infoSelected.Certification,
-          Function: infoSelected.Function,
-        }
-      }));
-
-      // IMAGE
-      if (profilePicture) {
-        dispatch(setProfileImage({
-          id: profileId,
-          uri: profilePicture
-        }));
-      }
-
-      // MEDIA
-      if (metadata?.length) {
-        dispatch(metaProfile({
-          id: profileId,
-          media: metadata
-        }));
-      }
-    }
-
-  }, [profileId, infoSelected, profilePicture, metadata])
-
 
   // VideoPlayer Section 
   const player = useVideoPlayer(selectedMedia?.video, player => {
@@ -331,18 +275,18 @@ const Pro = (prop) => {
               navigation.navigate("ProfilesTab", {
                 screen: "EditPro",
                 params: {
-                  profileId
-                  // profileData: item
+                  profileId,
+                  profileData: item
                 }
               });
             }}
           >
             <Text style={styles.Edit}> EDITE PROFILE</Text>
           </TouchableOpacity>
-          <Text style={styles.text}>{infoSelected.Full_Name}</Text>
-          <Text style={styles.text}>{infoSelected.Address}</Text>
-          <Text style={styles.text}>{infoSelected.Certification}</Text>
-          <Text style={styles.text}>{infoSelected.Function}</Text>
+          <Text style={styles.text}>{infoSelected.full_Name}</Text>
+          <Text style={styles.text}>{infoSelected.certification}</Text>
+          <Text style={styles.text}>{infoSelected.function}</Text>
+          <Text style={styles.text}>{infoSelected.email}</Text>
         </View>
         <View style={styles.container}>
           <View style={styles.box}>
@@ -460,6 +404,9 @@ const Pro = (prop) => {
                   style={styles.modalMedia}
                 />
               )}
+              <TouchableOpacity onPress={() => handleDelete(selectedMedia.id)} style={styles.deleteButton}>
+                <Text style={styles.deleteButtonText}>DELETE</Text>
+              </TouchableOpacity>
               <TouchableOpacity onPress={CloseModal} style={styles.closeButton}>
                 <Text style={styles.closeButtonText}>CLOSE</Text>
               </TouchableOpacity>
@@ -489,6 +436,19 @@ const styles = StyleSheet.create({
 
   },
 
+  deleteButton: {
+    backgroundColor: 'rgba(220,0,0,0.85)',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginTop: 20,
+    marginBottom:100
+  },
+  deleteButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
   info: {
     alignContent: 'left',
     alignItems: 'left',

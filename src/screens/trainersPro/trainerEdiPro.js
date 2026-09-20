@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Image, StyleSheet, Dimensions, SafeAreaView, TouchableOpacity, Modal, FlatList} from 'react-native';
+import { View, Text, TextInput, Image, StyleSheet, Dimensions, SafeAreaView, TouchableOpacity, Modal, FlatList, Alert } from 'react-native';
 import * as Yup from 'yup';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -17,37 +17,7 @@ import { combineReducers, isImmutableDefault } from "@reduxjs/toolkit";
 
 
 
-//     {
-//         id: 'user1',
-//         Full_Name: 'nanito',
-//         Address: 'xxx',
-//         Function: 'Calisthenics',
-//         Certification: ' Nasam',
-//         meta: null
 
-
-//     },
-//     {
-//         id: 'user2',
-//         Full_Name: 'Aicha Ahmat',
-//         Address: ' Address: 646 berge ave NJ',
-//         Function: '  weight trainer ',
-//         Certification: 'Nasam',
-//         meta: null
-
-
-//     },
-//     {
-//         id: 'user3',
-//         Full_Name: 'Alato Sow',
-//         Address: ' Address: 646 berge ave NJ',
-//         Function: ' weight trainer ',
-//         Certification: 'Nasam',
-//         meta: null
-
-
-//     },
-// ];
 const ScreenWidth = Dimensions.get('window').width;
 const Width = Math.round(ScreenWidth * 1);
 const ScreenHeight = Dimensions.get("window").height;
@@ -66,10 +36,10 @@ const EditPro = (prop) => {
     console.log('profileData', profileData);
 
     // useState Hook  Section
-    const [Full_Name, setFull_Name] = useState('infoProfiles?.Full_Name');
-    const [Address, setAddress] = useState('infoProfiles?.Address');
-    const [Certification, setCertification] = useState('infoProfiles?.Certification');
-    const [Function, setFunction] = useState('infoProfiles?.Function');
+    const [Full_Name, setFull_Name] = useState(infoProfiles?.full_Name || '');
+    const [Email, setEmail] = useState(infoProfiles?.email);
+    const [Certification, setCertification] = useState(infoProfiles?.certification || '');
+    const [Function, setFunction] = useState(infoProfiles?.function || '');
     // const [combinedProfiles, setCombinedProfiles] = useState([])
 
     //  USESELECTOR SECTION
@@ -77,15 +47,10 @@ const EditPro = (prop) => {
     console.log('ProfileImages:', profileImages)
     const infoProfiles = useSelector(state => state.info.infoPro[profileId] || {});
     console.log('infoProfiles:', infoProfiles);
-    const metadata = useSelector(state => state.meta.metaPro[profileId] || {});
-    console.log('metadata', metadata);
+    // const metadata = useSelector(state => state.meta.metaPro[profileId] || {});
+    // console.log('metadata', metadata);
 
     //METADATAPICKER
-
-
-
-
-
 
     const pickMedia = async (profileId) => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -96,73 +61,203 @@ const EditPro = (prop) => {
 
         const result = await ImagePicker.launchImageLibraryAsync({
             // mediaTypes: ImagePicker.MediaType,
-            MediaTypeOptions: 'All', 
+            MediaTypeOptions: 'All',
             allowsEditing: true,
             aspect: [4, 3],
             quality: 1,
         });
 
-        if (!result.canceled && result.assets?.length > 0) {
-            const metaUri = result.assets[0].uri;
+        if (result.canceled || !result.assets?.length) {
 
-            dispatch(setProfileMeta({
-                id: profileId,
-                newImage: metaUri
-            }))
+            return;
         }
+
+        const asset = result.assets[0]
+
+
+        const objectInstance = new FormData()
+        objectInstance.append('avatar', {
+
+            uri: asset.uri,
+            name: asset.fileName,
+            type: asset.mimeType,
+
+        });
+        // append is method that that add key,value pair to the  insttanceObject create  from FromData()
+        objectInstance.append("title", asset.fileName || "untitled");
+
+        try {
+            const request = await fetch(`http://192.168.1.173:3000/upload/user/${profileId}`, {
+                method: 'POST',
+                body: objectInstance,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+            console.log('Uploading for profileId:', profileId);
+
+            const data = await request.json();
+
+            if (data.success) {
+                dispatch(setProfileMeta({
+                    id: profileId,
+                    newImage: data.url
+
+                }))
+
+            } else {
+                console.log('Upload failed:', data.message);
+            }
+        } catch (e) {
+            console.log('Upload error:', e);
+        }
+
+
+
+
+
     };
 
-    const addMeta= async(profileId)=>{
-         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+
+    const addMeta = async (profileId) => {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
             alert('Permission to access media library is required!');
             return;
         }
 
         const result = await ImagePicker.launchImageLibraryAsync({
-            MediaTypeOptions: 'All', 
+            MediaTypeOptions: 'All',
             allowsEditing: true,
             aspect: [4, 3],
             quality: 1,
         });
-
-        if (!result.canceled && result.assets?.length > 0) {
-            const metaUri = result.assets[0].uri;
-
-            dispatch(metaProfile({
-                id: profileId,
-                newMeta: metaUri
-            }))
+        // if condition means if result is canceld=true or no asset is true then stop the function 
+        if (result.canceled || !result.assets?.length) {
+            return;
         }
+        //  here down if the above  the if condition is false  meaning  the result is not canceled and result is true 
+        // then execute the below blog if  the code 
+        const asset = result.assets[0];
+        const Video = asset.type === "video";
+        const assetFile = Video ? 'video' : 'photo';
+        //  new objectInstance is the instance object of FormData() it means copy of   FormDtata()  constructor 
+        const objectInstance = new FormData()
+        objectInstance.append(assetFile, {
+
+            uri: asset.uri,
+            name: asset.fileName || `upload_${Date.now()}.${Video ? 'mp4' : 'jpg'}`,
+            type: asset.mimeType || (Video ? 'video/mp4' : 'image/jpeg'),
+
+        });
+        // append is method that that add key,value pair to the  instanceObject create  from FromData()
+        objectInstance.append("title:", asset.fileName || "untitle");
+
+        try {
+            const request = await fetch(`http://192.168.1.173:3000/upload/user/${profileId}`, {
+                method: 'POST',
+                body: objectInstance,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+            console.log('Uploading for profileId:', profileId);
+
+            const data = await request.json();
+
+            if (data.success) {
+                console.log('Upload success:', data);
+                // no need to dispatch anything — gallery screen refetches automatically via useFocusEffect on return
+            } else {
+                console.log('Upload failed:', data.message);
+            }
+        } catch (e) {
+            console.log('Upload error:', e);
+        }
+
+
+
+
+
 
     }
 
     // EVENT TO SAVE INFO-PROFILE
 
     const newData = {
-        Full_Name,
-        Address,
-        Certification,
-        Function
+        full_Name: Full_Name,        // map local state to the correct backend field name
+        certification: Certification,
+        function: Function,
     }
 
 
 
 
-    const infoSave = () => {
+    const infoSave = async () => {
 
-        dispatch(updateInfoPro({ id: profileId, newData }))
+        try {
+            const request = await fetch(`http://192.168.1.173:3000/profiles/${profileId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newData),
 
+            })
+            const data = await request.json()
+            if (request.ok) {
+                console.log('bio updated:', data);
 
-        navigation.navigate('ProfilesTab', {
-            screen: 'Profiles',
-
-        });
-
-
+                navigation.navigate('ProfilesTab', { screen: 'Profiles' })
+            } else {
+                console.log("bio update faild:", data)
+            }
+        } catch (e) {
+            console.log(e)
+        }
 
 
     };
+
+    const deleteAvatar = async () => {
+
+        try {
+
+            const request = await fetch(`http://192.168.1.173:3000/profiles/${profileId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ avatar: { url: null, thumbnail: null } })
+
+
+            });
+            const data = await request.json();
+            if (request.ok) {
+                console.log("avatar is wiped !!!!:", data)
+                dispatch(setProfileMeta({ id: profileId, newImage: null }));
+
+            } else {
+                console.log(" delete avatar faild Oups!!!:", data)
+
+            }
+
+        } catch (e) {
+            console.log(e)
+        }
+
+    }
+
+    const handleAvatar = async () => {
+
+        Alert.alert(
+            " your are deleting avatar",
+            "do  you want  tro do it ",
+            [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Remove', style: 'destructive', onPress: deleteAvatar }
+            ]
+
+        )
+
+    }
 
 
 
@@ -173,10 +268,10 @@ const EditPro = (prop) => {
 
     const combinedProfiles = [{
         id: profileId,
-        Full_Name: infoProfiles.Full_Name || Full_Name, // Fallback to local state
-        Address: infoProfiles.Address || Address,
-        Function: infoProfiles.Function || Function,
-        Certification: infoProfiles.Certification || Certification,
+        full_Name: infoProfiles.full_Name || Full_Name,
+        certification: infoProfiles.certification || Certification,
+        function: infoProfiles.function || Function,
+        email: infoProfiles.email || Email,
         profileImage
     }];
 
@@ -198,79 +293,84 @@ const EditPro = (prop) => {
                         resizeMode="cover"
                     />
                     <TouchableOpacity
-                        onPress={() => pickMedia(item.id)}
+                        onPress={() => pickMedia(profileId)}
                         style={styles.pickButton}
                     >
                         <Text style={styles.buttonText}>Pick Image</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={handleAvatar} style={styles.pickButton}>
+                        <Text style={styles.buttonText}>DELETE</Text>
                     </TouchableOpacity>
 
                 </View>
                 <View>
                     <TextInput
                         style={styles.input}
+                        placeholder="Enter your full name"
+                        placeholderTextColor="#999"
                         onChangeText={setFull_Name}
                         value={Full_Name}
                     />
                     <TextInput
                         style={styles.input}
-                        onChangeText={setAddress}
-                        value={Address}
-                    />
-                    <TextInput
-                        style={styles.input}
+                        placeholder="Enter your certification if you have"
+                        placeholderTextColor="#999"
                         onChangeText={setCertification}
                         value={Certification}
                     />
                     <TextInput
                         style={styles.input}
+                        placeholder="Enter your function"
+                        placeholderTextColor="#999"
                         onChangeText={setFunction}
                         value={Function}
                     />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Enter your email"
+                        placeholderTextColor="#999"
+                        onChangeText={setEmail}
+                        value={Email}
+                    />
                 </View>
-                <View>
-                <Button
-                    title="ADD PROFILE MEDIA"
-                    onPress={addMeta}
-                />
-            </View>
-            <View style={{marginTop:6}}>
-                <Button
-                    title="ADD PROFILE LIVE MEDIA"
-                    onPress={addMeta}
-                />
-            </View>
-            <View style={{marginTop:6}}>
-                <Button
-                    title="DELET PROFILE MEDIA"
-                    onPress={() => alert('Simple Button pressed')}
-                />
-            </View>
+                <View style={{ marginTop: 6 }}>
+                    <Button
+                        title="ADD Gallery Media"
+                        onPress={() => addMeta(profileId)}
+                    />
+                </View>
+                <View style={{ marginTop: 6 }}>
+                    <Button
+                        title="DELET PROFILE MEDIA"
+                        onPress={() => alert('Simple Button pressed')}
+                    />
+                </View>
             </View >
 
         )
 
     };
-// RETURN
-return (
-    <SafeAreaView style={styles.container}>
-        <FlatList
-            data={combinedProfiles}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={styles.listContent}
-            showsVerticalScrollIndicator={false}
-        />
-
-        <View style={styles.saveAllContainer}>
-            <Button
-                title="Save All Changes"
-                onPress={infoSave}
-                buttonStyle={styles.saveAllButton}
-                titleStyle={styles.saveAllButtonText}
+    // RETURN
+    return (
+        <SafeAreaView style={styles.container}>
+            <FlatList
+                data={combinedProfiles}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={styles.listContent}
+                showsVerticalScrollIndicator={false}
             />
-        </View>
-    </SafeAreaView>
-);
+
+            <View style={styles.saveAllContainer}>
+                <Button
+                    title="Save All Changes"
+                    onPress={() => infoSave(profileId)}
+                    buttonStyle={styles.saveAllButton}
+                    titleStyle={styles.saveAllButtonText}
+                />
+            </View>
+        </SafeAreaView>
+    );
 };
 
 const styles = StyleSheet.create({

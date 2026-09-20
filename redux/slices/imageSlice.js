@@ -1,12 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  profiles: {
-     'user1': "https://images.unsplash.com/photo-1502685104226-ee32379fefbe",
-    'user2':  "https://images.unsplash.com/photo-1502685104226-ee32379fefbe",
-    'user3':  "https://images.unsplash.com/photo-1502685104226-ee32379fefbe",
-    'user4':  "https://images.unsplash.com/photo-1502685104226-ee32379fefbe"
-  }, // Store images by profile ID
+  profiles: {}
+  
+   
 };
 
 const imageSlice = createSlice({
