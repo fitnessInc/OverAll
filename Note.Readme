@@ -1,0 +1,2 @@
+// item in profileOne item.IsVideo in the return is a 
+//Got it. So item is one object from an array fetched from your DB — meaning whatever field name your backend actually uses for the thumbnail needs to match what you're reading here (item.thumbnail).
