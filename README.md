@@ -5,3 +5,4 @@ here firebase to set user it would read from users session which is cached in th
 
 
  the  UseEffect in navigation  is  it sets up liveSuscription that  firebase call whenever the state.auth change (user session) then dispath to redux via  const dispatch, it connects firebase to redux to update  loggin logout state 
+  
