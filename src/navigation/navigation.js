@@ -5,7 +5,7 @@ import HomeScreen from '../screens/HomeScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import Ionicons from 'react-native-vector-icons'
 import { Images } from '../config/images';
-import { Image, View } from 'react-native';
+import { Image, View, ActivityIndicator } from 'react-native';
 import CalisthenicScreen from '../screens/CalisthenicScreen';
 import GymScreen from '../screens/GymScreen';
 import MealScreen from '../screens/MealScreen';
@@ -21,6 +21,10 @@ import Profiles from '../screens/Profiles';
 import Pro from '../screens/trainersPro/profileOne'
 import EditPro from '../screens/trainersPro/trainerEdiPro';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useDispatch,useSelector } from 'react-redux';
+import { setAuth ,clearAuth} from '../../redux/slices/authSlice';
+import React, {  useEffect } from 'react';
+import ActivityIndicator from '../components/activityIndicator';
 
 
 
@@ -30,21 +34,57 @@ const Stack = createNativeStackNavigator();
 
 function ProfileStackScreen() {
     return (
-        
-            <Stack.Navigator>
-                <Stack.Screen name="Food" component={Food} options={{ headerShown: false }} />
-                <Stack.Screen name="Profiles" component={Profiles} options={{ headerShown: false }} />
-                <Stack.Screen name="Pro" component={Pro} options={{ headerShown: false }} />
-                <Stack.Screen name="EditPro" component={EditPro} options={{ headerShown: false }} />
-            </Stack.Navigator>
-        
+
+        <Stack.Navigator>
+            <Stack.Screen name="Food" component={Food} options={{ headerShown: false }} />
+            <Stack.Screen name="Profiles" component={Profiles} options={{ headerShown: false }} />
+            <Stack.Screen name="Pro" component={Pro} options={{ headerShown: false }} />
+            <Stack.Screen name="EditPro" component={EditPro} options={{ headerShown: false }} />
+        </Stack.Navigator>
+
     );
+};
+
+const auth = () => {
+    return (
+        <Stack.Navigator>
+            <Stack.Screen name="logging" component={LoggingScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="singUp" component={singUp} options={{ headerShown: false }} />
+        </Stack.Navigator>
+
+    )
+
 }
 
 
+
+
 export default function Navigation() {
+
+    const  dispatch = useDispatch();
+    const user = useSelector((state)=>state.auth.user);
+    const indicator = useSelector((state)=> state.auth.indicator);
+
+    useEffect(()=>{
+         const unsub = onAuthStateChanged(auth, (fbUser) => {
+      if (fbUser) {
+        dispatch(setAuth({ uid: fbUser.uid, email: fbUser.email }));
+      } else {
+        dispatch(clearAuth());
+      }
+    });
+    return unsub;
+
+
+    },[dispatch]);
+    if (indicator) return <ActivityIndicator/>
+
+    
+
     return (
         <NavigationContainer theme={MyTheme} >
+            {user?(
+              
             <Tab.Navigator screenOptions={({ route }) => ({
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
@@ -111,7 +151,11 @@ export default function Navigation() {
                     }}
                 />
 
-            </Tab.Navigator>
+            </Tab.Navigator>   
+
+            ):(
+                <auth/>
+            )}
         </NavigationContainer>
     );
 }

@@ -128,7 +128,7 @@ const EditPro = (prop) => {
         }
 
         const result = await ImagePicker.launchImageLibraryAsync({
-            MediaTypeOptions: 'All',
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
             allowsEditing: true,
             aspect: [4, 3],
             quality: 1,

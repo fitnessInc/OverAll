@@ -3,6 +3,7 @@ import  imagereducer  from './slices/imageSlice';
 import infoReducer   from "./slices/infoSlice";
 import metaReducer from "./slices/videoSlice"
 import selectedProfileReducer from './slices/selectedSlice'
+import authReducers  from './slices/authSlice'
 
 
 
@@ -13,6 +14,7 @@ import selectedProfileReducer from './slices/selectedSlice'
         info: infoReducer,
         meta:metaReducer,
         proSelected:selectedProfileReducer,
+        auth: authReducers
     }
 
       

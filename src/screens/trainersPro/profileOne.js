@@ -57,24 +57,14 @@ const Pro = (prop) => {
 
   const infoSelected = useSelector(state => state.info.infoPro[profileId] || EmptyObject);
   console.log("Received item in Pro:", infoSelected);
-  const profilePicture = useSelector(state => state.image.profiles[profileId] || EmptyObject);
+  const profilePicture = useSelector(state => state.image.profiles[profileId] || null);
   console.log('profilePictures', profilePicture);
+  console.log('profilePicture raw value:', JSON.stringify(profilePicture));
   const ProfileSelected = useSelector(state => state.proSelected.selectedProfile || EmptyObject);
   console.log("the profile selected:", ProfileSelected)
   // VIDEO CONTROLLER INSTENCE SECTION
 
 
-  // const videoSet = useMemo(() => {
-  //   const isVideo = media.map(mediaUri => {
-  //     if (typeof mediaUri !== 'string') return null;
-  //     const lowerUri = mediaUri.toLowerCase();
-  //     return (lowerUri.endsWith('.mp4') ||
-  //       lowerUri.endsWith('.mov') ||
-  //       lowerUri.endsWith('.mkv') ||
-  //       lowerUri.endsWith('.webm')) ? mediaUri : null;
-  //   });
-  //   return new Set(isVideo.filter(uri => uri));
-  // }, [media]);
 
   // useMemo let's you catch  a result of expensive calculation between rerender   in other term it memoizes  function  result
   //  and newSet() method return an array  whit  unique element  it discards deplucation 
@@ -99,7 +89,7 @@ const Pro = (prop) => {
 
 
   const deleteMedia = async (mediaId) => {
-    console.log('Attempting to delete mediaId:', mediaId); 
+    console.log('Attempting to delete mediaId:', mediaId);
     try {
       const res = await fetch(`http://192.168.1.173:3000/profiles/${profileId}/gallery/${mediaId}`, {
         method: 'DELETE',
@@ -146,6 +136,8 @@ const Pro = (prop) => {
         try {
           const request = await fetch(`${Ipaddress}/profiles/${profileId}/gallery`)
           const data = await request.json();
+            console.log(`raw  gallery data:${JSON.stringify(data)}`)
+    
 
           if (data.success) {
             setMedia(data.gallery);
@@ -182,22 +174,24 @@ const Pro = (prop) => {
     thumbnail: item.thumbnail || null,
   }));
 
+  console.log('default profile picture',require('../../assets/images/default.png'));
+  console.log('default profile picture',require('../../assets/images/default.png'));
 
   const renderItem = ({ item }) => {
     // Determine the URI to display
-    // const displayUri = item.video ? item.videoThumbnail : item.profileMeta;
-    const isVideo = item.isVideo;
-    const displayUri = isVideo
-      ? item.thumbnail ?? null
+    //  const displayUri = item.video ? item.videoThumbnail : item.profileMeta;
+     const isVideo = item.isVideo;
+     const displayUri = isVideo
+       ? item.thumbnail ?? null
       : item.uri;
 
     return (
-      <View style={{ width: ScreenWidth / 3, height: ScreenWidth / 3 }}>
-        <TouchableOpacity onPress={() => OpenModal(item)}>
+      <View className="w-1/3 aspect-square p-0.5">
+        <TouchableOpacity onPress={() => OpenModal(item)} className="flex-1 border border-gray-100 rounded-lg overflow-hidden">
           {displayUri && (
             <Image
               source={{ uri: displayUri }}
-              style={{ width: '100%', height: '100%', borderRadius: 15 }}
+              className="w-full h-full"
             />
           )}
         </TouchableOpacity>
@@ -256,21 +250,28 @@ const Pro = (prop) => {
   // RETURN SECTION
   const item = mediaItems
   return (
-    <SafeAreaView>
-      <View >
+    <SafeAreaView className='flex-1' bg-white>
+      <View>
 
-        <View style={styles.image}>
+        {/* <View style={styles.image}>
           <Image
             source={{ uri: profilePicture }}
-            style={styles.image}
+             style={styles.image}
+            // className="w-32 h-32 rounded-full border-4 border-white"
             defaultSource={require('../../../assets/images/salad.jpg')}
+          />
+        </View> */}
+
+        <View className='px-1 items-center overflow-hidden rounded-2xl border border-gray-100'>
+          <Image
+            source={profilePicture ? { uri: profilePicture} : require('../../assets/images/default.png')}
+            className="w-full h-80 rounded-xl"
+            defaultSource={require('../../../assets/images/default.png')}
           />
         </View>
         <View style={styles.info}>
           <TouchableOpacity
             onPress={() => {
-
-
 
               navigation.navigate("ProfilesTab", {
                 screen: "EditPro",
@@ -281,97 +282,13 @@ const Pro = (prop) => {
               });
             }}
           >
-            <Text style={styles.Edit}> EDITE PROFILE</Text>
+            <Text className=' text-left  font-extrabold text-3xl'> EDITE PROFILE</Text>
           </TouchableOpacity>
-          <Text style={styles.text}>{infoSelected.full_Name}</Text>
-          <Text style={styles.text}>{infoSelected.certification}</Text>
-          <Text style={styles.text}>{infoSelected.function}</Text>
-          <Text style={styles.text}>{infoSelected.email}</Text>
-        </View>
-        <View style={styles.container}>
-          <View style={styles.box}>
-            <TouchableOpacity activeOpacity={0.7} onPress={openModal}>
-              <LinearGradient
-                colors={['white', 'silver', 'white']}
-                start={{ x: 3, y: -2 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.button}
-              >
-                <Text style={styles.text}>Book Now</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Modal
-                animationType="fade"
-                transparent={false}
-                visible={modal}
-                onRequestClose={closeModal}
-
-              >
-
-                <View style={styles.modalOverlay}>
-                  <Text style={styles.text}>Choose Number of trainees</Text>
-                  <Picker
-                    style={styles.Picker}
-                    selectedValue={trainees}
-                    onValueChange={trainer}
-                    itemStyle={styles.itemStyle}
-
-                  >
-                    <Picker.Item label='1' value={1} />
-                    <Picker.Item label='2' value={2} />
-                    <Picker.Item label='3' value={3} />
-                    <Picker.Item label='4' value={4} />
-                    <Picker.Item label='5' value={5} />
-                    <Picker.Item label='6' value={6} />
-                  </Picker>
-                  <Separator />
-                  <Text style={styles.text}>Choose location</Text>
-                  <Picker
-                    style={styles.Picker}
-                    selectedValue={location}
-                    onValueChange={Spot}
-                    itemStyle={styles.itemStyle}
-                  >
-                    <Picker.Item label='24Fit' value='24Fit' />
-                    <Picker.Item label='jerseyFit' value='jerseyFit' />
-                    <Picker.Item label='bayonFit' value='bayonFit' />
-                    <Picker.Item label='FourFit' value='FourFit' />
-                  </Picker>
-                  <Separator />
-                  <Picker
-                    style={styles.Picker}
-                    selectedValue={selectedValue}
-                    onValueChange={(itemValue, itemIndex) => {
-                      setSelectedValue(itemValue);
-                      itemValue === 'datetime' ? setShowpicker(true) : undefined
-
-                    }}
-
-                  >
-                    <Picker.Item label="Choose Date and Time" value="datetime" />
-                    <Picker.Item label="Select an option" value="default" />
-                  </Picker>
-                  {showPicker && (
-                    <DateTimePicker
-                      value={date}
-                      mode="datetime"
-                      is24Hour={true}
-                      display="default"
-                      onChange={onChange}
-                    />
-                  )}
-                  <Button
-                    title="CLOSE"
-                    onPress={closeModal}
-                    buttonStyle={{ backgroundColor: 'rgba(0,10,0,0.2)', borderRadius: 10, padding: 10 }}
-                    containerStyle={{ marginTop: 200 }}
-                    titleStyle={{ color: 'black', fontWeight: 'bold' }}
-                  />
-
-                </View>
-              </Modal>
-            </TouchableOpacity>
+          <View className='gap-2'>
+            <Text className='text-left text-xl fond-bold font-stretch-ultra-expanded'>{infoSelected.full_Name || 'NO FULL NAME'}</Text>
+            <Text className='text-left text-xl fond-bold' >{infoSelected.certification || 'NO CERTIFICATION'}</Text>
+            <Text className='text-left text-xl fond-bold'>{infoSelected.function || 'No FUNCTION'}</Text>
+            <Text className='text-left text-xl fond-black'>{infoSelected.email || 'NO EMAIL'}</Text>
           </View>
         </View>
         <FlatList
@@ -418,12 +335,6 @@ const Pro = (prop) => {
   );
 };
 
-
-
-
-
-
-
 const styles = StyleSheet.create({
 
 
@@ -442,29 +353,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 8,
     marginTop: 20,
-    marginBottom:100
+    marginBottom: 100
   },
   deleteButtonText: {
     color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  info: {
-    alignContent: 'left',
-    alignItems: 'left',
-    marginTop: "auto"
-
-  },
-  text: {
-    color: 'black',
-    fontSize: 20,
-    fontWeight: "bold",
-    fontStyle: "italic",
-    fontWeight: 'condensed',
-    autoCapitalize: "characters"
 
 
-  },
+
   container: {
     flex: 4,
     backgroundColor: '#f0f0f0',
