@@ -38,3 +38,4 @@ android/
 #ignore files 
 features.js
 .env
+.env
