@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { vieView,Text,TextInput,Pressable,ActivityIndicator,KeyboardAvoidingView,ScrollView,Platform} from "react-native";
+import { View, Text, TextInput, Pressable, ActivityIndicator, KeyboardAvoidingView, ScrollView, Platform } from "react-native";
 import { useDispatch } from "react-redux";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import {auth} from '../../firebase/configue';
+import { auth } from '../../firebase/configue';
 import { setAuth } from "../../redux/slices/authSlice";
 import { useForm, Controller } from "react-hook-form";
 
@@ -25,9 +24,8 @@ function Field({ label, error, ...props }) {
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         placeholderTextColor="#8A94A6"
-        className={`rounded-xl border-2 bg-[#F2F4F8] px-4 py-3.5 text-base text-[#14213D] ${
-          error ? "border-[#D7263D]" : focused ? "border-[#1D3FA8]" : "border-transparent"
-        }`}
+        className={`rounded-xl border-2 bg-[#F2F4F8] px-4 py-3.5 text-base text-[#14213D] ${error ? "border-[#D7263D]" : focused ? "border-[#1D3FA8]" : "border-transparent"
+          }`}
       />
       {error ? <Text className="mt-1 text-sm text-[#D7263D]">{error}</Text> : null}
     </View>
@@ -40,7 +38,7 @@ export default function SignUpScreen({ navigation }) {
   const [formError, setFormError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const API_URL= process.env.EXPO_BASE_URL
+  const API_URL = process.env.EXPO_PUBLIC_API_URL
 
   const {
     control,
@@ -60,6 +58,7 @@ export default function SignUpScreen({ navigation }) {
 
       // 2. Create the matching user in MongoDB
       const token = await user.getIdToken();
+      console.log("API_URL:", API_URL);
       const res = await fetch(`${API_URL}/users`, {
         method: "POST",
         headers: {
@@ -68,6 +67,7 @@ export default function SignUpScreen({ navigation }) {
         },
         body: JSON.stringify({ name: name.trim(), email: user.email }),
       });
+      console.log("POST /users status:", res.status, await res.clone().text());
       if (!res.ok) throw new Error("profile-create-failed");
       const profile = await res.json();
 
@@ -77,9 +77,9 @@ export default function SignUpScreen({ navigation }) {
       console.log(err.code ?? err.message);
       setFormError(
         FIREBASE_ERRORS[err.code] ??
-          (err.message === "profile-create-failed"
-            ? "Your account was created, but your profile couldn't be saved. Try logging in."
-            : "Sign up failed. Try again.")
+        (err.message === "profile-create-failed"
+          ? "Your account was created, but your profile couldn't be saved. Try logging in."
+          : "Sign up failed. Try again.")
       );
     }
   };
@@ -200,9 +200,8 @@ export default function SignUpScreen({ navigation }) {
         <Pressable
           onPress={handleSubmit(onSubmit)}
           disabled={isSubmitting}
-          className={`items-center rounded-xl py-4 ${
-            isSubmitting ? "bg-[#1D3FA8]/60" : "bg-[#1D3FA8] active:bg-[#16318A]"
-          }`}
+          className={`items-center rounded-xl py-4 ${isSubmitting ? "bg-[#1D3FA8]/60" : "bg-[#1D3FA8] active:bg-[#16318A]"
+            }`}
         >
           {isSubmitting ? (
             <ActivityIndicator color="#fff" />
@@ -213,7 +212,7 @@ export default function SignUpScreen({ navigation }) {
 
         <View className="mt-6 flex-row justify-center">
           <Text className="text-[#5B6578]">Already have an account? </Text>
-          <Pressable onPress={() => navigation.navigate("Login")}>
+          <Pressable onPress={() => navigation.navigate("Logging")}>
             <Text className="font-bold text-[#1D3FA8]">Log in</Text>
           </Pressable>
         </View>

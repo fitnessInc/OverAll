@@ -15,6 +15,8 @@ import { setProfileMeta } from '../../../redux/slices/imageSlice';
 import { useDispatch } from 'react-redux';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import * as FileSystem from 'expo-file-system';
+import { authFetch } from '../../../firebase/authFetch'
+
 
 
 
@@ -35,7 +37,8 @@ const Pro = (prop) => {
   // PARAMS SECTION
   const routy = useRoute();
   console.log('routeObject', routy)
-  const { profileId, profileData } = route.params;
+  
+  
   // Dispatch;
   const dispatch = useDispatch();
   // USE STATE HOOK SECTION
@@ -52,17 +55,24 @@ const Pro = (prop) => {
   const [videoThumbnails, setVideoThumbnails] = useState({});
   const [thumbnailObject, setThumbnailsObject] = useState({})
   const [media, setMedia] = useState([])
+  const [isOwner, setIsOwner] = useState(!route.params?.userId);
+  const [profile, setProfile] = useState(null);
+
 
   // USESELECTOR SECTION
 
-  const infoSelected = useSelector(state => state.info.infoPro[profileId] || EmptyObject);
+  const infoSelected = useSelector(state => state.info.infoPro || EmptyObject);
   console.log("Received item in Pro:", infoSelected);
-  const profilePicture = useSelector(state => state.image.profiles[profileId] || null);
+  const profilePicture = useSelector(state => state.image.profiles || null);
   console.log('profilePictures', profilePicture);
   console.log('profilePicture raw value:', JSON.stringify(profilePicture));
   const ProfileSelected = useSelector(state => state.proSelected.selectedProfile || EmptyObject);
   console.log("the profile selected:", ProfileSelected)
+  const uid = useSelector(state => state.auth.user.uid)
   // VIDEO CONTROLLER INSTENCE SECTION
+  // replace profileId  
+
+  const viewedUserId = route.params?.userId;
 
 
 
@@ -91,9 +101,7 @@ const Pro = (prop) => {
   const deleteMedia = async (mediaId) => {
     console.log('Attempting to delete mediaId:', mediaId);
     try {
-      const res = await fetch(`http://192.168.1.173:3000/profiles/${profileId}/gallery/${mediaId}`, {
-        method: 'DELETE',
-      });
+      const res = await authFetch(`/profiles/me/media/${item.type}/${item.id}`, { method: 'DELETE' });
 
       const data = await res.json();
 
@@ -121,26 +129,34 @@ const Pro = (prop) => {
     );
   };
 
+  const ownProfile =!viewedUserId
+
 
 
   useFocusEffect(
 
-
     useCallback(() => {
 
-      var active = true
+
+      let active = true
+
+     const path = viewedUserId ? `/profiles/${viewedUserId}/gallery` : '/profiles/me/gallery';
       const FetchGallery = async () => {
 
-        const Ipaddress = 'http://192.168.1.173:3000';
-
         try {
-          const request = await fetch(`${Ipaddress}/profiles/${profileId}/gallery`)
-          const data = await request.json();
-            console.log(`raw  gallery data:${JSON.stringify(data)}`)
-    
+            console.log('gallery path:', path);
+          const request = await authFetch(path)
 
-          if (data.success) {
+          const data = await request.json();
+          if (!request.ok) {
+            return console.log('request  gallery faild', request.status, JSON.stringify(data))
+          }
+
+
+          if (active && data.success) {
             setMedia(data.gallery);
+            setProfile(data.profile)
+            setIsOwner(ownProfile || data.isOwner)
 
           };
 
@@ -151,17 +167,12 @@ const Pro = (prop) => {
         }
 
 
-
-
       }
       FetchGallery()
       return () => {
         active = false
       }
-    }, [profileId])
-
-
-
+    }, [viewedUserId,ownProfile])
 
   );
 
@@ -174,15 +185,15 @@ const Pro = (prop) => {
     thumbnail: item.thumbnail || null,
   }));
 
-  console.log('default profile picture',require('../../assets/images/default.png'));
-  console.log('default profile picture',require('../../assets/images/default.png'));
+  console.log('default profile picture', require('../../assets/images/default.png'));
+  console.log('default profile picture', require('../../assets/images/default.png'));
 
   const renderItem = ({ item }) => {
     // Determine the URI to display
     //  const displayUri = item.video ? item.videoThumbnail : item.profileMeta;
-     const isVideo = item.isVideo;
-     const displayUri = isVideo
-       ? item.thumbnail ?? null
+    const isVideo = item.isVideo;
+    const displayUri = isVideo
+      ? item.thumbnail ?? null
       : item.uri;
 
     return (
@@ -253,37 +264,26 @@ const Pro = (prop) => {
     <SafeAreaView className='flex-1' bg-white>
       <View>
 
-        {/* <View style={styles.image}>
-          <Image
-            source={{ uri: profilePicture }}
-             style={styles.image}
-            // className="w-32 h-32 rounded-full border-4 border-white"
-            defaultSource={require('../../../assets/images/salad.jpg')}
-          />
-        </View> */}
 
         <View className='px-1 items-center overflow-hidden rounded-2xl border border-gray-100'>
           <Image
-            source={profilePicture ? { uri: profilePicture} : require('../../assets/images/default.png')}
+            source={profile?.avatar ?{ uri: profile.avatar } : require('../../assets/images/default.png')}
             className="w-full h-80 rounded-xl"
             defaultSource={require('../../../assets/images/default.png')}
           />
         </View>
         <View style={styles.info}>
-          <TouchableOpacity
-            onPress={() => {
+          { isOwner &&
+            <TouchableOpacity
+              onPress={() => {
 
-              navigation.navigate("ProfilesTab", {
-                screen: "EditPro",
-                params: {
-                  profileId,
-                  profileData: item
-                }
-              });
-            }}
-          >
-            <Text className=' text-left  font-extrabold text-3xl'> EDITE PROFILE</Text>
-          </TouchableOpacity>
+                navigation.navigate("EditPro",{profileId:profile?.profile_id});
+                
+              }}
+            >
+              <Text className=' text-left  font-extrabold text-3xl'> EDITE PROFILE</Text>
+            </TouchableOpacity>
+          }
           <View className='gap-2'>
             <Text className='text-left text-xl fond-bold font-stretch-ultra-expanded'>{infoSelected.full_Name || 'NO FULL NAME'}</Text>
             <Text className='text-left text-xl fond-bold' >{infoSelected.certification || 'NO CERTIFICATION'}</Text>

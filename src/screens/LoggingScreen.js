@@ -5,43 +5,45 @@ import { Svg } from "react-native-svg";
 import { Dimensions } from 'react-native';
 import { BackgroundImage } from "@rneui/base";
 import { useState } from 'react';
-// import { Ionicons } from '@expo/vector-icons';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import SignUpScreen from "./singnUp";
+import { auth } from "../../firebase/configue";
+import { Ionicons } from '@expo/vector-icons';
 
 
 
-const LoggingScreen = () => {
+const LoggingScreen = ({ navigation }) => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setEerror]= useState();
-    const [spinnerLoad, setSpinnerLoad]= useState(false)
+    const [error, setEerror] = useState();
+    const [spinnerLoad, setSpinnerLoad] = useState(false)
 
-    
-      const  handleSignIn= async()=>{
+
+    const handleSignIn = async () => {
         setEerror('')
-        if (!email||!password){
+        if (!email || !password) {
             setEerror('input your email and password ')
             return
-        }else{
+        } else {
             setSpinnerLoad(true)
-             try{
-                await signInWithEmailAndPassword(Auth, email.trim(), password);
+            try {
+                await signInWithEmailAndPassword(auth, email.trim(), password);
 
-             }catch(e){
+            } catch (e) {
                 setEerror(authError(e.code))
 
-             }finally{
+            } finally {
                 setSpinnerLoad(false)
-             }
+            }
         }
-             
-    
-
-        
 
 
-      }
+
+
+
+
+    }
 
     return (
 
@@ -50,6 +52,7 @@ const LoggingScreen = () => {
             <View style={styles.inputContainer}>
                 <TextInput
                     style={styles.input}
+                    placeholderTextColor='#555'
                     placeholder="Email"
                     onChangeText={text => setEmail(text)}
                     value={email}
@@ -60,23 +63,28 @@ const LoggingScreen = () => {
                 <TextInput
                     style={styles.input}
                     placeholder="Password"
+                    placeholderTextColor='#555'
                     onChangeText={text => setPassword(text)}
                     value={password}
                     secureTextEntry={true}
                 />
                 <Ionicons name="lock-closed" size={24} color="black" style={styles.icon} />
-                {error?<Text className="text-red-500 mb-3">{error}</Text> : null}
+                {error ? <Text className="text-red-500 mb-3">{error}</Text> : null}
             </View>
             <TouchableOpacity style={styles.button} onPress={handleSignIn}>
                 <Text style={styles.buttonText}>Tap To Login</Text>
                 <Text style={{ margin: 10, justifyContent: 'center' }}>Forgot Password?</Text>
             </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('SingUp')}>
+                <Text style={styles.buttonText}>Tap To SingUP</Text>
+                <Text style={{ margin: 10, justifyContent: 'center' }}>Forgot Password?</Text>
+            </TouchableOpacity>
             <TouchableOpacity>
-            <View style={styles.socialIcons}>
-                <Ionicons name="logo-facebook" size={24} color="blue" style={styles.socialIcon} />
-                <Ionicons name="logo-google" size={24} color="red" style={styles.socialIcon} />
-                <Ionicons name="logo-linkedin" size={24} color="purple" style={styles.socialIcon} />
-            </View>  
+                <View style={styles.socialIcons}>
+                    <Ionicons name="logo-facebook" size={24} color="blue" style={styles.socialIcon} />
+                    <Ionicons name="logo-google" size={24} color="red" style={styles.socialIcon} />
+                    <Ionicons name="logo-linkedin" size={24} color="purple" style={styles.socialIcon} />
+                </View>
             </TouchableOpacity>
         </View>
 
@@ -88,18 +96,18 @@ const LoggingScreen = () => {
 };
 
 function authError(code) {
-  switch (code) {
-    case 'auth/invalid-email':
-      return 'That email address looks invalid.';
-    case 'auth/user-not-found':
-    case 'auth/wrong-password':
-    case 'auth/invalid-credential':
-      return 'Incorrect email or password.';
-    case 'auth/too-many-requests':
-      return 'Too many attempts. Try again later.';
-    default:
-      return 'Something went wrong. Please try again.';
-  }
+    switch (code) {
+        case 'auth/invalid-email':
+            return 'That email address looks invalid.';
+        case 'auth/user-not-found':
+        case 'auth/wrong-password':
+        case 'auth/invalid-credential':
+            return 'Incorrect email or password.';
+        case 'auth/too-many-requests':
+            return 'Too many attempts. Try again later.';
+        default:
+            return 'Something went wrong. Please try again.';
+    }
 }
 
 
@@ -116,12 +124,15 @@ const styles = StyleSheet.create({
 
     input: {
         height: 50,
-        width: '200',
+        width: '100%',
         borderColor: 'black',
         borderWidth: 1,
-        borderRadius: 5,
-        paddingHorizontal: 100,
-        marginBottom: 0,
+        borderRadius: 6,
+        paddingLeft: 14,
+        paddingRight: 44,
+        color: '#14213D',
+        backgroundColor: 'white'
+
     },
     button: {
         backgroundColor: 'transparent',
@@ -144,7 +155,7 @@ const styles = StyleSheet.create({
     socialIcons: {
         flexDirection: 'row',
         marginTop: 10,
-        
+
     },
     socialIcon: {
         marginHorizontal: 10,

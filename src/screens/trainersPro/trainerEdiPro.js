@@ -13,6 +13,7 @@ import { updateInfoPro } from "../../../redux/slices/infoSlice";
 import Pro from "./profileOne";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { combineReducers, isImmutableDefault } from "@reduxjs/toolkit";
+import { authFetch } from "../../../firebase/authFetch";
 
 
 
@@ -26,12 +27,11 @@ const Height = Math.round(ScreenHeight * 0.3);
 
 const EditPro = (prop) => {
 
-    // const safeParams = route?.params?.params || {};
+     
     const navigation = useNavigation();
     const route = useRoute();
-    console.log('routeObject', route)
     const dispatch = useDispatch();
-    const { profileId, profileData } = route.params || {};
+    const { profileId, profileData } = route.params ?? {};
     console.log('profileId:', profileId);
     console.log('profileData', profileData);
 
@@ -155,15 +155,12 @@ const EditPro = (prop) => {
         objectInstance.append("title:", asset.fileName || "untitle");
 
         try {
-            const request = await fetch(`http://192.168.1.173:3000/upload/user/${profileId}`, {
+            const request = await authFetch(`upload/me/media`, {
                 method: 'POST',
                 body: objectInstance,
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+                
             })
-            console.log('Uploading for profileId:', profileId);
-
+            
             const data = await request.json();
 
             if (data.success) {
@@ -222,7 +219,7 @@ const EditPro = (prop) => {
 
         try {
 
-            const request = await fetch(`http://192.168.1.173:3000/profiles/${profileId}`, {
+            const request = await authFetch(`profiles/me`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ avatar: { url: null, thumbnail: null } })
@@ -337,12 +334,6 @@ const EditPro = (prop) => {
                     <Button
                         title="ADD Gallery Media"
                         onPress={() => addMeta(profileId)}
-                    />
-                </View>
-                <View style={{ marginTop: 6 }}>
-                    <Button
-                        title="DELET PROFILE MEDIA"
-                        onPress={() => alert('Simple Button pressed')}
                     />
                 </View>
             </View >

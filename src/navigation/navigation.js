@@ -3,28 +3,22 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator, } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
 import SettingsScreen from '../screens/SettingsScreen';
-import Ionicons from 'react-native-vector-icons'
 import { Images } from '../config/images';
-import { Image, View, ActivityIndicator } from 'react-native';
-import CalisthenicScreen from '../screens/CalisthenicScreen';
-import GymScreen from '../screens/GymScreen';
-import MealScreen from '../screens/MealScreen';
-import WorkoutScreen from '../screens/WorkoutScreen';
+import { Image, View } from 'react-native';
 import ChatScreen from '../screens/ChatScreen';
-import { BlurView } from 'expo-blur';
 import { DefaultTheme } from "@react-navigation/native"
 import LoggingScreen from '../screens/LoggingScreen';
-import CarouselCard from '../components/carousel';
-import Food from '../screens/food';
-import Order from '../screens/Order';
 import Profiles from '../screens/Profiles';
 import Pro from '../screens/trainersPro/profileOne'
 import EditPro from '../screens/trainersPro/trainerEdiPro';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useDispatch,useSelector } from 'react-redux';
-import { setAuth ,clearAuth} from '../../redux/slices/authSlice';
-import React, {  useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setAuth, clearAuth } from '../../redux/slices/authSlice';
+import { useEffect } from 'react';
 import ActivityIndicator from '../components/activityIndicator';
+import SignUpScreen from '../screens/singnUp';
+import { auth } from '../../firebase/configue';
+import { onAuthStateChanged } from 'firebase/auth';
 
 
 
@@ -36,7 +30,6 @@ function ProfileStackScreen() {
     return (
 
         <Stack.Navigator>
-            <Stack.Screen name="Food" component={Food} options={{ headerShown: false }} />
             <Stack.Screen name="Profiles" component={Profiles} options={{ headerShown: false }} />
             <Stack.Screen name="Pro" component={Pro} options={{ headerShown: false }} />
             <Stack.Screen name="EditPro" component={EditPro} options={{ headerShown: false }} />
@@ -45,11 +38,21 @@ function ProfileStackScreen() {
     );
 };
 
-const auth = () => {
+function myProfile() {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="logging" component={LoggingScreen} options={{ headerShown: false }} />
-            <Stack.Screen name="singUp" component={singUp} options={{ headerShown: false }} />
+            <Stack.Screen name="Pro" component={Pro} options={{ headerShown: false }} />
+            <Stack.Screen name="EditPro" component={EditPro} options={{ headerShown: false }} />
+        </Stack.Navigator>
+    )
+
+};
+
+const Auth = () => {
+    return (
+        <Stack.Navigator>
+            <Stack.Screen name="Logging" component={LoggingScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="SingUp" component={SignUpScreen} options={{ headerShown: false }} />
         </Stack.Navigator>
 
     )
@@ -61,100 +64,89 @@ const auth = () => {
 
 export default function Navigation() {
 
-    const  dispatch = useDispatch();
-    const user = useSelector((state)=>state.auth.user);
-    const indicator = useSelector((state)=> state.auth.indicator);
+    const dispatch = useDispatch();
+    const user = useSelector((state) => state.auth.user);
+    const indicator = useSelector((state) => state.auth.indicator);
 
-    useEffect(()=>{
-         const unsub = onAuthStateChanged(auth, (fbUser) => {
-      if (fbUser) {
-        dispatch(setAuth({ uid: fbUser.uid, email: fbUser.email }));
-      } else {
-        dispatch(clearAuth());
-      }
-    });
-    return unsub;
+    useEffect(() => {
+        const unsub = onAuthStateChanged(auth, (fbUser) => {
+            if (fbUser) {
+                dispatch(setAuth({ uid: fbUser.uid, email: fbUser.email }));
+            } else {
+                dispatch(clearAuth());
+            }
+        });
+        return unsub;
 
 
-    },[dispatch]);
-    if (indicator) return <ActivityIndicator/>
+    }, [dispatch]);
+    if (indicator) return <ActivityIndicator />
 
-    
+
 
     return (
         <NavigationContainer theme={MyTheme} >
-            {user?(
-              
-            <Tab.Navigator screenOptions={({ route }) => ({
-                tabBarIcon: ({ focused, color, size }) => {
-                    let iconName;
+            {user ? (
 
-                    if (route.name === 'Home') {
-                        iconName = Images.homeIcon;
-                    } else if (route.name === 'Settings') {
-                        iconName = Images.settingsIcon;
-                    } else if (route.name == 'Workout') {
-                        iconName = Images.workoutIcon;
-                    } else if (route.name == 'Meal') {
-                        iconName = Images.mealIcon;
-                    } else if (route.name == 'Logging') {
+                <Tab.Navigator screenOptions={({ route }) => ({
+                    tabBarIcon: ({ focused, color, size }) => {
+                        let iconName;
 
-                        return <Image className="w-6 h-6" source={Images.LoggingIcon} />;
-                    } else if (route.name == "Food") {
-                        iconName: () => null;
+                        if (route.name === 'Home') {
+                            iconName = Images.homeIcon;
+                        } else if (route.name === 'Settings') {
+                            iconName = Images.settingsIcon;
 
-                    } else if (route.name === 'Order') {
-                        iconName: () => null;
-                    } else if (route.name === 'Profiles') {
-                        iconName: () => null;
+                        } else if (route.name == 'Logging') {
 
-                    } else {
-                        iconName = Images.chatIcon
-                    }
+                            return <Image className="w-6 h-6" source={Images.LoggingIcon} />;
 
-                    return <Image source={iconName} style={{ tintColor: focused ? 'white:' : "white", width: 30, height: 30 }}
-                    />;
+                        } else {
+                            iconName = Images.meIcon
 
-                },
+                        }
 
-                tabBarInactiveTintColor: 'black',
-                tabBarLabelStyle: {
-                    fontSize: 14,
-                    fontWeight: 600,
-                    marginBottom: -10,
-                    color: "white"
-                },
-                tabBarStyle: {
-                    paddingTop: 12,
-                    // position: 'absolute',
-                },
+                        return <Image source={iconName} style={{ tintColor: focused ? 'white' : "white", width: 30, height: 30 }}
+                        />;
 
-                tabBarBackground: () => (
-                    <View intensity={60} className="backdrop-blur-sm bg-white/30" />
-                )
+                    },
 
-            })}>
+                    tabBarInactiveTintColor: 'black',
+                    tabBarLabelStyle: {
+                        fontSize: 14,
+                        fontWeight: 600,
+                        marginBottom: -10,
+                        color: "white"
+                    },
+                    tabBarStyle: {
+                        paddingTop: 12,
+                        // position: 'absolute',
+                    },
+
+                    tabBarBackground: () => (
+                        <View intensity={60} className="backdrop-blur-sm bg-white/30" />
+                    )
+
+                })}>
 
 
-                <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false, }} />
-                <Tab.Screen name="Workout" component={WorkoutScreen} options={{ headerShown: false }} />
-                <Tab.Screen name="Meal" component={CarouselCard} options={{ headerShown: false }} />
-                <Tab.Screen name="Chat" component={ChatScreen} options={{ headerShown: false }} />
-                <Tab.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
-                <Tab.Screen
-                    name="ProfilesTab"
-                    component={ProfileStackScreen}
-                    options={{
-                        headerShown: false,
-                        tabBarLabel: () => null,
-                        tabBarButton: (props) => null,
-                    }}
-                />
+                    <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false, }} />
+                    <Tab.Screen name="me" component={myProfile} options={{ headerShown: false }} />
+                    <Tab.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
+                    <Tab.Screen
+                        name="ProfilesTab"
+                        component={ProfileStackScreen}
+                        options={{
+                            headerShown: false,
+                            tabBarLabel: () => null,
+                            tabBarButton: (props) => null,
+                        }}
+                    />
 
-            </Tab.Navigator>   
+                </Tab.Navigator>
 
-            ):(
-                <auth/>
+            ) : (
+                <Auth />
             )}
         </NavigationContainer>
     );

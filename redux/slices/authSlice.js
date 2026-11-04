@@ -1,10 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  user:null,
-  indicator:true
-  
-   
+  user: null,
+  indicator: true,
 };
 
 const authSlice = createSlice({
@@ -12,17 +10,15 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setAuth: (state, action) => {
-     state.user = action.payload,
-      state.indicator= false
-      console.log('setAuth',state.users)
+      state.user = action.payload;
+      state.indicator = false;
     },
-    clearAuth: (state, action) => {
-      state.user=null,
-      state.indicator= false
-      
+    clearAuth: (state) => {
+      state.user = null;
+      state.indicator = false;
     },
   },
 });
 
-export const { setAuth, clearAuth } = imageSlice.actions;
+export const { setAuth, clearAuth } = authSlice.actions;
 export default authSlice.reducer;

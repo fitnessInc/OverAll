@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import { updateInfoPro } from "../../redux/slices/infoSlice";
 import { setProfileMeta } from "../../redux/slices/imageSlice";
 // import { selectPro } from "../../redux/reselect"
+import  {authFetch } from "../../firebase/authFetch";
 
 
 
@@ -30,7 +31,8 @@ const Profiles = ({ navigation }) => {
 
       const fetchProfiles = async () => {
         try {
-          const res = await fetch('http://192.168.1.173:3000/profiles');
+          const res= await authFetch("/profiles")
+          
           const data = await res.json();
 
           if (data.success && isActive) {
@@ -75,7 +77,7 @@ const Profiles = ({ navigation }) => {
       onPress={() => navigation.navigate('ProfilesTab', {
         screen: 'Pro',
         params: {
-          profileId: item.user_id,
+          userId: item.user_id,
           profileData: item
         }
 
