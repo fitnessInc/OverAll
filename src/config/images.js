@@ -6,5 +6,8 @@ export const Images = {
     mealIcon: require('../assets/images/meal.png'),
     settingsIcon: require('../assets/images/settings.png'),
     LoggingIcon:require('../assets/images/log.png'),
-     meIcon:require('../assets/images/user.png')
+     meIcon:require('../assets/images/user.png'),
+     logOut:require('../assets/images/out.png'),
+     logout:require('../assets/images/logout.png'),
+
 }

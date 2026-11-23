@@ -19,12 +19,14 @@ import ActivityIndicator from '../components/activityIndicator';
 import SignUpScreen from '../screens/singnUp';
 import { auth } from '../../firebase/configue';
 import { onAuthStateChanged } from 'firebase/auth';
+import useLogout from '../components/logOut';
 
 
 
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
+const Empty = () => null
 
 function ProfileStackScreen() {
     return (
@@ -67,11 +69,12 @@ export default function Navigation() {
     const dispatch = useDispatch();
     const user = useSelector((state) => state.auth.user);
     const indicator = useSelector((state) => state.auth.indicator);
+    const { confirmLogout, loading: loggingOut } = useLogout();
 
     useEffect(() => {
         const unsub = onAuthStateChanged(auth, (fbUser) => {
             if (fbUser) {
-                dispatch(setAuth({ uid: fbUser.uid, email: fbUser.email }));
+                dispatch(setAuth({ uid: fbUser.uid, email: fbUser.email, name: fbUser.displayName }));
             } else {
                 dispatch(clearAuth());
             }
@@ -94,8 +97,10 @@ export default function Navigation() {
 
                         if (route.name === 'Home') {
                             iconName = Images.homeIcon;
-                        } else if (route.name === 'Settings') {
-                            iconName = Images.settingsIcon;
+                        } else if (route.name === 'logout') {
+                            if (loggingOut) return <ActivityIndicator color="white" />;
+                            iconName = Images.logout
+                            ;
 
                         } else if (route.name == 'Logging') {
 
@@ -132,7 +137,17 @@ export default function Navigation() {
 
                     <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false, }} />
                     <Tab.Screen name="me" component={myProfile} options={{ headerShown: false }} />
-                    <Tab.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
+                    <Tab.Screen
+                        name="logout"
+                        component={Empty}
+                        options={{ headerShown: false }}
+                        listeners={{
+                            tabPress: (e) => {
+                                e.preventDefault(); // don't open the empty screen
+                                confirmLogout();    // ② confirmLogout: show the alert → sign out
+                            },
+                        }}
+                    />
                     <Tab.Screen
                         name="ProfilesTab"
                         component={ProfileStackScreen}

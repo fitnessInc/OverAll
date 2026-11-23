@@ -37,8 +37,8 @@ const Pro = (prop) => {
   // PARAMS SECTION
   const routy = useRoute();
   console.log('routeObject', routy)
-  
-  
+
+
   // Dispatch;
   const dispatch = useDispatch();
   // USE STATE HOOK SECTION
@@ -61,18 +61,14 @@ const Pro = (prop) => {
 
   // USESELECTOR SECTION
 
-  const infoSelected = useSelector(state => state.info.infoPro || EmptyObject);
-  console.log("Received item in Pro:", infoSelected);
-  const profilePicture = useSelector(state => state.image.profiles || null);
-  console.log('profilePictures', profilePicture);
-  console.log('profilePicture raw value:', JSON.stringify(profilePicture));
-  const ProfileSelected = useSelector(state => state.proSelected.selectedProfile || EmptyObject);
-  console.log("the profile selected:", ProfileSelected)
+  // const infoSelected = useSelector(state => state.info.infoPro || EmptyObject);
+
   const uid = useSelector(state => state.auth.user.uid)
   // VIDEO CONTROLLER INSTENCE SECTION
   // replace profileId  
 
   const viewedUserId = route.params?.userId;
+  const ownProfile = !viewedUserId;
 
 
 
@@ -98,17 +94,19 @@ const Pro = (prop) => {
   };
 
 
-  const deleteMedia = async (mediaId) => {
-    console.log('Attempting to delete mediaId:', mediaId);
+  const deleteMedia = async (item) => {
+    const type = item.type ?? (item.video ? 'video' : 'photo');
+    const id = item.id ?? item._id;
+    console.log('Deleting:', type, id);
     try {
-      const res = await authFetch(`/profiles/me/media/${item.type}/${item.id}`, { method: 'DELETE' });
+      const res = await authFetch(`/upload/me/media/${type}/${id}`, { method: 'DELETE' });
 
       const data = await res.json();
 
       if (data.success) {
         console.log('Deleted:', data.message);
         // the filter prev take previous state  and filter to return a state without item deleted 
-        setMedia(prev => prev.filter(item => item.id !== mediaId)); // instant UI update
+        setMedia(prev => prev.filter(m => (m.id ?? m._id) !== id)); // instant UI update
         CloseModal();
       } else {
         console.log('Delete failed:', data.message);
@@ -118,18 +116,44 @@ const Pro = (prop) => {
     }
   };
 
-  const handleDelete = (mediaId) => {
+  const handleDelete = (item) => {
     Alert.alert(
       'Delete this item?',
       'This cannot be undone.',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete', style: 'destructive', onPress: () => deleteMedia(mediaId) }
+        { text: 'Delete', style: 'destructive', onPress: () => deleteMedia(item) }
       ]
     );
   };
 
-  const ownProfile =!viewedUserId
+
+
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+      (async () => {
+        try {
+
+          const path = viewedUserId ? `/profiles/${viewedUserId}` : '/profiles/me'
+          const res = await authFetch(path);
+          const data = await res.json();
+          if (data.success && active) {
+            setProfile(data.profile), setIsOwner(ownProfile || data.isOwner)
+          } else {
+            console.log('profile fetch failed:', res.status, data.message);
+            setError(data.message || 'Could not load profile');
+          }
+        } catch (e) {
+
+          console.log('server error:', e)
+        }
+
+      })();
+      return () => { active = false; };
+
+    }, [ownProfile, viewedUserId])
+  )
 
 
 
@@ -140,11 +164,12 @@ const Pro = (prop) => {
 
       let active = true
 
-     const path = viewedUserId ? `/profiles/${viewedUserId}/gallery` : '/profiles/me/gallery';
+      const path = viewedUserId ? `/profiles/${viewedUserId}/gallery` : '/profiles/me/gallery';
+
       const FetchGallery = async () => {
 
         try {
-            console.log('gallery path:', path);
+          console.log('gallery path:', path);
           const request = await authFetch(path)
 
           const data = await request.json();
@@ -155,7 +180,6 @@ const Pro = (prop) => {
 
           if (active && data.success) {
             setMedia(data.gallery);
-            setProfile(data.profile)
             setIsOwner(ownProfile || data.isOwner)
 
           };
@@ -172,7 +196,7 @@ const Pro = (prop) => {
       return () => {
         active = false
       }
-    }, [viewedUserId,ownProfile])
+    }, [viewedUserId, ownProfile])
 
   );
 
@@ -185,8 +209,7 @@ const Pro = (prop) => {
     thumbnail: item.thumbnail || null,
   }));
 
-  console.log('default profile picture', require('../../assets/images/default.png'));
-  console.log('default profile picture', require('../../assets/images/default.png'));
+
 
   const renderItem = ({ item }) => {
     // Determine the URI to display
@@ -259,36 +282,35 @@ const Pro = (prop) => {
   })
 
   // RETURN SECTION
-  const item = mediaItems
+
   return (
     <SafeAreaView className='flex-1' bg-white>
       <View>
 
-
         <View className='px-1 items-center overflow-hidden rounded-2xl border border-gray-100'>
           <Image
-            source={profile?.avatar ?{ uri: profile.avatar } : require('../../assets/images/default.png')}
+            source={profile?.avatar ? { uri: profile.avatar.uri } : require('../../assets/images/default.png')}
             className="w-full h-80 rounded-xl"
             defaultSource={require('../../../assets/images/default.png')}
           />
         </View>
         <View style={styles.info}>
-          { isOwner &&
+          {isOwner &&
             <TouchableOpacity
               onPress={() => {
+               
+                navigation.navigate("EditPro");
 
-                navigation.navigate("EditPro",{profileId:profile?.profile_id});
-                
               }}
             >
               <Text className=' text-left  font-extrabold text-3xl'> EDITE PROFILE</Text>
             </TouchableOpacity>
           }
           <View className='gap-2'>
-            <Text className='text-left text-xl fond-bold font-stretch-ultra-expanded'>{infoSelected.full_Name || 'NO FULL NAME'}</Text>
-            <Text className='text-left text-xl fond-bold' >{infoSelected.certification || 'NO CERTIFICATION'}</Text>
-            <Text className='text-left text-xl fond-bold'>{infoSelected.function || 'No FUNCTION'}</Text>
-            <Text className='text-left text-xl fond-black'>{infoSelected.email || 'NO EMAIL'}</Text>
+            <Text className='text-left text-xl fond-bold font-stretch-ultra-expanded'>{profile?.full_Name || 'NO FULL NAME'}</Text>
+            <Text className='text-left text-xl fond-bold' >{profile?.certification || 'NO CERTIFICATION'}</Text>
+            <Text className='text-left text-xl fond-bold'>{profile?.function || 'No FUNCTION'}</Text>
+            <Text className='text-left text-xl fond-black'>{profile?.email || 'NO EMAIL'}</Text>
           </View>
         </View>
         <FlatList
@@ -321,9 +343,11 @@ const Pro = (prop) => {
                   style={styles.modalMedia}
                 />
               )}
-              <TouchableOpacity onPress={() => handleDelete(selectedMedia.id)} style={styles.deleteButton}>
-                <Text style={styles.deleteButtonText}>DELETE</Text>
-              </TouchableOpacity>
+              {isOwner &&
+                <TouchableOpacity onPress={() => handleDelete(selectedMedia)} style={styles.deleteButton}>
+                  <Text style={styles.deleteButtonText}>DELETE</Text>
+                </TouchableOpacity>
+              }
               <TouchableOpacity onPress={CloseModal} style={styles.closeButton}>
                 <Text style={styles.closeButtonText}>CLOSE</Text>
               </TouchableOpacity>

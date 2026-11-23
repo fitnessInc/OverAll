@@ -1,19 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Image, StyleSheet, Dimensions, SafeAreaView, TouchableOpacity, Modal, FlatList, Alert } from 'react-native';
-import * as Yup from 'yup';
-import { useForm, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
+import React, { useState, useEffect, useCallback } from "react";
+import { View, Text, TextInput, Image, StyleSheet, Dimensions, SafeAreaView, TouchableOpacity, Modal, FlatList, Alert, ActivityIndicator } from 'react-native';
 import { ListItem, Button } from "react-native-elements";
 import * as ImagePicker from 'expo-image-picker';
 import { Video } from "expo-av";
 import { useSelector, useDispatch } from "react-redux";
 import { setProfileMeta, clearProfileMeta } from "../../../redux/slices/imageSlice";
-import { metaProfile } from "../../../redux/slices/videoSlice";
-import { updateInfoPro } from "../../../redux/slices/infoSlice";
-import Pro from "./profileOne";
-import { useRoute, useNavigation } from "@react-navigation/native";
-import { combineReducers, isImmutableDefault } from "@reduxjs/toolkit";
+import { useRoute, useNavigation, useFocusEffect } from "@react-navigation/native";
 import { authFetch } from "../../../firebase/authFetch";
+import useDeleteAccount from "../../components/deleteAccount";
+
 
 
 
@@ -27,32 +22,36 @@ const Height = Math.round(ScreenHeight * 0.3);
 
 const EditPro = (prop) => {
 
-     
+    const { confirmDeleteAccount, loading } = useDeleteAccount()
+
+
     const navigation = useNavigation();
     const route = useRoute();
     const dispatch = useDispatch();
     const { profileId, profileData } = route.params ?? {};
-    console.log('profileId:', profileId);
-    console.log('profileData', profileData);
+
 
     // useState Hook  Section
-    const [Full_Name, setFull_Name] = useState(infoProfiles?.full_Name || '');
-    const [Email, setEmail] = useState(infoProfiles?.email);
-    const [Certification, setCertification] = useState(infoProfiles?.certification || '');
-    const [Function, setFunction] = useState(infoProfiles?.function || '');
-    // const [combinedProfiles, setCombinedProfiles] = useState([])
+    const [form, setForm] = useState({
+        full_Name: '',
+        certification: '',
+        function: '',
+        phoneNumber: '',
 
-    //  USESELECTOR SECTION
-    const profileImages = useSelector(state => state.image.profiles[profileId] || {});
-    console.log('ProfileImages:', profileImages)
-    const infoProfiles = useSelector(state => state.info.infoPro[profileId] || {});
-    console.log('infoProfiles:', infoProfiles);
-    // const metadata = useSelector(state => state.meta.metaPro[profileId] || {});
-    // console.log('metadata', metadata);
+
+    });
+    const [loaded, setLoaded] = useState(false);
+    const [avatarUri, setAvatarUri] = useState(null);
+
+
+
+
 
     //METADATAPICKER
 
-    const pickMedia = async (profileId) => {
+    const pickMedia = async () => {
+
+
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
             alert('Permission to access media library is required!');
@@ -60,8 +59,8 @@ const EditPro = (prop) => {
         }
 
         const result = await ImagePicker.launchImageLibraryAsync({
-            // mediaTypes: ImagePicker.MediaType,
-            MediaTypeOptions: 'All',
+
+            MediaTypeOptions: ImagePicker.MediaType.Images,
             allowsEditing: true,
             aspect: [4, 3],
             quality: 1,
@@ -79,31 +78,27 @@ const EditPro = (prop) => {
         objectInstance.append('avatar', {
 
             uri: asset.uri,
-            name: asset.fileName,
-            type: asset.mimeType,
+            name: asset.fileName || `avatar_${Date.now()}.jpg`,
+            type: asset.mimeType || 'image/jpeg',
 
         });
         // append is method that that add key,value pair to the  insttanceObject create  from FromData()
         objectInstance.append("title", asset.fileName || "untitled");
 
         try {
-            const request = await fetch(`http://192.168.1.173:3000/upload/user/${profileId}`, {
+
+
+            const request = await authFetch('/upload/me/media', {
                 method: 'POST',
                 body: objectInstance,
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+
             })
             console.log('Uploading for profileId:', profileId);
 
             const data = await request.json();
 
             if (data.success) {
-                dispatch(setProfileMeta({
-                    id: profileId,
-                    newImage: data.url
-
-                }))
+                setAvatarUri(data.url);
 
             } else {
                 console.log('Upload failed:', data.message);
@@ -144,8 +139,10 @@ const EditPro = (prop) => {
         const assetFile = Video ? 'video' : 'photo';
         //  new objectInstance is the instance object of FormData() it means copy of   FormDtata()  constructor 
         const objectInstance = new FormData()
+
         objectInstance.append(assetFile, {
 
+            title: asset.fileName || 'untitled',
             uri: asset.uri,
             name: asset.fileName || `upload_${Date.now()}.${Video ? 'mp4' : 'jpg'}`,
             type: asset.mimeType || (Video ? 'video/mp4' : 'image/jpeg'),
@@ -155,12 +152,12 @@ const EditPro = (prop) => {
         objectInstance.append("title:", asset.fileName || "untitle");
 
         try {
-            const request = await authFetch(`upload/me/media`, {
+            const request = await authFetch(`/upload/me/media`, {
                 method: 'POST',
                 body: objectInstance,
-                
+
             })
-            
+
             const data = await request.json();
 
             if (data.success) {
@@ -180,13 +177,31 @@ const EditPro = (prop) => {
 
     }
 
-    // EVENT TO SAVE INFO-PROFILE
-
-    const newData = {
-        full_Name: Full_Name,        // map local state to the correct backend field name
-        certification: Certification,
-        function: Function,
-    }
+    useFocusEffect(
+        useCallback(() => {
+            let active = true;
+            (async () => {
+                try {
+                    const request = await authFetch('/profiles/me');
+                    const data = await request.json();
+                    if (active && data.success) {
+                        const d = data.profile;
+                        setAvatarUri(d.avatar?.uri ?? null);
+                        setForm({
+                            full_Name: d.full_Name ?? '',
+                            email: d.email ?? '',
+                            certification: d.certification ?? '',
+                            function: d.function ?? '',
+                        });
+                        setLoaded(true);
+                    }
+                } catch (e) {
+                    console.log('load profile error:', e);
+                }
+            })();
+            return () => { active = false; };
+        }, [])
+    );
 
 
 
@@ -194,22 +209,21 @@ const EditPro = (prop) => {
     const infoSave = async () => {
 
         try {
-            const request = await fetch(`http://192.168.1.173:3000/profiles/${profileId}`, {
+            const request = await authFetch('/profiles/me', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(newData),
+                body: JSON.stringify(form),
 
             })
             const data = await request.json()
-            if (request.ok) {
-                console.log('bio updated:', data);
+            if (data.success) {
 
-                navigation.navigate('ProfilesTab', { screen: 'Profiles' })
+                navigation.goBack()
             } else {
                 console.log("bio update faild:", data)
             }
         } catch (e) {
-            console.log(e)
+            console.log('erro in the update data:', e)
         }
 
 
@@ -219,7 +233,7 @@ const EditPro = (prop) => {
 
         try {
 
-            const request = await authFetch(`profiles/me`, {
+            const request = await authFetch('profiles/me', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ avatar: { url: null, thumbnail: null } })
@@ -260,16 +274,13 @@ const EditPro = (prop) => {
 
 
 
-
-    const profileImage = profileData?.profileImage || profileImages?.uri || profileImages;
-
     const combinedProfiles = [{
-        id: profileId,
-        full_Name: infoProfiles.full_Name || Full_Name,
-        certification: infoProfiles.certification || Certification,
-        function: infoProfiles.function || Function,
-        email: infoProfiles.email || Email,
-        profileImage
+        id: 'me',                        // any stable string; the FlatList only needs a key
+        full_Name: form.full_Name,
+        certification: form.certification,
+        function: form.function,
+        email: form.email,
+        profileImage: avatarUri,
     }];
 
 
@@ -290,7 +301,7 @@ const EditPro = (prop) => {
                         resizeMode="cover"
                     />
                     <TouchableOpacity
-                        onPress={() => pickMedia(profileId)}
+                        onPress={pickMedia}
                         style={styles.pickButton}
                     >
                         <Text style={styles.buttonText}>Pick Image</Text>
@@ -305,29 +316,30 @@ const EditPro = (prop) => {
                         style={styles.input}
                         placeholder="Enter your full name"
                         placeholderTextColor="#999"
-                        onChangeText={setFull_Name}
-                        value={Full_Name}
+                        value={form.full_Name}
+                        onChangeText={(t) => setForm(prev => ({ ...prev, full_Name: t }))}
+
                     />
                     <TextInput
                         style={styles.input}
                         placeholder="Enter your certification if you have"
                         placeholderTextColor="#999"
-                        onChangeText={setCertification}
-                        value={Certification}
+                        onChangeText={(t) => setForm(prev => ({ ...prev, certification: t }))}
+                        value={form.certification}
                     />
                     <TextInput
                         style={styles.input}
                         placeholder="Enter your function"
                         placeholderTextColor="#999"
-                        onChangeText={setFunction}
-                        value={Function}
+                        onChangeText={(t) => setForm(prev => ({ ...prev, function: t }))}
+                        value={form.function}
                     />
                     <TextInput
                         style={styles.input}
                         placeholder="Enter your email"
                         placeholderTextColor="#999"
-                        onChangeText={setEmail}
-                        value={Email}
+                        onChangeText={(t) => setForm(prev => ({ ...prev, email: t }))}
+                        value={form.email}
                     />
                 </View>
                 <View style={{ marginTop: 6 }}>
@@ -353,9 +365,28 @@ const EditPro = (prop) => {
             />
 
             <View style={styles.saveAllContainer}>
+                <TouchableOpacity onPress={confirmDeleteAccount}
+                    disabled={loading}
+                    style={{
+                        backgroundColor: 'red',
+                        padding: 10,
+                        borderRadius: 8,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom:40
+
+                    }}>
+                    {
+                        loading ? (
+                            <ActivityIndicator color="#ef4444" />) :
+                            (<Text className="text-white-800 text-base">DELETE ACCOUNT</Text>)
+                    }
+
+                </TouchableOpacity>
+
                 <Button
                     title="Save All Changes"
-                    onPress={() => infoSave(profileId)}
+                    onPress={infoSave}
                     buttonStyle={styles.saveAllButton}
                     titleStyle={styles.saveAllButtonText}
                 />
